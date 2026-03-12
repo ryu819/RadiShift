@@ -6,7 +6,8 @@ ENV TZ=Asia/Tokyo
 RUN apt-get update -qq && apt-get -y install \
     build-essential \
     libyaml-dev \
-    libmariadb-dev 
+    libmariadb-dev \
+    git
 
 WORKDIR /backend
 COPY Gemfile /backend/Gemfile

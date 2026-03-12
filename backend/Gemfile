@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
 source "https://rubygems.org"
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
+ruby "3.3.10"
 
 gem "rails", "~> 8.1.2"
+
+# ActiveRecord で MySQL を使う場合のアダプタ
+gem "mysql2", "~> 0.5"
+
+# Rails の標準 Web サーバー
+gem "puma", ">= 5.0"
+
+# Windowsではタイムゾーン情報がOSに含まれていないため、WindowsでRailsを動かす人向けに tzinfoのデータを別途インストールする
+gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
+
+# Rails の起動を高速化するキャッシュ機構（config/boot.rb で使用）
+gem "bootsnap", require: false
+
