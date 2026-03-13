@@ -19,3 +19,11 @@ gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 # Rails の起動を高速化するキャッシュ機構（config/boot.rb で使用）
 gem "bootsnap", require: false
 
+
+group :development, :test do
+  # pry コンソールを使えるようにする。
+  gem "pry-byebug"
+  gem "pry-doc"
+  gem "pry-rails"
+end
+
