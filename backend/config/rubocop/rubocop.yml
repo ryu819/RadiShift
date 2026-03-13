@@ -1,0 +1,142 @@
+# 自動生成されるものはチェック対象から除外する
+AllCops:
+  Exclude:
+    - "node_modules/**/*" 
+    - "vendor/**/*"        
+    - "db/schema.rb"  
+    - "db/migrate/*"
+    - "log/**/*"
+    - "tmp/**/*"     
+    - "bin/**/*"           
+    
+#################### Layout ################################
+
+# 1行の最大文字数
+Layout/LineLength:
+  Max: 160
+  Exclude:
+    - "db/migrate/*.rb"
+
+# クラス内の定義順を揃える
+Layout/ClassStructure:
+  Enabled: true
+
+# attr_accessor の前後に空行を入れる
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
+# 余計なスペースを検出（migration は除外）
+Layout/ExtraSpacing:
+  Exclude:
+    - "db/migrate/*.rb"
+
+# 複数行メソッド呼び出しのインデント
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented_relative_to_receiver
+
+# obj .method のような変なスペースを禁止
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+#################### Lint ##################################
+
+# ブロックの結びつきが曖昧な書き方を検出
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - "spec/**/*_spec.rb"
+
+
+# 古い OpenSSL 定数の警告
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: false
+
+# 空 when を許容
+Lint/EmptyWhen:
+  Enabled: false
+
+# _var のような未使用変数を許容
+Lint/UnderscorePrefixedVariableName:
+  Enabled: false
+
+# 未使用引数を許容
+Lint/UnusedMethodArgument:
+  Enabled: false
+
+
+#################### Metrics ###############################
+
+# メソッドの複雑さ制限
+Metrics/AbcSize:
+  Max: 30
+
+# 分岐の多さ制限
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+# 体感的な複雑さ制限
+Metrics/PerceivedComplexity:
+  Max: 8
+
+# メソッドが長くなりすぎるのを防ぐ
+Metrics/MethodLength:
+  Max: 20
+  Exclude:
+    - "db/migrate/*.rb"
+
+# RSpecや設定ファイルは長くなりがちなので除外
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*.rb"
+    - "config/routes.rb"
+    - "db/seeds.rb"
+    - 'config/initializers/devise.rb'
+
+#################### Naming ################################
+
+# is_xxx? を xxx? に寄せる
+Naming/PredicatePrefix:
+  NamePrefix:
+    - "is_"
+    - "has_"
+    - "have_"
+  ForbiddenPrefixes:
+    - "is_"
+    - "has_"
+    - "have_"
+  AllowedMethods:
+    - "is_a?"
+
+# 短い引数名を許容
+Naming/MethodParameterName:
+  Enabled: false
+
+#################### Security ##############################
+
+# YAML.load を許容
+Security/YAMLLoad:
+  Enabled: false
+
+#################### Style #################################
+
+# 日本語にコメントを許可
+Style/AsciiComments:
+  Enabled: false
+
+# 文字列のダブルクォートチェック
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+# alias より alias_method
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
+# %w / %i を強制しない
+Style/WordArray:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+# クラスに説明コメントを書かなくてもいい
+Style/Documentation:
+  Enabled: false
