@@ -1,0 +1,49 @@
+Rails:
+  Enabled: true  
+
+# ActiveRecord のコールバック順序をチェック
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true  
+
+# 複数カラム変更用の bulk を無効
+Rails/BulkChangeTable:
+  Enabled: false
+
+# delegate の使用を強制するルール無効
+Rails/Delegate:
+  Enabled: false
+
+# find_by_id の代わりに find を推奨するルール,強制したくないので無効
+Rails/FindById:
+  Enabled: false
+
+# ActiveSupport の inquiry (xxx?) を使うべきという警告,強制しないので無効
+Rails/Inquiry:
+  Enabled: false
+
+# mailer クラス命名チェック
+Rails/MailerName:
+  Enabled: true
+
+# present? / blank? を使うべきというルール,無効
+Rails/Present:
+  Enabled: false
+
+# try を &. に自動変換 
+Rails/SafeNavigation:
+  ConvertTry: true
+
+# save / update / create に ! を付けることで失敗を例外で検知
+Rails/SaveBang:
+  Enabled: true
+
+# Rails.env の知らない環境名を警告
+Rails/UnknownEnv:
+  Environments:
+    - development  
+    - test         
+    - production   
+
+# where(...).exists? を where_exists に変換を無効
+Rails/WhereExists:
+  Enabled: false

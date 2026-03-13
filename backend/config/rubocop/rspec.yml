@@ -1,0 +1,62 @@
+# 日本語OK
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/ExampleWording:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/DescribeMethod:
+  Enabled: false
+
+# described_class を使わない
+RSpec/DescribedClass:
+  EnforcedStyle: explicit
+
+# let の最後の後に空行強制しない
+RSpec/EmptyLineAfterFinalLet:
+  Enabled: false
+
+# 1 example の行数上限
+RSpec/ExampleLength:
+  Max: 12 
+
+# change matcher の書き方をブロック形式にする
+RSpec/ExpectChange:
+  EnforcedStyle: block 
+
+# is_expected.to のような暗黙的 expect を禁止しない
+RSpec/ImplicitExpect:
+  Enabled: false 
+
+# インスタンス変数を許可
+RSpec/InstanceVariable:
+  Enabled: false
+
+# 1 example 内での複数 expect は許可
+RSpec/MultipleExpectations:
+  Enabled: false 
+
+# let を自由に使って OK 
+RSpec/LetSetup:
+  Enabled: false 
+
+# subject を名前付きにする強制しない
+RSpec/NamedSubject:
+  Enabled: false
+
+# describe/context ネストの深さ
+RSpec/NestedGroups:
+  Max: 4 
+
+# stub の戻り値書き方自由
+RSpec/ReturnFromStub:
+  Enabled: false
+
+# let/subject の数
+RSpec/MultipleMemoizedHelpers:
+  Enabled: true 
+  Max: 8      
+  AllowSubject: false 
