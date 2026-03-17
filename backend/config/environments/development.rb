@@ -5,6 +5,9 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Docker ネットワーク内から "app" というホスト名で来るアクセスを許可
+  config.hosts << "app"
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 

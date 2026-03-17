@@ -13,6 +13,7 @@ services:
   app:
     build:
       context: ./backend
+    command: bash
     volumes:
       - ./backend:/backend
     ports:
@@ -24,6 +25,7 @@ services:
   front:
       build:
         context: ./frontend
+      command: bash
       tty: true
       stdin_open: true
       volumes:

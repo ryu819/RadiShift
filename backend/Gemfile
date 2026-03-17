@@ -36,5 +36,5 @@ group :development, :test do
 
   # テストカバレッジ計測
   gem "simplecov", require: false
-  gem 'simplecov-console', require: false
+  gem "simplecov-console", require: false
 end
