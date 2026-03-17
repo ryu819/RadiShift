@@ -1,0 +1,100 @@
+# テスト(rspec)、コードルール(rubocop, eslint, prettier)のチェックを行う
+name: Continuous Integration
+
+# 当 workflow の実行タイミング
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+
+# 当 workflow が行う処理
+jobs:
+  # 処理① rspec がオールグリーンであることをチェック
+  rspec:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      RAILS_ENV: test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
+    services:
+      mysql:
+        image: mysql:8.4
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        # DBが使えるようになるまで待つ
+        options: --health-cmd "mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 10
+         
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.10
+          bundler-cache: true
+          working-directory: backend
+
+      - name: Database create and migrate
+        run: |
+          cp config/database.yml.ci config/database.yml
+          bundle exec rails db:create 
+          bundle exec rails db:migrate 
+
+      - name: Run rspec
+        run: bundle exec rspec
+
+  # 処理② rubocop のルール違反がないことをチェック
+  rubocop:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      RAILS_ENV: test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.10
+          bundler-cache: true
+          working-directory: backend
+
+      - name: Run rubocop
+        run: bundle exec rubocop
+
+  # 処理③ eslint(& prettier) のルール違反がないことをチェック
+  eslint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.21.1
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run format check
+        run: npm run format:check
