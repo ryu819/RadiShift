@@ -16,7 +16,7 @@ async function getHealthCheck() {
 }
 
 async function HealthCheck() {
-  const message =  await getHealthCheck();
+  const message = await getHealthCheck();
   return <div>{message}</div>;
 }
 
