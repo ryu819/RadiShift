@@ -37,4 +37,7 @@ group :development, :test do
   # テストカバレッジ計測
   gem "simplecov", require: false
   gem "simplecov-console", require: false
+
+  # N+1発生時にアラートを表示する
+  gem "bullet"
 end
