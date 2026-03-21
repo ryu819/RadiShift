@@ -17,7 +17,7 @@ module Api
         end
 
         def register_success
-          render json: { message: "認証メールを送信しました。メールをご確認ください。" }, status: :ok
+          render json: { message: "認証メールを送信しました。メールをご確認ください。" }, status: :created
         end
 
         def register_failed
