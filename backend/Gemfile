@@ -19,7 +19,19 @@ gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 # Rails の起動を高速化するキャッシュ機構（config/boot.rb で使用）
 gem "bootsnap", require: false
 
+# ユーザー認証を提供する
+gem "devise"
+
+# JWT認証を提供する
+gem "devise-jwt"
+
+# devise を日本語化する
+gem "devise-i18n"
+
 group :development, :test do
+  # 開発環境でメール送信をテストする
+  gem "letter_opener_web"
+
   # pry コンソールを使えるようにする。
   gem "pry-byebug"
   gem "pry-doc"
