@@ -20,8 +20,12 @@ Rails.application.routes.draw do
                confirmations: "api/v1/users/confirmations"
              }
 
-  namespace :api do
+  namespace :api, defaults: { format: :json } do
     namespace :v1 do
+      namespace :current do
+        resource :user, only: [:show, :update, :destroy] do
+        end
+      end
       get "health_check", to: "health_check#index"
     end
   end
