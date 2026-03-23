@@ -14,7 +14,7 @@ module Api
           render json: { message: "ログインしました。" }, status: :ok
         end
 
-        def respond_to_on_destroy(_resource = nil)
+        def respond_to_on_destroy
           current_user ? log_out_success : log_out_failure
         end
 
