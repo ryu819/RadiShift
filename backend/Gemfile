@@ -40,6 +40,9 @@ group :development, :test do
   # テストフレームワーク rspec を導入する
   gem "rspec-rails"
 
+  # テスト用データを作成する
+  gem "factory_bot_rails"
+
   # rubocop を使えるようにする。
   gem "rubocop", require: false
   gem "rubocop-performance", require: false
