@@ -6,6 +6,7 @@ module AuthHelper
       user: { email: user.email, password: user.password }
     }
 
+    puts response.headers.inspect
     response.headers["Authorization"]
   end
 end
