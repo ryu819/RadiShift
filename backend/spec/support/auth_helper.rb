@@ -7,6 +7,7 @@ module AuthHelper
     }
 
     puts response.headers.inspect
-    response.headers["Authorization"]
+    # response.headers["Authorization"]
+    "Bearer #{response.headers['Authorization']}"
   end
 end
