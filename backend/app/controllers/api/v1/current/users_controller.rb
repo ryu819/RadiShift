@@ -18,7 +18,7 @@ module Api
               render json: { message: "アカウント情報を更新しました。" }, status: :ok
             end
           else
-            render json: { message: "アカウントの更新に失敗しました。", errors: current_user.errors.to_hash(true) }, status: :unprocessable_entity
+            render json: { message: "アカウントの更新に失敗しました。", errors: current_user.errors.to_hash(true) }, status: :unprocessable_content
           end
         end
 
@@ -26,14 +26,14 @@ module Api
           if current_user.destroy
             head :no_content
           else
-            render json: { message: "アカウントの削除に失敗しました。" }, status: :unprocessable_entity
+            render json: { message: "アカウントの削除に失敗しました。" }, status: :unprocessable_content
           end
         end
 
         private
 
         def current_user_params
-          params.require(:user).permit(:email)
+          params.require(:user).permit(:email, :name)
         end
       end
     end
