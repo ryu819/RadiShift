@@ -7,6 +7,9 @@ ruby "3.3.10"
 
 gem "rails", "~> 8.1.2"
 
+# メッセージを日本語化
+gem "rails-i18n"
+
 # ActiveRecord で MySQL を使う場合のアダプタ
 gem "mysql2", "~> 0.5"
 
