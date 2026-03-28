@@ -4,36 +4,38 @@ module Api
   module V1
     module Users
       class PasswordsController < Devise::PasswordsController
-        # GET /resource/password/new
-        # def new
-        #   super
-        # end
+        include DeviseHackFakeSession
+        wrap_parameters false
+        respond_to :json
 
-        # POST /resource/password
-        # def create
-        #   super
-        # end
+        private
 
-        # GET /resource/password/edit?reset_password_token=abcdef
-        # def edit
-        #   super
-        # end
+        def respond_with(resource, _opts = {})
+          return send_email if action_name == "create"
 
-        # PUT /resource/password
-        # def update
-        #   super
-        # end
+          return reset_password_success if (action_name == "update") && resource.errors.empty?
 
-        # protected
+          reset_password_failed
+        end
 
-        # def after_resetting_password_path_for(resource)
-        #   super(resource)
-        # end
+        def send_email
+          render json: {
+            message: "パスワードリセット用のメールを送信しました。メールをご確認ください。"
+          }, status: :ok
+        end
 
-        # The path used after sending reset password instructions
-        # def after_sending_reset_password_instructions_path_for(resource_name)
-        #   super(resource_name)
-        # end
+        def reset_password_success
+          render json: {
+            message: "パスワードを変更しました。"
+          }, status: :ok
+        end
+
+        def reset_password_failed
+          render json: {
+            message: "パスワード変更に失敗しました。",
+            errors: resource.errors.full_messages
+          }, status: :unprocessable_entity
+        end
       end
     end
   end
