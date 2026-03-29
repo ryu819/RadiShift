@@ -52,6 +52,16 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       end
     end
 
+    context "登録済みのemailを送った時" do
+      let(:params) { { user: { email: current_user.email } } }
+
+      it "エラーになり、unconfirmed_emailは変わらない" do
+        subject
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(current_user.reload.unconfirmed_email).to be_nil
+      end
+    end
+
     context "バリデーションエラーのとき" do
       let(:params) { { user: { name: "" } } }
       it "更新に失敗する" do
