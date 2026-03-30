@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_24_095623) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_30_024414) do
+  create_table "facilities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "invite_code"
+    t.datetime "invite_expires_at"
+    t.string "name", null: false
+    t.integer "request_deadline", default: 7, null: false
+    t.text "rules_text"
+    t.datetime "updated_at", null: false
+    t.index ["invite_code"], name: "index_facilities_on_invite_code", unique: true
+    t.index ["name"], name: "index_facilities_on_name", unique: true
+  end
+
   create_table "jwt_denylists", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "exp", null: false
