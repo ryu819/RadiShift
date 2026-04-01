@@ -23,9 +23,9 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       namespace :current do
-        resource :user, only: [:show, :update, :destroy] do
-        end
+        resource :user, only: [:show, :update, :destroy]
       end
+      resource :facility, only: [:show, :create, :update, :destroy]
       get "health_check", to: "health_check#index"
     end
   end
