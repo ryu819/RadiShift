@@ -25,11 +25,8 @@ module Api
         end
 
         def destroy
-          if current_user.destroy
-            head :no_content
-          else
-            render json: { message: "アカウントの削除に失敗しました。" }, status: :unprocessable_content
-          end
+          current_user.destroy!
+          render json: { message: "アカウントを削除しました。" }, status: :ok
         end
 
         private
