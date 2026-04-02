@@ -90,7 +90,7 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         expect { subject }
           .to change { User.count }.by(-1)
 
-        expect(response).to have_http_status(:no_content)
+        expect(response).to have_http_status(:ok)
       end
     end
   end

@@ -9,7 +9,7 @@ module Api
       before_action :require_no_facility!, only: [:create]
 
       def show
-        render json: current_user.facility
+        render json: facility
       end
 
       def create
@@ -17,38 +17,42 @@ module Api
 
         Facility.transaction do
           unless facility.save
-            return render json: { message: "施設作成に失敗しました。", errors: current_user.facility.errors.to_hash(true) },
+            return render json: { message: "施設作成に失敗しました。", errors: facility.errors.to_hash(true) },
                           status: :unprocessable_content
           end
 
           current_user.update!(facility: facility, is_admin: true)
         end
 
-        render json: { message: "新規施設を作成しました。" }
+        render json: { message: "新規施設を作成しました。" }, status: :created
       end
 
       def update
-        if current_user.facility.update(facility_params)
+        if facility.update(facility_params)
           render json: { message: "施設情報を更新しました。" }, status: :ok
         else
-          render json: { message: "施設の更新に失敗しました。", errors: current_user.facility.errors.to_hash(true) }, status: :unprocessable_content
+          render json: { message: "施設の更新に失敗しました。", errors: facility.errors.to_hash(true) }, status: :unprocessable_content
         end
       end
 
       def destroy
         Facility.transaction do
-          current_user.facility.users.where(is_admin: true).find_each do |user|
+          facility.users.where(is_admin: true).find_each do |user|
             user.update!(is_admin: false)
           end
         end
-        current_user.facility.destroy!
-        render json: { message: "施設を削除しました。" }
+        facility.destroy!
+        render json: { message: "施設を削除しました。" }, status: :ok
       end
 
       private
 
       def facility_params
         params.require(:facility).permit(:name, :request_deadline, :rules_text)
+      end
+
+      def facility
+        current_user.facility
       end
     end
   end
