@@ -26,8 +26,8 @@ Rails.application.routes.draw do
         resource :user, only: [:show, :update, :destroy]
       end
       resource :facility, only: [:show, :create, :update, :destroy] do
-        resource :invitation, only: [:show, :create, :destroy], 
-        module: :facilities
+        resource :invitation, only: [:show, :create, :destroy],
+                              module: :facilities
       end
       get "health_check", to: "health_check#index"
     end
