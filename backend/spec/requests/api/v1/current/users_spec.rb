@@ -3,8 +3,8 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Current::Users", type: :request do
-  let!(:current_user) { create(:user) }
-  let!(:token) { login_and_get_token(current_user) }
+  let!(:user) { create(:user) }
+  let!(:token) { login_and_get_token(user) }
 
   describe "GET /api/v1/current/user" do
     subject { get(api_v1_current_user_path, headers: { "Authorization": token }) }
@@ -13,7 +13,7 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       it "正常にレコードを取得できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["id"]).to eq(current_user.id)
+        expect(res["id"]).to eq(user.id)
         expect(response).to have_http_status(:ok)
       end
     end
@@ -38,7 +38,7 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       it "正常にレコードを更新できる" do
         subject
         JSON.parse(response.body)
-        expect(current_user.reload.name).to eq("テスト変更")
+        expect(user.reload.name).to eq("テスト変更")
         expect(response).to have_http_status(:ok)
       end
     end
@@ -48,17 +48,17 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       it "unconfirmed_emailに入る" do
         subject
         expect(response).to have_http_status(:ok)
-        expect(current_user.reload.unconfirmed_email).to eq("new@example.com")
+        expect(user.reload.unconfirmed_email).to eq("new@example.com")
       end
     end
 
     context "登録済みのemailを送った時" do
-      let(:params) { { user: { email: current_user.email } } }
+      let(:params) { { user: { email: user.email } } }
 
       it "エラーになり、unconfirmed_emailは変わらない" do
         subject
         expect(response).to have_http_status(:unprocessable_content)
-        expect(current_user.reload.unconfirmed_email).to be_nil
+        expect(user.reload.unconfirmed_email).to be_nil
       end
     end
 
@@ -77,7 +77,7 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       it "is_admin は更新されない" do
         subject
         expect(response).to have_http_status(:ok)
-        expect(current_user.reload.is_admin).to be(false)
+        expect(user.reload.is_admin).to be(false)
       end
     end
   end
