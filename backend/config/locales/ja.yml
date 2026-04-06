@@ -3,3 +3,5 @@ ja:
     attributes:
       user:
         name: 名前
+      facility:
+        name: 施設名
