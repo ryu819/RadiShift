@@ -4,6 +4,9 @@ module Api
   module V1
     module Facilities
       class InvitationsController < ApplicationController
+        INVITE_CODE_LENGTH = 10
+        INVITE_EXPIRATION = 1.week
+
         before_action :authenticate_user!
         before_action :require_facility!, only: [:show, :create, :destroy]
         before_action :require_admin!, only: [:show, :create, :destroy]
@@ -15,12 +18,12 @@ module Api
 
         def create
           loop do
-            code = SecureRandom.alphanumeric(10)
+            code = SecureRandom.alphanumeric(INVITE_CODE_LENGTH)
 
             begin
               facility.update!(
                 invite_code: code,
-                invite_expires_at: 1.week.from_now.end_of_day
+                invite_expires_at: INVITE_EXPIRATION.from_now.end_of_day
               )
               break
             rescue ActiveRecord::RecordNotUnique
