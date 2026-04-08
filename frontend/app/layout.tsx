@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/header/Header";
 
 const notoSansJP = Noto_Sans_JP({
@@ -30,9 +31,10 @@ export default function RootLayout({
         className={`${notoSansJP.variable} antialiased font-sans bg-slate-50`}
       >
         <Header />
-        <main className="flex items-center justify-center pt-16">
+        <main className="flex items-center justify-center pt-16 min-h-screen">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );
