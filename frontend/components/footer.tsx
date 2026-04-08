@@ -7,7 +7,7 @@ export function Footer() {
         <Link href="/terms" className="hover:opacity-50 transition">
           利用規約
         </Link>
-        <Link href="/" className="hover:opacity-50 transition">
+        <Link href="/privacy-policy" className="hover:opacity-50 transition">
           プライバシーポリシー
         </Link>
       </div>
