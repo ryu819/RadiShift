@@ -3,6 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 
+import { Header } from "@/components/header/Header";
+
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-sans",
   display: "swap",
@@ -24,8 +26,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={`${notoSansJP.variable} antialiased font-sans`}>
-        {children}
+      <body
+        className={`${notoSansJP.variable} antialiased font-sans bg-slate-50`}
+      >
+        <Header />
+        <main className="flex items-center justify-center pt-16">
+          {children}
+        </main>
       </body>
     </html>
   );
