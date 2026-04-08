@@ -86,14 +86,15 @@ export default function PrivacyPolicyPage() {
 
       <h2 className="text-lg font-bold mt-6 mb-2">第8条（開示・訂正・削除）</h2>
       <p>
-        お客様は、当サービスが保有するご自身の個人情報について、開示・訂正・削除を求めることができます。ご希望の場合は、下記のお問い合わせ先までご連絡ください。ご本人確認のうえ、合理的な期間内に対応いたします。
+        お客様は、当サービスが保有するご自身の個人情報について、開示・訂正・削除を求めることができます。ご希望の場合は、
+        <Link
+          href="/contact"
+          className="text-primary underline hover:opacity-50 transition"
+        >
+          お問い合わせ
+        </Link>
+        までご連絡ください。ご本人確認のうえ、合理的な期間内に対応いたします。
       </p>
-      <Link
-        href="/contact"
-        className="text-primary underline hover:opacity-50 transition"
-      >
-        お問い合わせ
-      </Link>
 
       <h2 className="text-lg font-bold mt-6 mb-2">
         第9条（プライバシーポリシーの変更）
