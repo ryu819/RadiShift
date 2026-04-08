@@ -8,10 +8,10 @@ export default function ContactPage() {
         お問い合わせは以下のメールアドレスまでお願いいたします。
       </p>
       <Link
-        href="mailto:test@gmail.com"
+        href="mailto:radishift@gmail.com"
         className="text-primary  hover:opacity-50 transition"
       >
-        test@gmail.com
+        radishift@gmail.com
       </Link>
 
       <div className="mt-4">
