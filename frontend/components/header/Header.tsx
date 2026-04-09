@@ -8,7 +8,9 @@ export function Header() {
     <header className="bg-white border-b border-slate-200 px-4 fixed  w-full h-16 flex justify-between items-center ">
       <Link href="/" className="flex items-center gap-1">
         <Image src="/icon.png" alt="icon" width={50} height={50} />
-        <div className="text-3xl font-semibold text-primary">RadiShift</div>
+        <div className="hidden xs:block text-3xl font-semibold text-primary">
+          RadiShift
+        </div>
       </Link>
 
       <nav className="flex items-center gap-3 text-sm">
