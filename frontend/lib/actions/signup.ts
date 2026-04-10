@@ -1,5 +1,6 @@
 "use server";
 import camelcaseKeys from "camelcase-keys";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
@@ -58,6 +59,20 @@ export async function submitSignupForm(
       values: { name, email },
     };
   }
+
+  const cookieStore = await cookies();
+
+  cookieStore.set(
+    "flashToast",
+    JSON.stringify({
+      type: "pending",
+      message: data.message,
+    }),
+    {
+      path: "/",
+      maxAge: 3,
+    },
+  );
 
   redirect("/");
 }
