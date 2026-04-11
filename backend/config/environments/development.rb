@@ -19,7 +19,7 @@ Rails.application.configure do
 
   # 認証メール送信に関する設定
   config.action_mailer.default_options = { from: "no-reply@example.com" }
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.action_mailer.default_url_options = { host: "localhost", port: 8000 }
   config.action_mailer.delivery_method = :letter_opener_web
 
   # Make code changes take effect immediately without server restart.
