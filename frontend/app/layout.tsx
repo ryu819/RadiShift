@@ -2,9 +2,12 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
+import { Suspense } from "react";
 
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/header/Header";
+import { FlashToastServer } from "@/components/toast/FlashToastServer";
+import { Toaster } from "@/components/ui/sonner";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-sans",
@@ -30,6 +33,10 @@ export default function RootLayout({
       <body
         className={`${notoSansJP.variable} antialiased font-sans bg-slate-50`}
       >
+        <Toaster closeButton />
+        <Suspense fallback={null}>
+          <FlashToastServer />
+        </Suspense>
         <Header />
         <main className="flex items-center justify-center pt-16 min-h-screen">
           {children}
