@@ -19,6 +19,7 @@ export function UserDropdownMenu() {
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar className="w-10 h-10">
             <AvatarImage src="/images/default-user-icon.png" alt="user" />
+            <AvatarFallback>RS</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
