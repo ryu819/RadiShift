@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { LoginForm } from "@/components/header/LoginForm";
 import { SignUpForm } from "@/components/header/SignupForm";
-import { Button } from "@/components/ui/button";
 
 export function Header() {
   return (
@@ -16,7 +16,7 @@ export function Header() {
 
       <nav className="flex items-center gap-3 text-sm">
         <SignUpForm />
-        <Button>ログイン</Button>
+        <LoginForm />
       </nav>
     </header>
   );
