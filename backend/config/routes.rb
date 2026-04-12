@@ -11,7 +11,7 @@ Rails.application.routes.draw do
                sign_out: "logout",
                registration: "signup",
                password: "reset_password",
-               confirmation: "email_confirmation"
+               confirmation: "confirmation"
              },
              controllers: {
                sessions: "api/v1/users/sessions",
