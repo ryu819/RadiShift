@@ -2,6 +2,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { setFlashToast } from "@/lib/setFlashToast";
 import { RailsResponse } from "@/types/rails-response";
 
 type ActionState = {
@@ -27,40 +28,20 @@ export async function submitLoginForm(
     }),
   });
 
-  const cookieStore = await cookies();
-
   const data: RailsResponse = await res.json();
 
   if (!res.ok) {
-    cookieStore.set(
-      "flashToast",
-      JSON.stringify({
-        type: "failure",
-        message: data.error,
-      }),
-      {
-        path: "/",
-        maxAge: 3,
-      },
-    );
+    await setFlashToast({
+      type: "failure",
+      message: data.error,
+    });
 
-    redirect("/");
+    return { values: { email } };
   }
 
-  const jwt = res.headers.get("authorization");
+  const jwt = res.headers.get("authorization") as string;
 
-  if (!jwt) {
-    cookieStore.set(
-      "flashToast",
-      JSON.stringify({
-        type: "failure",
-        message: "エラーが発生しました。もう一度お試しください。",
-      }),
-      { path: "/", maxAge: 3 },
-    );
-
-    redirect("/");
-  }
+  const cookieStore = await cookies();
 
   cookieStore.set("jwt", jwt, {
     httpOnly: true,
@@ -70,17 +51,7 @@ export async function submitLoginForm(
     maxAge: 60 * 60 * 24,
   });
 
-  cookieStore.set(
-    "flashToast",
-    JSON.stringify({
-      type: "success",
-      message: data.message,
-    }),
-    {
-      path: "/",
-      maxAge: 3,
-    },
-  );
+  await setFlashToast({ type: "success", message: data.message });
 
   redirect("/");
 }
