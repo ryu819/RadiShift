@@ -28,9 +28,17 @@ export async function submitLoginForm(
     }),
   });
 
+  if (res.status >= 500) {
+    await setFlashToast({
+      type: "failure",
+    });
+
+    return { values: { email } };
+  }
+
   const data: RailsResponse = await res.json();
 
-  if (!res.ok) {
+  if (res.status >= 400) {
     await setFlashToast({
       type: "failure",
       message: data.error,

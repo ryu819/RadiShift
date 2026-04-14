@@ -1,12 +1,11 @@
 "use server";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { deleteJwt, getJwt } from "@/lib/actions/jwt";
+import { setFlashToast } from "@/lib/setFlashToast";
 import { RailsResponse } from "@/types/rails-response";
 
 export async function logout() {
-  const cookieStore = await cookies();
   const jwt = await getJwt();
 
   if (!jwt) redirect("/");
@@ -19,52 +18,27 @@ export async function logout() {
   });
 
   if (res.status >= 500) {
-    cookieStore.set(
-      "flashToast",
-      JSON.stringify({
-        type: "failure",
-        message:
-          "現在サーバーで問題が発生しています。しばらくしてからもう一度お試しください。",
-      }),
-      {
-        path: "/",
-        maxAge: 3,
-      },
-    );
+    await setFlashToast({
+      type: "failure",
+    });
 
     return;
   }
 
   const data: RailsResponse = await res.json();
 
-  if (!res.ok) {
-    cookieStore.set(
-      "flashToast",
-      JSON.stringify({
-        type: "failure",
-        message: data.message,
-      }),
-      {
-        path: "/",
-        maxAge: 3,
-      },
-    );
+  if (res.status >= 400) {
+    await setFlashToast({
+      type: "failure",
+      message: data.message,
+    });
+
     return;
   }
 
   await deleteJwt();
 
-  cookieStore.set(
-    "flashToast",
-    JSON.stringify({
-      type: "success",
-      message: data.message,
-    }),
-    {
-      path: "/",
-      maxAge: 3,
-    },
-  );
+  await setFlashToast({ type: "success", message: data.message });
 
   redirect("/");
 }

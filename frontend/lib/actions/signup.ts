@@ -1,8 +1,9 @@
 "use server";
 import camelcaseKeys from "camelcase-keys";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
+
+import { setFlashToast } from "@/lib/setFlashToast";
 
 type SignupError = {
   message: string;
@@ -51,28 +52,27 @@ export async function submitSignupForm(
     }),
   });
 
+  if (res.status >= 500) {
+    await setFlashToast({
+      type: "failure",
+    });
+
+    return {
+      errors: {},
+      values: { name, email },
+    };
+  }
+
   const data: SignupError = camelcaseKeys(await res.json());
 
-  if (!res.ok) {
+  if (res.status >= 400) {
     return {
       errors: data.errors,
       values: { name, email },
     };
   }
 
-  const cookieStore = await cookies();
-
-  cookieStore.set(
-    "flashToast",
-    JSON.stringify({
-      type: "pending",
-      message: data.message,
-    }),
-    {
-      path: "/",
-      maxAge: 3,
-    },
-  );
+  await setFlashToast({ type: "pending", message: data.message });
 
   redirect("/");
 }
