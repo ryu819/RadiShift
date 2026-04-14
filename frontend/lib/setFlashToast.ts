@@ -7,16 +7,17 @@ const SERVER_ERROR_MESSAGE =
 export type FlashToast = {
   type: "success" | "failure" | "pending";
   message?: string;
-  id: number;
+  id?: number;
 };
 
 export async function setFlashToast(data: FlashToast) {
-  const cookieStore = await cookies();
   const toastData: FlashToast = {
     type: data.type,
     message: data.message ?? SERVER_ERROR_MESSAGE,
     id: Date.now(),
   };
+
+  const cookieStore = await cookies();
 
   cookieStore.set("flashToast", JSON.stringify(toastData), {
     path: "/",
