@@ -3,8 +3,8 @@ import camelcaseKeys from "camelcase-keys";
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
+import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/setFlashToast";
-
 type SignupError = {
   message: string;
   errors: {
@@ -52,7 +52,7 @@ export async function submitSignupForm(
     }),
   });
 
-  if (res.status >= 500) {
+  if (isServerError(res.status)) {
     await setFlashToast({
       type: "failure",
     });
@@ -65,7 +65,7 @@ export async function submitSignupForm(
 
   const data: SignupError = camelcaseKeys(await res.json());
 
-  if (res.status >= 400) {
+  if (isClientError(res.status)) {
     return {
       errors: data.errors,
       values: { name, email },

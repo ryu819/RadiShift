@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 
 import { deleteJwt, getJwt } from "@/lib/actions/jwt";
+import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/setFlashToast";
 import { RailsResponse } from "@/types/rails-response";
 
@@ -17,7 +18,7 @@ export async function logout() {
     },
   });
 
-  if (res.status >= 500) {
+  if (isServerError(res.status)) {
     await setFlashToast({
       type: "failure",
     });
@@ -27,7 +28,7 @@ export async function logout() {
 
   const data: RailsResponse = await res.json();
 
-  if (res.status >= 400) {
+  if (isClientError(res.status)) {
     await setFlashToast({
       type: "failure",
       message: data.message,

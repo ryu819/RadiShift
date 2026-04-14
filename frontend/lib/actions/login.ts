@@ -2,6 +2,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/setFlashToast";
 import { RailsResponse } from "@/types/rails-response";
 
@@ -28,7 +29,7 @@ export async function submitLoginForm(
     }),
   });
 
-  if (res.status >= 500) {
+  if (isServerError(res.status)) {
     await setFlashToast({
       type: "failure",
     });
@@ -38,7 +39,7 @@ export async function submitLoginForm(
 
   const data: RailsResponse = await res.json();
 
-  if (res.status >= 400) {
+  if (isClientError(res.status)) {
     await setFlashToast({
       type: "failure",
       message: data.error,
