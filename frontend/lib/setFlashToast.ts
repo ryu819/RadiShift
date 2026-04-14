@@ -7,26 +7,19 @@ const SERVER_ERROR_MESSAGE =
 export type FlashToast = {
   type: "success" | "failure" | "pending";
   message?: string;
+  id: number;
 };
 
 export async function setFlashToast(data: FlashToast) {
   const cookieStore = await cookies();
-  if (data.message) {
-    cookieStore.set("flashToast", JSON.stringify(data), {
-      path: "/",
-      maxAge: FLASH_TOAST_MAX_AGE,
-    });
-  } else {
-    cookieStore.set(
-      "flashToast",
-      JSON.stringify({
-        type: "failure",
-        message: SERVER_ERROR_MESSAGE,
-      }),
-      {
-        path: "/",
-        maxAge: FLASH_TOAST_MAX_AGE,
-      },
-    );
-  }
+  const toastData: FlashToast = {
+    type: data.type,
+    message: data.message ?? SERVER_ERROR_MESSAGE,
+    id: Date.now(),
+  };
+
+  cookieStore.set("flashToast", JSON.stringify(toastData), {
+    path: "/",
+    maxAge: FLASH_TOAST_MAX_AGE,
+  });
 }
