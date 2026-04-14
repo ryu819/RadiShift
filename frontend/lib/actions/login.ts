@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { isClientError, isServerError } from "@/lib/http-status";
-import { setFlashToast } from "@/lib/setFlashToast";
+import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
 
 type ActionState = {

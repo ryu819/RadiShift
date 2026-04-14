@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
 import { isClientError, isServerError } from "@/lib/http-status";
-import { setFlashToast } from "@/lib/setFlashToast";
+import { setFlashToast } from "@/lib/set-flash-toast";
 type SignupError = {
   message: string;
   errors: {

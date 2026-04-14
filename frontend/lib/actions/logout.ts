@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { deleteJwt, getJwt } from "@/lib/actions/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
-import { setFlashToast } from "@/lib/setFlashToast";
+import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
 
 export async function logout() {
