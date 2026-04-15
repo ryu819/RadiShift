@@ -37,42 +37,50 @@ export async function submitSignupForm(
   const password = formData.get("password") as string;
   const passwordConfirmation = formData.get("passwordConfirmation") as string;
 
-  const res = await fetch(`${process.env.RAILS_API_URL}/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      user: snakecaseKeys({
-        name,
-        email,
-        password,
-        passwordConfirmation,
+  try {
+    const res = await fetch(`${process.env.RAILS_API_URL}/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user: snakecaseKeys({
+          name,
+          email,
+          password,
+          passwordConfirmation,
+        }),
       }),
-    }),
-  });
-
-  if (isServerError(res.status)) {
-    await setFlashToast({
-      type: "failure",
     });
 
+    if (isServerError(res.status)) {
+      await setFlashToast({
+        type: "failure",
+      });
+
+      return {
+        errors: {},
+        values: { name, email },
+      };
+    }
+
+    const data: SignupError = camelcaseKeys(await res.json());
+
+    if (isClientError(res.status)) {
+      return {
+        errors: data.errors,
+        values: { name, email },
+      };
+    }
+
+    await setFlashToast({ type: "pending", message: data.message });
+  } catch {
+    await setFlashToast({ type: "failure" });
     return {
       errors: {},
       values: { name, email },
     };
   }
-
-  const data: SignupError = camelcaseKeys(await res.json());
-
-  if (isClientError(res.status)) {
-    return {
-      errors: data.errors,
-      values: { name, email },
-    };
-  }
-
-  await setFlashToast({ type: "pending", message: data.message });
 
   redirect("/");
 }

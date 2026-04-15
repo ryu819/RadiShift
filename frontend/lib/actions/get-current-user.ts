@@ -8,15 +8,19 @@ export async function getCurrentUser() {
   const jwt = await getJwt();
   if (!jwt) return null;
 
-  const res = await fetch(`${process.env.RAILS_API_URL}/current/user`, {
-    headers: {
-      Authorization: jwt,
-    },
-  });
+  try {
+    const res = await fetch(`${process.env.RAILS_API_URL}/current/user`, {
+      headers: {
+        Authorization: jwt,
+      },
+    });
 
-  if (!res.ok) return null;
+    if (!res.ok) return null;
 
-  const data: User = camelcaseKeys(await res.json());
+    const data: User = camelcaseKeys(await res.json());
 
-  return data;
+    return data;
+  } catch {
+    return null;
+  }
 }
