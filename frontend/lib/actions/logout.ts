@@ -11,35 +11,40 @@ export async function logout() {
 
   if (!jwt) redirect("/");
 
-  const res = await fetch(`${process.env.RAILS_API_URL}/logout`, {
-    method: "DELETE",
-    headers: {
-      Authorization: jwt,
-    },
-  });
-
-  if (isServerError(res.status)) {
-    await setFlashToast({
-      type: "failure",
+  try {
+    const res = await fetch(`${process.env.RAILS_API_URL}/logout`, {
+      method: "DELETE",
+      headers: {
+        Authorization: jwt,
+      },
     });
 
+    if (isServerError(res.status)) {
+      await setFlashToast({
+        type: "failure",
+      });
+
+      return;
+    }
+
+    const data: RailsResponse = await res.json();
+
+    if (isClientError(res.status)) {
+      await setFlashToast({
+        type: "failure",
+        message: data.message,
+      });
+
+      return;
+    }
+
+    await deleteJwt();
+
+    await setFlashToast({ type: "success", message: data.message });
+  } catch {
+    await setFlashToast({ type: "failure" });
     return;
   }
-
-  const data: RailsResponse = await res.json();
-
-  if (isClientError(res.status)) {
-    await setFlashToast({
-      type: "failure",
-      message: data.message,
-    });
-
-    return;
-  }
-
-  await deleteJwt();
-
-  await setFlashToast({ type: "success", message: data.message });
 
   redirect("/");
 }

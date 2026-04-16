@@ -15,7 +15,7 @@ const TOAST_FONT_SIZE = "15px";
 
 type Toast = {
   type: string;
-  message?: string;
+  message: string;
 };
 
 export function FlashToaster({ flash }: { flash?: string }) {
@@ -23,8 +23,6 @@ export function FlashToaster({ flash }: { flash?: string }) {
     if (!flash) return;
 
     const data: Toast = JSON.parse(flash);
-
-    if (!data.message) return;
 
     if (data.type === "pending") {
       toast.dismiss();
