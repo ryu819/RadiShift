@@ -22,6 +22,9 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "localhost", port: 8000 }
   config.action_mailer.delivery_method = :letter_opener_web
 
+  # 画像URL設定
+  Rails.application.routes.default_url_options[:host] = "localhost:3000"
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 
