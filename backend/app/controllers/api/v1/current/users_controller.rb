@@ -48,11 +48,9 @@ module Api
         end
 
         def avatar_image_url
-          if current_user.avatar_image.attached?
-            url_for(current_user.avatar_image)
-          else
-            "http://localhost:8000/images/default-user-icon.png"
-          end
+          return unless current_user.avatar_image.attached?
+
+          url_for(current_user.avatar_image)
         end
       end
     end
