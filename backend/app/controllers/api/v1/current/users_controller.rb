@@ -37,8 +37,11 @@ module Api
           current_user.avatar_image.purge if current_user.avatar_image.attached?
 
           current_user.avatar_image.attach(params[:avatar_image])
-
-          render json: { message: "ユーザーアイコンを更新しました。" }, status: :ok
+          if current_user.save
+            render json: { message: "ユーザーアイコンを更新しました。" }, status: :ok
+          else
+            render json: { errors: current_user.errors[:avatar_image] }, status: :unprocessable_content
+          end
         end
 
         private
