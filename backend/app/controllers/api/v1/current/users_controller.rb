@@ -7,7 +7,9 @@ module Api
         before_action :authenticate_user!
 
         def show
-          render json: current_user
+          render json: current_user.as_json.merge(
+            avatar_image_url: avatar_image_url
+          )
         end
 
         def update
@@ -29,10 +31,29 @@ module Api
           render json: { message: "アカウントを削除しました。" }, status: :ok
         end
 
+        def avatar_image
+          return render json: { message: "画像が送信されていません。" }, status: :bad_request if params[:avatar_image].blank?
+
+          current_user.avatar_image.purge if current_user.avatar_image.attached?
+
+          current_user.avatar_image.attach(params[:avatar_image])
+          if current_user.save
+            render json: { message: "ユーザーアイコンを更新しました。" }, status: :ok
+          else
+            render json: { errors: current_user.errors[:avatar_image] }, status: :unprocessable_content
+          end
+        end
+
         private
 
         def current_user_params
           params.require(:user).permit(:email, :name)
+        end
+
+        def avatar_image_url
+          return unless current_user.avatar_image.attached?
+
+          url_for(current_user.avatar_image)
         end
       end
     end

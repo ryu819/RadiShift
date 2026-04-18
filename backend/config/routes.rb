@@ -23,7 +23,9 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       namespace :current do
-        resource :user, only: [:show, :update, :destroy]
+        resource :user, only: [:show, :update, :destroy] do
+          patch :avatar_image
+        end
       end
       resource :facility, only: [:show, :create, :update, :destroy] do
         resource :invitation, only: [:show, :create, :destroy],

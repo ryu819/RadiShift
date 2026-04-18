@@ -7,6 +7,9 @@ ruby "3.3.10"
 
 gem "rails", "~> 8.1.2"
 
+# Active Storageバリデーション
+gem "active_storage_validations"
+
 # メッセージを日本語化
 gem "rails-i18n"
 
