@@ -1,4 +1,4 @@
-import { AccountUpdateForm } from "@/components/AccountUpdateForm";
+import { AccountUpdateForm } from "@/components/account-settings/AccountUpdateForm";
 import { getCurrentUser } from "@/lib/actions/get-current-user";
 
 export async function AccountUpdateServer() {

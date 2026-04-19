@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 
-import { AccountUpdateForm } from "@/components/AccountUpdateForm";
-import { AccountUpdateServer } from "@/components/AccountUpdateServer";
+import { AccountUpdateForm } from "@/components/account-settings/AccountUpdateForm";
+import { AccountUpdateServer } from "@/components/account-settings/AccountUpdateServer";
 import { Button } from "@/components/ui/button";
-import { UploadImageForm } from "@/components/UploadImageForm";
-import { UploadImageServer } from "@/components/UploadImageServer";
+import { UploadImageForm } from "@/components/account-settings/UploadImageForm";
+import { UploadImageServer } from "@/components/account-settings/UploadImageServer";
 
 export default function AccountSettingsPage() {
   return (

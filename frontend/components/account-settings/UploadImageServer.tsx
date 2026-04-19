@@ -1,4 +1,4 @@
-import { UploadImageForm } from "@/components/UploadImageForm";
+import { UploadImageForm } from "@/components/account-settings/UploadImageForm";
 import { getCurrentUser } from "@/lib/actions/get-current-user";
 
 export async function UploadImageServer() {
