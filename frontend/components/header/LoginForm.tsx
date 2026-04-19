@@ -52,7 +52,7 @@ export function LoginForm() {
       <DialogTrigger asChild>
         <Button>ログイン</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="max-w-xs sm:max-w-sm">
         <Form
           control={control}
           onSubmit={({ formData }) =>
@@ -60,7 +60,7 @@ export function LoginForm() {
           }
         >
           <DialogHeader className="gap-3 mb-2">
-            <DialogTitle className="text-xl">ログイン</DialogTitle>
+            <DialogTitle className="text-xl text-center">ログイン</DialogTitle>
           </DialogHeader>
           <FieldGroup className="gap-2">
             <Field className="gap-2">

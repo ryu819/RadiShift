@@ -5,6 +5,7 @@ export type User = {
   isAdmin: boolean;
   facilityId: number | null;
   rulesText: string | null;
+  avatarImageUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
