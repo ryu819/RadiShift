@@ -11,23 +11,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logout } from "@/lib/actions/logout";
+import { User } from "@/types/user";
 
-export function UserDropdownMenu() {
+export function UserDropdownMenu({ user }: { user: User | null }) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar className="w-10 h-10">
-            <AvatarImage src="/images/default-user-icon.png" alt="user" />
-            <AvatarFallback>RS</AvatarFallback>
+            <AvatarImage
+              src={user?.avatarImageUrl ?? "/images/default-user-icon.png"}
+            />
+            <AvatarFallback>{user?.name}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheckIcon />
-            <Link href="/settings">アカウント設定</Link>
+          <DropdownMenuItem asChild>
+            <Link href="/settings" className="cursor-pointer">
+              <BadgeCheckIcon />
+              アカウント設定
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <form action={logout}>
