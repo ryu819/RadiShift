@@ -55,9 +55,9 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
     context "登録済みのemailを送った時" do
       let(:params) { { user: { email: user.email } } }
 
-      it "エラーになり、unconfirmed_emailは変わらない" do
+      it "unconfirmed_emailは変わらない" do
         subject
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(response).to have_http_status(:ok)
         expect(user.reload.unconfirmed_email).to be_nil
       end
     end

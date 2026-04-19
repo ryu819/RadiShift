@@ -1,5 +1,7 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 import { getJwt } from "@/lib/actions/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -31,11 +33,7 @@ export async function submitAccountUpdateForm(
   const email = formData.get("email") as string;
 
   const jwt = await getJwt();
-  if (!jwt)
-    return {
-      errors: {},
-      values: { name, email },
-    };
+  if (!jwt) redirect("/");
 
   try {
     const res = await fetch(`${process.env.RAILS_API_URL}/current/user`, {
