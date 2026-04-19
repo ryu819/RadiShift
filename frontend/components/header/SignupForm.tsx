@@ -67,7 +67,7 @@ export function SignUpForm() {
       <DialogTrigger asChild>
         <Button>新規登録</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="max-w-xs sm:max-w-sm">
         <Form
           control={control}
           onSubmit={({ formData }) =>
@@ -75,7 +75,7 @@ export function SignUpForm() {
           }
         >
           <DialogHeader className="gap-3 mb-2">
-            <DialogTitle className="text-xl">新規登録</DialogTitle>
+            <DialogTitle className="text-xl text-center">新規登録</DialogTitle>
             <DialogDescription className="mb-2">
               利用規約およびプライバシーポリシーに同意した上で、以下の「登録」ボタンを押してください。
             </DialogDescription>

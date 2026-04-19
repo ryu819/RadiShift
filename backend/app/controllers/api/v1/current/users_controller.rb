@@ -13,11 +13,11 @@ module Api
         end
 
         def update
-          return render json: { message: "元のメールアドレスと同じです。" }, status: :unprocessable_content if current_user_params[:email] == current_user.email
+          # return render json: { message: "元のメールアドレスと同じです。" }, status: :unprocessable_content if current_user_params[:email] == current_user.email
 
           if current_user.update(current_user_params)
-            if current_user.unconfirmed_email.present?
-              render json: { message: "確認メールを送信しました。メールをご確認ください。" }, status: :ok
+            if current_user.saved_change_to_unconfirmed_email?
+              render json: { message: "確認メールを送信しました。メールをご確認ください。", confirmation: true }, status: :ok
             else
               render json: { message: "アカウント情報を更新しました。" }, status: :ok
             end
