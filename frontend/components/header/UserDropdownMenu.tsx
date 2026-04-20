@@ -1,7 +1,7 @@
 import { BadgeCheckIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,7 +22,6 @@ export function UserDropdownMenu({ user }: { user: User | null }) {
             <AvatarImage
               src={user?.avatarImageUrl ?? "/images/default-user-icon.png"}
             />
-            <AvatarFallback>{user?.name}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
