@@ -5,10 +5,10 @@ import { getCurrentUser } from "@/lib/actions/get-current-user";
 import { UserDropdownMenu } from "./UserDropdownMenu";
 
 export async function HeaderAuthSection() {
-  const loggedIn = await getCurrentUser();
+  const user = await getCurrentUser();
 
-  return loggedIn ? (
-    <UserDropdownMenu />
+  return user ? (
+    <UserDropdownMenu user={user} />
   ) : (
     <>
       <SignUpForm />
