@@ -16,5 +16,16 @@ FactoryBot.define do
       is_admin { true }
       facility
     end
+
+    trait :with_avatar do
+      after(:build) do |user|
+        file = Rack::Test::UploadedFile.new(
+          Rails.root.join("spec/fixtures/files/test.png"),
+          "image/png"
+        )
+
+        user.avatar_image.attach(file)
+      end
+    end
   end
 end
