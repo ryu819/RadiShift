@@ -28,6 +28,8 @@ Rails.application.routes.draw do
         end
       end
       resource :facility, only: [:show, :create, :update, :destroy] do
+        post :join
+        delete :leave
         resource :invitation, only: [:show, :create, :destroy],
                               module: :facilities
       end
