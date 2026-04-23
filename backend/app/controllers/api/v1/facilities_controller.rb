@@ -46,7 +46,10 @@ module Api
       end
 
       def join
-        code = params.require(:invite_code)
+        code = params[:invite_code]
+
+        return render json: { message: "招待コードが必要です。" }, status: :bad_request if code.blank?
+
         facility = Facility.find_by(invite_code: code)
 
         return render json: { message: "施設が存在しません。" }, status: :not_found if facility.nil?
@@ -55,7 +58,7 @@ module Api
 
         current_user.update!(facility: facility)
 
-        render json: { message: "施設に参加しました。" }
+        render json: { message: "施設に参加しました。" }, status: :ok
       end
 
       def leave
@@ -63,7 +66,7 @@ module Api
 
         current_user.update!(facility: nil)
 
-        render json: { message: "施設を脱退しました。" }
+        render json: { message: "施設を脱退しました。" }, status: :ok
       end
 
       private
