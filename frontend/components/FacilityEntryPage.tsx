@@ -100,7 +100,9 @@ export function FacilityEntryPage() {
                   required
                 />
                 {createState.errors.name && (
-                  <p className="text-red-500 text-sm">{createState.errors.name}</p>
+                  <p className="text-red-500 text-sm">
+                    {createState.errors.name}
+                  </p>
                 )}
               </div>
             </CardContent>
