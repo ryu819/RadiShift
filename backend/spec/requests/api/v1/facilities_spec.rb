@@ -109,9 +109,10 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         let(:token) { login_and_get_token(admin_user) }
         let(:params) { { facility: { invite_code: "testcode" } } }
         it "invite_code は更新されない" do
-          subject
+          expect do
+            subject
+          end.not_to change { admin_user.reload.facility.invite_code }
           expect(response).to have_http_status(:ok)
-          expect(admin_user.reload.facility.invite_code).to be_nil
         end
       end
 
@@ -176,6 +177,113 @@ RSpec.describe "Api::V1::Facilities", type: :request do
       it "not_found エラーが返る" do
         subject
         res = JSON.parse(response.body)
+        expect(res["message"]).to eq("施設に所属していません。")
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe "POST /api/v1/facility/join" do
+    subject { post(join_api_v1_facility_path, params: params, headers: { "Authorization": token }) }
+
+    let(:facility) { create(:facility) }
+    let(:params) { { invite_code: facility.invite_code } }
+
+    context "施設に所属していない時" do
+      let(:user) { create(:user) }
+
+      it "正常に施設に参加できる" do
+        subject
+        res = JSON.parse(response.body)
+
+        expect(res["message"]).to eq("施設に参加しました。")
+        expect(user.reload.facility).to eq(facility)
+        expect(response).to have_http_status(:ok)
+      end
+
+      context "invite_codeがない時" do
+        let(:params) { {} }
+
+        it "bad_request エラーが返る" do
+          subject
+          res = JSON.parse(response.body)
+
+          expect(res["message"]).to eq("招待コードが必要です。")
+          expect(response).to have_http_status(:bad_request)
+        end
+      end
+
+      context "存在しない招待コードを送った時" do
+        let(:params) { { invite_code: "INVALID_CODE" } }
+
+        it "not_found エラーが返る" do
+          subject
+          res = JSON.parse(response.body)
+
+          expect(res["message"]).to eq("施設が存在しません。")
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "招待コードの有効期限が切れている時" do
+        let(:facility) { create(:facility, invite_expires_at: 1.day.ago) }
+
+        it "gone エラーが返る" do
+          subject
+          res = JSON.parse(response.body)
+
+          expect(res["message"]).to eq("招待コードの有効期限が切れています。")
+          expect(response).to have_http_status(:gone)
+        end
+      end
+    end
+
+    context "すでに施設に所属している時" do
+      it "conflict エラーが返る" do
+        subject
+        res = JSON.parse(response.body)
+
+        expect(res["message"]).to eq("すでに施設に所属しています。")
+        expect(response).to have_http_status(:conflict)
+      end
+    end
+  end
+
+  describe "DELETE /api/v1/facility/leave" do
+    subject { delete(leave_api_v1_facility_path, headers: { "Authorization": token }) }
+
+    context "施設に所属している時" do
+      context "一般ユーザーの時" do
+        it "正常に施設から脱退できる" do
+          subject
+          res = JSON.parse(response.body)
+
+          expect(res["message"]).to eq("施設を脱退しました。")
+          expect(user.reload.facility).to be_nil
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "管理者の時" do
+        let(:user) { create(:user, :admin) }
+
+        it "forbidden エラーが返る" do
+          subject
+          res = JSON.parse(response.body)
+
+          expect(res["message"]).to eq("管理者は脱退できません。（管理者権限の移譲が必要です。）")
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
+
+    context "施設に所属していない時" do
+      let(:user) { create(:user) }
+
+      it "not_found エラーが返る" do
+        subject
+        res = JSON.parse(response.body)
+
         expect(res["message"]).to eq("施設に所属していません。")
         expect(response).to have_http_status(:not_found)
       end
