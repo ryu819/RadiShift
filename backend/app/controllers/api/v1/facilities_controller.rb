@@ -4,12 +4,12 @@ module Api
   module V1
     class FacilitiesController < ApplicationController
       before_action :authenticate_user!
-      before_action :require_facility!, only: [:show, :update, :destroy]
+      before_action :require_facility!, only: [:show, :update, :destroy, :leave]
       before_action :require_admin!, only: [:update, :destroy]
-      before_action :require_no_facility!, only: [:create]
+      before_action :require_no_facility!, only: [:create, :join]
 
       def show
-        render json: facility
+        render json: current_facility
       end
 
       def create
@@ -28,21 +28,45 @@ module Api
       end
 
       def update
-        if facility.update(facility_params)
+        if current_facility.update(facility_params)
           render json: { message: "施設情報を更新しました。" }, status: :ok
         else
-          render json: { message: "施設の更新に失敗しました。", errors: facility.errors.to_hash(true) }, status: :unprocessable_content
+          render json: { message: "施設の更新に失敗しました。", errors: current_facility.errors.to_hash(true) }, status: :unprocessable_content
         end
       end
 
       def destroy
         Facility.transaction do
-          facility.users.where(is_admin: true).find_each do |user|
+          current_facility.users.where(is_admin: true).find_each do |user|
             user.update!(is_admin: false)
           end
         end
-        facility.destroy!
+        current_facility.destroy!
         render json: { message: "施設を削除しました。" }, status: :ok
+      end
+
+      def join
+        code = params[:invite_code]
+
+        return render json: { message: "招待コードが必要です。" }, status: :bad_request if code.blank?
+
+        facility = Facility.find_by(invite_code: code)
+
+        return render json: { message: "施設が存在しません。" }, status: :not_found if facility.nil?
+
+        return render json: { message: "招待コードの有効期限が切れています。" }, status: :gone if facility.invite_expires_at.past?
+
+        current_user.update!(facility: facility)
+
+        render json: { message: "施設に参加しました。" }, status: :ok
+      end
+
+      def leave
+        return render json: { message: "管理者は脱退できません。（管理者権限の移譲が必要です。）" }, status: :forbidden if current_user.is_admin?
+
+        current_user.update!(facility: nil)
+
+        render json: { message: "施設を脱退しました。" }, status: :ok
       end
 
       private
@@ -51,7 +75,7 @@ module Api
         params.require(:facility).permit(:name, :request_deadline, :rules_text)
       end
 
-      def facility
+      def current_facility
         current_user.facility
       end
     end
