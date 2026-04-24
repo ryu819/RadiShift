@@ -39,8 +39,8 @@ export function FacilityEntryPage() {
     <Card className="w-full max-w-sm">
       <Tabs defaultValue="join" className="space-y-3">
         <CardHeader>
-          <CardTitle className="text-lg">施設登録</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg text-center">施設登録</CardTitle>
+          <CardDescription className="mb-1">
             施設に参加するか、新しい施設を作成してください
           </CardDescription>
           <TabsList className="w-full">
@@ -63,7 +63,7 @@ export function FacilityEntryPage() {
                 <Input
                   id="inviteCode"
                   name="inviteCode"
-                  placeholder="ABC1234"
+                  placeholder="10文字の英数字（例: ABc123XyZ0）"
                   required
                 />
                 {joinState.error && (
@@ -73,7 +73,7 @@ export function FacilityEntryPage() {
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={joinPending} className="w-full">
-                {createPending ? (
+                {joinPending ? (
                   <Loader2 className="animate-spin" />
                 ) : (
                   "施設に参加"

@@ -53,7 +53,7 @@ export async function joinFacilityForm(
 
     if (isClientError(res.status)) {
       return {
-        error: "",
+        error: data.message,
         value: inviteCode,
       };
     }
