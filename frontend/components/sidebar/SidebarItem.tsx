@@ -7,7 +7,7 @@ import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
 type Props = {
   href: string;
-  icon: IconName;
+  icon?: IconName;
   label: string;
 };
 
@@ -20,7 +20,9 @@ const iconMap = {
 
 type IconName = keyof typeof iconMap;
 
-function ItemIcon({ icon }: { icon: IconName }) {
+function ItemIcon({ icon }: { icon?: IconName }) {
+  if (!icon) return null;
+
   const Icon = iconMap[icon];
   return <Icon className="!size-5" />;
 }
