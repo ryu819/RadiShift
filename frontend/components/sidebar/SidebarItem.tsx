@@ -39,7 +39,7 @@ export function SidebarItem({ href, icon, label }: Props) {
       >
         <Link href={href} className="gap-3">
           <ItemIcon icon={icon} />
-          <span className="text-base font-semibold">{label}</span>
+          <span className="text-sm font-semibold">{label}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
