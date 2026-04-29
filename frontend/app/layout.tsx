@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import { Suspense } from "react";
 
-import { Footer } from "@/components/Footer";
 import { Header } from "@/components/header/Header";
 import { FlashToastServer } from "@/components/toast/FlashToastServer";
 import { Toaster } from "@/components/ui/sonner";
@@ -40,11 +39,7 @@ export default function RootLayout({
 
         <Header />
 
-        <main className="flex-1 flex items-center justify-center pt-16">
-          {children}
-        </main>
-
-        <Footer />
+        {children}
       </body>
     </html>
   );

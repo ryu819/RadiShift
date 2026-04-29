@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { AccountUpdateForm } from "@/components/account-settings/AccountUpdateForm";
@@ -5,6 +6,10 @@ import { AccountUpdateServer } from "@/components/account-settings/AccountUpdate
 import { UploadImageForm } from "@/components/account-settings/UploadImageForm";
 import { UploadImageServer } from "@/components/account-settings/UploadImageServer";
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "アカウント設定",
+};
 
 export default function AccountSettingsPage() {
   return (

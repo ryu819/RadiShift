@@ -2,15 +2,15 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="bg-white border-t border-slate-200 p-4 w-full flex flex-col justify-center items-center text-secondary text-sm gap-3 ">
+    <footer className="bg-white border-t border-slate-200 p-4 w-full flex flex-col justify-center items-center text-secondary text-sm gap-3 z-20">
       <div className="space-x-4 ">
-        <Link href="/terms" className="hover:opacity-50 transition">
+        <Link href="/terms" className="hover:opacity-70 transition">
           利用規約
         </Link>
-        <Link href="/privacy-policy" className="hover:opacity-50 transition">
+        <Link href="/privacy-policy" className="hover:opacity-70 transition">
           プライバシーポリシー
         </Link>
-        <Link href="/contact" className="hover:opacity-50 transition">
+        <Link href="/contact" className="hover:opacity-70 transition">
           お問い合わせ
         </Link>
       </div>

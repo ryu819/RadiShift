@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { FacilityEntryPage } from "@/components/FacilityEntryPage";
-import { GuestPage } from "@/components/GuestPage";
+import { FacilityEntryPage } from "@/components/top-page/FacilityEntryPage";
+import { GuestPage } from "@/components/top-page/GuestPage";
 import { getCurrentUser } from "@/lib/actions/get-current-user";
 import { hasFacility } from "@/lib/actions/has-facility";
 
