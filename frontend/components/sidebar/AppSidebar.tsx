@@ -14,7 +14,7 @@ export function AppSidebar() {
       <SidebarContent className="bg-white mt-16">
         <SidebarGroup className="mt-4">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-3">
+            <SidebarMenu className="gap-2">
               <SidebarItem
                 href="/dashboard"
                 icon="house"
@@ -28,7 +28,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="bg-white border-t">
-        <SidebarMenu className="gap-3">
+        <SidebarMenu className="gap-0">
           <SidebarItem href="/terms" label="利用規約" />
           <SidebarItem href="/privacy-policy" label="プライバシーポリシー" />
           <SidebarItem href="/contact" label="お問い合わせ" />
