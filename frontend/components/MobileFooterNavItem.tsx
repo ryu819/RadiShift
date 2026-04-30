@@ -22,7 +22,7 @@ type IconName = keyof typeof iconMap;
 
 function ItemIcon({ icon }: { icon: IconName }) {
   const Icon = iconMap[icon];
-  return <Icon className="!size-5" />;
+  return <Icon className="size-5" />;
 }
 
 export function MobileFooterNavItem({ href, icon, label }: Props) {

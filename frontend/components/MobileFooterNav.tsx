@@ -1,4 +1,5 @@
 import { MobileFooterNavItem } from "@/components/MobileFooterNavItem";
+import { MoreNavItem } from "@/components/MoreNavItem";
 
 export function MobileFooterNav() {
   return (
@@ -11,6 +12,7 @@ export function MobileFooterNav() {
         />
         <MobileFooterNavItem href="/shifts" icon="calendar" label="シフト" />
         <MobileFooterNavItem href="/settings" icon="settings" label="設定" />
+        <MoreNavItem />
       </ul>
     </nav>
   );
