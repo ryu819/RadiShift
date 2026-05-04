@@ -51,16 +51,16 @@ export function SignUpForm() {
 
   const currentEmail = useWatch({ control, name: "email" });
 
-  const nameMsg = clientErrors.name?.message ?? serverState.errors.name;
+  const nameMsg = clientErrors.name?.message ?? serverState.errors?.name;
   const emailMsg =
     currentEmail === serverState.values.email
-      ? serverState.errors.email
+      ? serverState.errors?.email
       : clientErrors.email?.message;
   const passwordMsg =
-    clientErrors.password?.message ?? serverState.errors.password;
+    clientErrors.password?.message ?? serverState.errors?.password;
   const passwordConfirmationMsg =
     clientErrors.passwordConfirmation?.message ??
-    serverState.errors.passwordConfirmation;
+    serverState.errors?.passwordConfirmation;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -109,7 +109,7 @@ export function SignUpForm() {
                 {...register("password")}
                 name="password"
                 type="password"
-                placeholder="6文字以上半角英数字のみ"
+                placeholder="6文字以上半角英数字"
               />
               {passwordMsg && (
                 <p className="text-red-500 text-sm">{passwordMsg}</p>

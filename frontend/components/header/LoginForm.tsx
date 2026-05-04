@@ -85,7 +85,7 @@ export function LoginForm() {
                 {...register("password")}
                 name="password"
                 type="password"
-                placeholder="6文字以上半角英数字のみ"
+                placeholder="6文字以上半角英数字"
               />
               {clientErrors.password?.message && (
                 <p className="text-red-500 text-sm">
