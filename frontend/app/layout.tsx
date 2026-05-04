@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${notoSansJP.variable} antialiased font-sans bg-slate-50 min-h-screen flex flex-col`}
+        className={`${notoSansJP.variable} antialiased font-sans bg-slate-50 min-h-screen flex flex-col text-secondary`}
       >
         <Toaster closeButton />
         <Suspense fallback={null}>

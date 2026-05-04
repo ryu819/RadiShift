@@ -11,7 +11,11 @@ module Api
         private
 
         def respond_with(resource, _opts = {})
-          return send_email if action_name == "create"
+          if action_name == "create"
+            return reset_password_failed if resource.respond_to?(:errors) && resource.errors.any?
+
+            return send_email
+          end
 
           return reset_password_success if (action_name == "update") && resource.errors.empty?
 

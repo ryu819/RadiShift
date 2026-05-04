@@ -3,6 +3,7 @@ import { Suspense } from "react";
 
 import { AccountUpdateForm } from "@/components/account-settings/AccountUpdateForm";
 import { AccountUpdateServer } from "@/components/account-settings/AccountUpdateServer";
+import { PasswordResetDialogButton } from "@/components/account-settings/PasswordResetDialogButton";
 import { UploadImageForm } from "@/components/account-settings/UploadImageForm";
 import { UploadImageServer } from "@/components/account-settings/UploadImageServer";
 import { Button } from "@/components/ui/button";
@@ -31,9 +32,7 @@ export default function AccountSettingsPage() {
       </div>
 
       <div className="flex justify-between">
-        <Button className="w-35" variant="outline">
-          パスワード再設定
-        </Button>
+        <PasswordResetDialogButton />
 
         <Button className="w-30" variant="destructiveOutline">
           アカウント削除
