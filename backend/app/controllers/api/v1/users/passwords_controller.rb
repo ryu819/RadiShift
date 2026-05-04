@@ -33,7 +33,7 @@ module Api
         def reset_password_failed
           render json: {
             message: "パスワード変更に失敗しました。",
-            errors: resource.errors.full_messages
+            errors: resource.errors.to_hash(true)
           }, status: :unprocessable_entity
         end
       end

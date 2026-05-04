@@ -69,5 +69,5 @@ export async function submitLoginForm(
     return { values: { email } };
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }

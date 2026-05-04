@@ -5,9 +5,9 @@ import snakecaseKeys from "snakecase-keys";
 
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
-type SignupError = {
+type SignupResponse = {
   message: string;
-  errors: {
+  errors?: {
     name?: string[];
     email?: string[];
     password?: string[];
@@ -16,7 +16,7 @@ type SignupError = {
 };
 
 type ActionState = {
-  errors: {
+  errors?: {
     name?: string[];
     email?: string[];
     password?: string[];
@@ -64,7 +64,9 @@ export async function submitSignupForm(
       };
     }
 
-    const data: SignupError = camelcaseKeys(await res.json());
+    const data: SignupResponse = camelcaseKeys(await res.json(), {
+      deep: true,
+    });
 
     if (isClientError(res.status)) {
       return {
