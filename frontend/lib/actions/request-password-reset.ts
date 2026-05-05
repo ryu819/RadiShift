@@ -6,16 +6,30 @@ import { getCurrentUser } from "@/lib/actions/get-current-user";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 
-type RequestPasswordResetResponse = {
-  message: string;
+type ActionState = {
   errors?: {
+    email?: string[];
+  };
+  values: {
     email?: string;
   };
 };
 
-export async function requestPasswordReset() {
+type RequestPasswordResetResponse = {
+  message: string;
+  errors?: {
+    email?: string[];
+  };
+};
+
+export async function requestPasswordReset(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const userData = await getCurrentUser();
+  const email = (formData.get("email") as string) ?? userData?.email;
+
   try {
-    const userData = await getCurrentUser();
     const res = await fetch(`${process.env.RAILS_API_URL}/password`, {
       method: "POST",
       headers: {
@@ -23,7 +37,7 @@ export async function requestPasswordReset() {
       },
       body: JSON.stringify({
         user: {
-          email: userData?.email,
+          email,
         },
       }),
     });
@@ -33,24 +47,22 @@ export async function requestPasswordReset() {
         type: "failure",
       });
 
-      return;
+      return { values: { email } };
     }
 
     const data: RequestPasswordResetResponse = await res.json();
 
     if (isClientError(res.status)) {
-      await setFlashToast({
-        type: "failure",
-        message: data.message,
-      });
-
-      return;
+      return {
+        errors: data.errors,
+        values: { email },
+      };
     }
 
     await setFlashToast({ type: "pending", message: data.message });
   } catch {
     await setFlashToast({ type: "failure" });
-    return;
+    return { values: { email } };
   }
 
   redirect("/settings");
