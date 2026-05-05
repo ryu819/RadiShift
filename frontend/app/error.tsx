@@ -3,7 +3,7 @@
 import { AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/footer/Footer";
 import {
   Card,
   CardContent,

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { Auth } from "@/components/Auth";
-import { MobileFooterNav } from "@/components/MobileFooterNav";
+import { MobileFooterNav } from "@/components/footer/MobileFooterNav";
 import { AppSidebar } from "@/components/sidebar/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 export default async function PrivateLayout({

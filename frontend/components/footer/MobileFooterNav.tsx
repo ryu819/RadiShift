@@ -1,5 +1,5 @@
-import { MobileFooterNavItem } from "@/components/MobileFooterNavItem";
-import { MoreNavItem } from "@/components/MoreNavItem";
+import { MobileFooterNavItem } from "@/components/footer/MobileFooterNavItem";
+import { MoreNavItem } from "@/components/footer/MoreNavItem";
 
 export function MobileFooterNav() {
   return (

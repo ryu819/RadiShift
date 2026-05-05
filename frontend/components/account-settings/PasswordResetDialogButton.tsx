@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useFormStatus } from "react-dom";
+import { useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,21 +15,14 @@ import {
 } from "@/components/ui/dialog";
 import { requestPasswordReset } from "@/lib/actions/request-password-reset";
 
-function PasswordResetSubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? (
-        <Loader2 className="animate-spin" />
-      ) : (
-        "パスワード再設定を送信"
-      )}
-    </Button>
-  );
-}
-
 export function PasswordResetDialogButton() {
+  const [_serverState, formAction, isPending] = useActionState(
+    requestPasswordReset,
+    {
+      errors: {},
+      values: {},
+    },
+  );
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -38,7 +31,7 @@ export function PasswordResetDialogButton() {
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xs sm:max-w-sm">
-        <form action={requestPasswordReset}>
+        <form action={formAction}>
           <DialogHeader>
             <DialogTitle className="text-center">パスワード再設定</DialogTitle>
             <DialogDescription className="my-4">
@@ -46,7 +39,13 @@ export function PasswordResetDialogButton() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <PasswordResetSubmitButton />
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "パスワード再設定を送信"
+              )}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
