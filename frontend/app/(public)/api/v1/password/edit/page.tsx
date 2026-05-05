@@ -1,4 +1,4 @@
-import { PasswordResetForm } from "@/components/PasswordResetForm";
+import { PasswordResetForm } from "@/components/account-settings/PasswordResetForm";
 
 type Props = {
   searchParams: Promise<{

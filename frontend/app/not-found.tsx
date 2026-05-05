@@ -2,7 +2,7 @@ import { AlertCircle, House } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/footer/Footer";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
