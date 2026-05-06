@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -34,9 +33,9 @@ export function PasswordResetDialogButton() {
         <form action={formAction}>
           <DialogHeader>
             <DialogTitle className="text-center">パスワード再設定</DialogTitle>
-            <DialogDescription className="my-4">
+            <p className="my-4 text-left">
               登録済みのメールアドレス宛に、パスワード再設定用のメールを送信します。
-            </DialogDescription>
+            </p>
           </DialogHeader>
           <DialogFooter>
             <Button type="submit" className="w-full" disabled={isPending}>

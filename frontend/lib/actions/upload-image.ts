@@ -63,12 +63,12 @@ export async function uploadImage(formData: FormData) {
     }
 
     const data: ImageResponse = await res.json();
-    const message = data.errors?.join("\n");
+    const errorMessage = data.errors?.join("\n");
 
     if (isClientError(res.status)) {
       await setFlashToast({
         type: "failure",
-        message,
+        message: errorMessage,
       });
       return;
     }

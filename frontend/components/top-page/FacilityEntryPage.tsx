@@ -39,7 +39,7 @@ export function FacilityEntryPage() {
     <Card className="w-full max-w-sm">
       <Tabs defaultValue="join" className="space-y-3">
         <CardHeader>
-          <CardTitle className="text-lg text-center">施設登録</CardTitle>
+          <CardTitle className="text-lg text-center ">施設登録</CardTitle>
           <CardDescription className="mb-1">
             施設に参加するか、新しい施設を作成してください
           </CardDescription>
