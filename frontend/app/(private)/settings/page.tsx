@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { AccountDeleteDialogButton } from "@/components/account-settings/AccountDeleteDialogButton";
 import { AccountUpdateForm } from "@/components/account-settings/AccountUpdateForm";
 import { AccountUpdateServer } from "@/components/account-settings/AccountUpdateServer";
 import { PasswordResetDialogButton } from "@/components/account-settings/PasswordResetDialogButton";
 import { UploadImageForm } from "@/components/account-settings/UploadImageForm";
 import { UploadImageServer } from "@/components/account-settings/UploadImageServer";
-import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "アカウント設定",
@@ -33,10 +33,7 @@ export default function AccountSettingsPage() {
 
       <div className="flex justify-between">
         <PasswordResetDialogButton />
-
-        <Button className="w-30" variant="destructiveOutline">
-          アカウント削除
-        </Button>
+        <AccountDeleteDialogButton />
       </div>
     </div>
   );

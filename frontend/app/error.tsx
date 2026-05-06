@@ -27,7 +27,7 @@ export default function Error({
         <Card className="w-full max-w-sm">
           <CardHeader className="space-y-2 text-center">
             <div className="mx-auto flex h-10 w-10 items-center justify-center ">
-              <AlertCircle className="h-5 w-5 text-destructive" />
+              <AlertCircle className="h-5 w-5" />
             </div>
 
             <CardTitle>予期しないエラーが発生しました</CardTitle>

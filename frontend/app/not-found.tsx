@@ -14,11 +14,11 @@ export default function NotFound() {
     <>
       <main className="flex-1 flex items-center justify-center pt-16">
         <div className="flex flex-col items-center gap-5">
-          <AlertCircle className="w-10 h-10 text-secondary" />
+          <AlertCircle className="w-10 h-10" />
           <h2 className="text-xl text-primary font-semibold">
             指定されたページが見つかりませんでした
           </h2>
-          <p className="text-md text-secondary">
+          <p className="text-md">
             URLが間違っているか、ページが削除された可能性があります。
           </p>
           <Link href="/">
