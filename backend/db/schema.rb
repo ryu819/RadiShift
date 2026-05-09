@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_16_101159) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_09_093108) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -59,6 +59,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_101159) do
     t.index ["jti"], name: "index_jwt_denylists_on_jti", unique: true
   end
 
+  create_table "schedule_months", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "facility_id", null: false
+    t.integer "month", limit: 1, null: false
+    t.decimal "monthly_days_off", precision: 3, scale: 1, null: false
+    t.datetime "updated_at", null: false
+    t.integer "year", null: false
+    t.index ["facility_id", "year", "month"], name: "index_schedule_months_on_facility_id_and_year_and_month", unique: true
+    t.index ["facility_id"], name: "index_schedule_months_on_facility_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
@@ -82,5 +93,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_101159) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "schedule_months", "facilities"
   add_foreign_key "users", "facilities"
 end
