@@ -34,6 +34,9 @@ gem "devise-jwt"
 # devise を日本語化する
 gem "devise-i18n"
 
+# 祝日判定をする
+gem "holiday_japan"
+
 group :development, :test do
   # 開発環境でメール送信をテストする
   gem "letter_opener_web"
