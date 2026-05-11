@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :schedule_month do
     facility
-    year { 2025 }
+    year { 2026 }
     month { 1 }
     monthly_days_off { 8.0 }
   end
