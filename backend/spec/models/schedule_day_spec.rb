@@ -37,7 +37,7 @@ RSpec.describe ScheduleDay, type: :model do
 
   describe "holiday_nameメソッド" do
     context "祝日の時" do
-      before { schedule_day.date = Date.new(2026, 1, 1) }
+      let(:schedule_day) { build(:schedule_day, :holiday) }
 
       it "祝日名を返す" do
         expect(schedule_day.holiday_name).to eq("元日")
@@ -45,8 +45,6 @@ RSpec.describe ScheduleDay, type: :model do
     end
 
     context "祝日ではない時" do
-      before { schedule_day.date = Date.new(2026, 1, 2) }
-
       it "nil を返す" do
         expect(schedule_day.holiday_name).to be_nil
       end
@@ -63,7 +61,7 @@ RSpec.describe ScheduleDay, type: :model do
 
   describe "public_holiday?メソッド" do
     context "祝日の時" do
-      before { schedule_day.date = Date.new(2026, 1, 1) }
+      let(:schedule_day) { build(:schedule_day, :holiday) }
 
       it "true を返す" do
         expect(schedule_day.public_holiday?).to be true
@@ -71,8 +69,6 @@ RSpec.describe ScheduleDay, type: :model do
     end
 
     context "祝日ではない時" do
-      before { schedule_day.date = Date.new(2026, 1, 2) }
-
       it "false を返す" do
         expect(schedule_day.public_holiday?).to be false
       end
@@ -89,16 +85,13 @@ RSpec.describe ScheduleDay, type: :model do
 
   describe "weekday_typeメソッド" do
     context "祝日の時" do
-      before { schedule_day.date = Date.new(2026, 1, 1) }
-
+      let(:schedule_day) { build(:schedule_day, :holiday) }
       it "7 を返す" do
         expect(schedule_day.weekday_type).to eq(7)
       end
     end
 
     context "祝日ではない時" do
-      before { schedule_day.date = Date.new(2026, 1, 2) }
-
       it "曜日番号を返す" do
         expect(schedule_day.weekday_type).to eq(5)
       end

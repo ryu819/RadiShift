@@ -20,6 +20,6 @@ class ScheduleDay < ApplicationRecord
   def weekday_type
     return if date.blank?
 
-    public_holiday? ? 7 : date.wday
+    is_holiday ? 7 : date.wday
   end
 end

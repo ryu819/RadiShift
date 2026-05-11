@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_11_060424) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_11_124734) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -62,6 +62,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_11_060424) do
   create_table "schedule_days", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "date", null: false
+    t.boolean "is_holiday", default: false, null: false
     t.bigint "schedule_month_id", null: false
     t.datetime "updated_at", null: false
     t.index ["schedule_month_id", "date"], name: "index_schedule_days_on_schedule_month_id_and_date", unique: true
