@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ScheduleDay < ApplicationRecord
-  belongs_to :schedule_period
+  belongs_to :schedule_month
 
   validates :date, presence: true
 
