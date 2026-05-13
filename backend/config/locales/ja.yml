@@ -5,3 +5,7 @@ ja:
         name: 名前
       facility:
         name: 施設名
+      schedule_month:
+        year: 年
+        month: 月
+        monthly_days_off: 公休数

@@ -3,8 +3,7 @@
 class ScheduleMonth < ApplicationRecord
   belongs_to :facility
 
-  has_many :schedule_days, dependent: :destroy
-
+  has_many :schedule_days, -> { order(date: :asc) }, dependent: :destroy, inverse_of: :schedule_month
   validates :year, presence: true
   validates :month, presence: true,
                     numericality: {

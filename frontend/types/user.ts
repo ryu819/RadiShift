@@ -3,9 +3,6 @@ export type User = {
   name: string;
   email: string;
   isAdmin: boolean;
-  facilityId: number | null;
   rulesText: string | null;
   avatarImageUrl: string | null;
-  createdAt: string;
-  updatedAt: string;
 };
