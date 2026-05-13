@@ -33,6 +33,7 @@ Rails.application.routes.draw do
         resource :invitation, only: [:show, :create, :destroy],
                               module: :facilities
       end
+      resources :schedule_months, only: [:index, :show, :create, :update, :destroy]
       get "health_check", to: "health_check#index"
     end
   end

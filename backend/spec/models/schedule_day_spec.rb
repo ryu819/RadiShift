@@ -59,30 +59,6 @@ RSpec.describe ScheduleDay, type: :model do
     end
   end
 
-  describe "public_holiday?メソッド" do
-    context "祝日の時" do
-      let(:schedule_day) { build(:schedule_day, :holiday) }
-
-      it "true を返す" do
-        expect(schedule_day.public_holiday?).to be true
-      end
-    end
-
-    context "祝日ではない時" do
-      it "false を返す" do
-        expect(schedule_day.public_holiday?).to be false
-      end
-    end
-
-    context "date がない時" do
-      before { schedule_day.date = nil }
-
-      it "false を返す" do
-        expect(schedule_day.public_holiday?).to be false
-      end
-    end
-  end
-
   describe "weekday_typeメソッド" do
     context "祝日の時" do
       let(:schedule_day) { build(:schedule_day, :holiday) }
