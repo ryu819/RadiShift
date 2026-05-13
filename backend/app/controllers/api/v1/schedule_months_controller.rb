@@ -4,7 +4,8 @@ module Api
   module V1
     class ScheduleMonthsController < ApplicationController
       before_action :authenticate_user!
-      before_action :require_admin!
+      before_action :require_facility!
+      before_action :require_admin!, only: [:create, :update, :destroy]
       before_action :set_schedule_month, only: [:show, :update, :destroy]
 
       def index
@@ -38,7 +39,7 @@ module Api
           end
         end
 
-        render json: { message: "対象月のシフトを作成しました。" }
+        render json: { message: "対象月のシフトを作成しました。" }, status: :created
       end
 
       def update
