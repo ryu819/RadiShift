@@ -4,8 +4,9 @@ module Api
   module V1
     class ScheduleMonthsController < ApplicationController
       before_action :authenticate_user!
-      before_action :require_admin!
-      before_action :set_schedule_month, only: [:show, :update, :destroy]
+      before_action :require_facility!
+      before_action :require_admin!, only: [:create, :update, :destroy]
+      before_action :set_schedule_month, only: [:update, :destroy]
 
       def index
         schedule_months = current_user.facility.schedule_months
@@ -15,7 +16,10 @@ module Api
       end
 
       def show
-        render json: { schedule_month: @schedule_month.as_json(include: :schedule_days) }
+        schedule_month = current_user.facility.schedule_months
+                           .includes(:schedule_days)
+                           .find(params[:id])
+        render json: { schedule_month: schedule_month.as_json(include: :schedule_days) }
       end
 
       def create
@@ -38,7 +42,7 @@ module Api
           end
         end
 
-        render json: { message: "対象月のシフトを作成しました。" }
+        render json: { message: "対象月のシフトを作成しました。" }, status: :created
       end
 
       def update
@@ -61,9 +65,7 @@ module Api
       private
 
       def set_schedule_month
-        @schedule_month = current_user.facility.schedule_months
-                            .includes(:schedule_days)
-                            .find(params[:id])
+        @schedule_month = current_user.facility.schedule_months.find(params[:id])
       end
 
       def schedule_month_params
