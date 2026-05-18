@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_081834) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_18_215850) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -71,6 +71,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_081834) do
     t.index ["jti"], name: "index_jwt_denylists_on_jti", unique: true
   end
 
+  create_table "modality_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "color_code"
+    t.datetime "created_at", null: false
+    t.bigint "facility_id", null: false
+    t.boolean "is_active", default: true, null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id", "name"], name: "index_modality_types_on_facility_id_and_name", unique: true
+    t.index ["facility_id"], name: "index_modality_types_on_facility_id"
+  end
+
   create_table "schedule_days", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "date", null: false
@@ -127,6 +138,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_081834) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "day_off_types", "facilities"
+  add_foreign_key "modality_types", "facilities"
   add_foreign_key "schedule_days", "schedule_months"
   add_foreign_key "schedule_months", "facilities"
   add_foreign_key "users", "facilities"
