@@ -187,10 +187,12 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
         let(:params) { { schedule_month: { year: 2027, month: 12, monthly_days_off: 9.0 } } }
 
         it "year と month は更新されない" do
+          original_year = schedule_month.year
+          original_month = schedule_month.month
           subject
           schedule_month.reload
-          expect(schedule_month.year).to eq(2026)
-          expect(schedule_month.month).to eq(1)
+          expect(schedule_month.year).to eq(original_year)
+          expect(schedule_month.month).to eq(original_month)
           expect(schedule_month.monthly_days_off).to eq(9.0)
           expect(response).to have_http_status(:ok)
         end
