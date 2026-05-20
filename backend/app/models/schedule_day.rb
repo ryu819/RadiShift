@@ -2,6 +2,7 @@
 
 class ScheduleDay < ApplicationRecord
   belongs_to :schedule_month, inverse_of: :schedule_days
+  has_many :day_off_slots, dependent: :destroy
 
   validates :date, presence: true
 
