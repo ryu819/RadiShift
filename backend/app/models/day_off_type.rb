@@ -3,6 +3,7 @@
 class DayOffType < ApplicationRecord
   belongs_to :facility
   has_many :day_off_slots, dependent: :destroy
+  has_many :day_off_slot_rules, dependent: :destroy
   scope :active, -> { where(is_active: true) }
   validates :name, presence: true, uniqueness: { scope: :facility_id }
   validates :day_off_unit, presence: true,
