@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_20_022600) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_20_085902) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_20_022600) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "day_off_slot_rules", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "day_off_type_id", null: false
+    t.bigint "facility_id", null: false
+    t.integer "max_slots", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "weekday", limit: 1, null: false
+    t.index ["day_off_type_id"], name: "index_day_off_slot_rules_on_day_off_type_id"
+    t.index ["facility_id", "day_off_type_id", "weekday"], name: "idx_on_facility_id_day_off_type_id_weekday_02d9efe75c", unique: true
+    t.index ["facility_id"], name: "index_day_off_slot_rules_on_facility_id"
   end
 
   create_table "day_off_slots", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -148,6 +160,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_20_022600) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "day_off_slot_rules", "day_off_types"
+  add_foreign_key "day_off_slot_rules", "facilities"
   add_foreign_key "day_off_slots", "day_off_types"
   add_foreign_key "day_off_slots", "schedule_days"
   add_foreign_key "day_off_types", "facilities"
