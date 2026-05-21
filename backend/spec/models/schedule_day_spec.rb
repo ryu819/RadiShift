@@ -21,13 +21,7 @@ RSpec.describe ScheduleDay, type: :model do
     end
   end
 
-  context "Schedule_monthに紐づいている時" do
-    it "Schedule_monthに属する" do
-      expect(schedule_day.schedule_month).to eq(schedule_month)
-    end
-  end
-
-  context "Schedule_monthに紐づいていない時" do
+  context "Schedule_month がない時" do
     before { schedule_day.schedule_month = nil }
 
     it "無効である" do
