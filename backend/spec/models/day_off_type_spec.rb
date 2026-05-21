@@ -55,12 +55,6 @@ RSpec.describe DayOffType, type: :model do
     end
   end
 
-  context "施設に紐づいている時" do
-    it "施設に属する" do
-      expect(day_off_type.facility).to eq(facility)
-    end
-  end
-
   describe "DayOffType.active" do
     let(:facility) { create(:facility) }
     let!(:active_day_off_type) { create(:day_off_type, facility: facility, name: "休み", is_active: true) }

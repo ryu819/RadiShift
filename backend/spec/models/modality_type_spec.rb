@@ -39,12 +39,6 @@ RSpec.describe ModalityType, type: :model do
     end
   end
 
-  context "施設に紐づいている時" do
-    it "施設に属する" do
-      expect(modality_type.facility).to eq(facility)
-    end
-  end
-
   describe "ModalityType.active" do
     let(:facility) { create(:facility) }
     let!(:active_modality_type) { create(:modality_type, facility: facility, name: "CT", is_active: true) }

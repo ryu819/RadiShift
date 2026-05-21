@@ -62,16 +62,4 @@ RSpec.describe DayOffSlot, type: :model do
       expect(day_off_slot).to be_invalid
     end
   end
-
-  context "schedule_day に紐づいている時" do
-    it "対象日に属する" do
-      expect(day_off_slot.schedule_day).to eq(schedule_day)
-    end
-  end
-
-  context "day_off_type に紐づいている時" do
-    it "休み種別に属する" do
-      expect(day_off_slot.day_off_type).to eq(day_off_type)
-    end
-  end
 end

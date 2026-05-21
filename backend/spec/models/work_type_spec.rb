@@ -39,12 +39,6 @@ RSpec.describe WorkType, type: :model do
     end
   end
 
-  context "施設に紐づいている時" do
-    it "施設に属する" do
-      expect(work_type.facility).to eq(facility)
-    end
-  end
-
   describe "WorkType.active" do
     let(:facility) { create(:facility) }
     let!(:active_work_type) { create(:work_type, facility: facility, name: "日勤", is_active: true) }

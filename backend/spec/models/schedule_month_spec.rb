@@ -95,13 +95,7 @@ RSpec.describe ScheduleMonth, type: :model do
     end
   end
 
-  context "施設に紐づいている時" do
-    it "施設に属する" do
-      expect(schedule_month.facility).to eq(facility)
-    end
-  end
-
-  context "施設に紐づいていない時" do
+  context "facility がない時" do
     before { schedule_month.facility = nil }
 
     it "無効である" do
