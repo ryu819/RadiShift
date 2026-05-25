@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_20_124314) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_25_110429) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -164,6 +164,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_20_124314) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "work_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "facility_id", null: false
+    t.boolean "is_return", default: false, null: false
+    t.integer "request_status", limit: 1, default: 0, null: false
+    t.bigint "schedule_day_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.bigint "work_type_id", null: false
+    t.index ["facility_id", "request_status", "created_at"], name: "idx_on_facility_id_request_status_created_at_0f093d73c4"
+    t.index ["facility_id"], name: "index_work_requests_on_facility_id"
+    t.index ["schedule_day_id"], name: "index_work_requests_on_schedule_day_id"
+    t.index ["user_id", "created_at"], name: "index_work_requests_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_work_requests_on_user_id"
+    t.index ["work_type_id"], name: "index_work_requests_on_work_type_id"
+  end
+
   create_table "work_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "color_code"
     t.datetime "created_at", null: false
@@ -190,5 +207,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_20_124314) do
   add_foreign_key "schedule_days", "schedule_months"
   add_foreign_key "schedule_months", "facilities"
   add_foreign_key "users", "facilities"
+  add_foreign_key "work_requests", "facilities"
+  add_foreign_key "work_requests", "schedule_days"
+  add_foreign_key "work_requests", "users"
+  add_foreign_key "work_requests", "work_types"
   add_foreign_key "work_types", "facilities"
 end

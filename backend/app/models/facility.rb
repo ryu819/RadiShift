@@ -8,5 +8,6 @@ class Facility < ApplicationRecord
   has_many :modality_types, dependent: :destroy
   has_many :day_off_slot_rules, dependent: :destroy
   has_many :day_off_requests, dependent: :destroy
+  has_many :work_requests, dependent: :destroy
   validates :name, presence: true, uniqueness: true
 end
