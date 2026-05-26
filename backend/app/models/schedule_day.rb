@@ -5,6 +5,7 @@ class ScheduleDay < ApplicationRecord
   has_many :day_off_slots, dependent: :destroy
   has_many :day_off_requests, dependent: :destroy
   has_many :work_requests, dependent: :destroy
+  has_many :work_assignments, dependent: :destroy
   validates :date, presence: true
 
   def holiday_name
