@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_020536) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_073650) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -124,6 +124,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_020536) do
     t.index ["jti"], name: "index_jwt_denylists_on_jti", unique: true
   end
 
+  create_table "modality_assignments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "modality_type_id", null: false
+    t.bigint "schedule_day_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["modality_type_id"], name: "index_modality_assignments_on_modality_type_id"
+    t.index ["schedule_day_id", "modality_type_id", "user_id"], name: "idx_on_schedule_day_id_modality_type_id_user_id_5f26da0b72", unique: true
+    t.index ["schedule_day_id"], name: "index_modality_assignments_on_schedule_day_id"
+    t.index ["user_id", "schedule_day_id"], name: "index_modality_assignments_on_user_id_and_schedule_day_id"
+    t.index ["user_id"], name: "index_modality_assignments_on_user_id"
+  end
+
   create_table "modality_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "color_code"
     t.datetime "created_at", null: false
@@ -232,6 +245,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_020536) do
   add_foreign_key "day_off_slots", "day_off_types"
   add_foreign_key "day_off_slots", "schedule_days"
   add_foreign_key "day_off_types", "facilities"
+  add_foreign_key "modality_assignments", "modality_types"
+  add_foreign_key "modality_assignments", "schedule_days"
+  add_foreign_key "modality_assignments", "users"
   add_foreign_key "modality_types", "facilities"
   add_foreign_key "schedule_days", "schedule_months"
   add_foreign_key "schedule_months", "facilities"
