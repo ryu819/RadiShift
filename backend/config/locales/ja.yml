@@ -9,3 +9,6 @@ ja:
         year: 年
         month: 月
         monthly_days_off: 公休数
+      work_type:
+        name: 勤務パターン名
+        color_code: カラーコード

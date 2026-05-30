@@ -47,10 +47,10 @@ module Api
 
       def update
         if @schedule_month.update(schedule_month_update_params)
-          render json: { message: "公休数を更新しました。" }, status: :ok
+          render json: { message: "対象月のシフトを更新しました。" }, status: :ok
         else
           render json: {
-            message: "公休数の更新に失敗しました。",
+            message: "対象月のシフトの更新に失敗しました。",
             errors: @schedule_month.errors.to_hash(true)
           }, status: :unprocessable_content
         end

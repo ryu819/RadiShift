@@ -166,7 +166,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
       it "正常に公休数を更新できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("公休数を更新しました。")
+        expect(res["message"]).to eq("対象月のシフトを更新しました。")
         expect(schedule_month.reload.monthly_days_off).to eq(9.5)
         expect(response).to have_http_status(:ok)
       end
@@ -179,7 +179,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
           res = JSON.parse(response.body)
           expect(response).to have_http_status(:unprocessable_content)
           expect(res["errors"]).to be_present
-          expect(res["message"]).to eq("公休数の更新に失敗しました。")
+          expect(res["message"]).to eq("対象月のシフトの更新に失敗しました。")
         end
       end
 

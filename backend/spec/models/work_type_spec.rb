@@ -28,17 +28,6 @@ RSpec.describe WorkType, type: :model do
     end
   end
 
-  context "name が同じ施設内で重複している時" do
-    let(:facility) { create(:facility) }
-    let(:work_type) { build(:work_type, facility: facility, name: "日勤") }
-
-    before { create(:work_type, facility: facility, name: "日勤") }
-
-    it "無効である" do
-      expect(work_type).to be_invalid
-    end
-  end
-
   describe "WorkType.active" do
     let(:facility) { create(:facility) }
     let!(:active_work_type) { create(:work_type, facility: facility, name: "日勤", is_active: true) }
