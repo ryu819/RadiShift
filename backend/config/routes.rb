@@ -35,6 +35,7 @@ Rails.application.routes.draw do
       end
       resources :schedule_months, only: [:index, :show, :create, :update, :destroy]
       resources :schedule_days, only: [:update]
+      resources :work_types, only: [:index, :create, :update, :destroy]
       get "health_check", to: "health_check#index"
     end
   end
