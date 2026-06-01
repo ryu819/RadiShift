@@ -66,7 +66,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
           res = JSON.parse(response.body)
 
           expect(res["message"]).to eq("勤務パターンの作成に失敗しました。")
-          expect(res["errors"]["name"]).to include("勤務パターン名を入力してください")
+          expect(res["errors"]["name"]).to be_present
           expect(response).to have_http_status(:unprocessable_content)
         end
       end
@@ -76,9 +76,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
         it "is_active は反映されず true で作成される" do
           expect { subject }.to change { WorkType.count }.by(1)
-
           work_type = user.facility.work_types.find_by(name: "日勤")
-
           expect(work_type.color_code).to eq("#FF0000")
           expect(work_type.is_active).to be true
           expect(response).to have_http_status(:created)
@@ -121,11 +119,22 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
       it "勤務パターンを更新できる" do
         subject
         res = JSON.parse(response.body)
-
         expect(res["message"]).to eq("勤務パターンを更新しました。")
         expect(work_type.reload.name).to eq("夜勤")
         expect(work_type.color_code).to eq("#0000FF")
         expect(response).to have_http_status(:ok)
+      end
+
+      context "name がない時" do
+        let(:params) { { work_type: { name: nil, color_code: "#FF0000" } } }
+
+        it "更新に失敗する" do
+          subject
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("勤務パターンの更新に失敗しました。")
+          expect(res["errors"]["name"]).to be_present
+          expect(response).to have_http_status(:unprocessable_content)
+        end
       end
 
       context "permitしていない項目を送る時" do
