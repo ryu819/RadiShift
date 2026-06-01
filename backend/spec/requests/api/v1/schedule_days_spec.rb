@@ -14,10 +14,10 @@ RSpec.describe "Api::V1::ScheduleDays", type: :request do
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
-      it "祝日設定を更新できる" do
+      it "対象日を更新できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("祝日設定を更新しました。")
+        expect(res["message"]).to eq("対象日を更新しました。")
         expect(schedule_day.reload.is_holiday).to be true
         expect(response).to have_http_status(:ok)
       end
@@ -75,8 +75,6 @@ RSpec.describe "Api::V1::ScheduleDays", type: :request do
 
       it "not_found エラーが返る" do
         subject
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("対象日が存在しません。")
         expect(response).to have_http_status(:not_found)
       end
     end

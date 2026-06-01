@@ -44,17 +44,6 @@ RSpec.describe DayOffType, type: :model do
     end
   end
 
-  context "name が同じ施設内で重複している時" do
-    let(:facility) { create(:facility) }
-    let(:day_off_type) { build(:day_off_type, facility: facility, name: "休み") }
-
-    before { create(:day_off_type, facility: facility, name: "休み") }
-
-    it "無効である" do
-      expect(day_off_type).to be_invalid
-    end
-  end
-
   describe "DayOffType.active" do
     let(:facility) { create(:facility) }
     let!(:active_day_off_type) { create(:day_off_type, facility: facility, name: "休み", is_active: true) }

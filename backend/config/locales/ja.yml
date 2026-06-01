@@ -9,6 +9,12 @@ ja:
         year: 年
         month: 月
         monthly_days_off: 公休数
+      schedule_day:
+        is_holiday: 祝日設定
       work_type:
         name: 勤務パターン名
+        color_code: カラーコード
+      day_off_type:
+        name: 休みパターン名
+        day_off_unit: 公休消費数
         color_code: カラーコード
