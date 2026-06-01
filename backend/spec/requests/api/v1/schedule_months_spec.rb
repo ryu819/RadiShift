@@ -163,7 +163,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
 
       let!(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 1, monthly_days_off: 8.0) }
 
-      it "正常に公休数を更新できる" do
+      it "正常に対象月のシフトを更新できる" do
         subject
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("対象月のシフトを更新しました。")
