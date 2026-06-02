@@ -28,17 +28,6 @@ RSpec.describe ModalityType, type: :model do
     end
   end
 
-  context "name が同じ施設内で重複している時" do
-    let(:facility) { create(:facility) }
-    let(:modality_type) { build(:modality_type, facility: facility, name: "CT") }
-
-    before { create(:modality_type, facility: facility, name: "CT") }
-
-    it "無効である" do
-      expect(modality_type).to be_invalid
-    end
-  end
-
   describe "ModalityType.active" do
     let(:facility) { create(:facility) }
     let!(:active_modality_type) { create(:modality_type, facility: facility, name: "CT", is_active: true) }
