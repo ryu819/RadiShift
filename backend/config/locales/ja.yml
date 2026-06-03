@@ -21,3 +21,6 @@ ja:
       modality_type:
         name: モダリティパターン名
         color_code: カラーコード
+      day_off_slot_rule:
+        weekday: 曜日
+        max_slots: 休み枠数
