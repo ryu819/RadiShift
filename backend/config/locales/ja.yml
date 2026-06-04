@@ -24,3 +24,5 @@ ja:
       day_off_slot_rule:
         weekday: 曜日
         max_slots: 休み枠数
+      day_off_slot:
+        max_slots: 休み枠数
