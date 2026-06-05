@@ -49,14 +49,18 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
     context "施設に所属している時" do
       let!(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 1) }
       let!(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
+      let!(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み") }
+      let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 5) }
 
-      it "正常に対象月と日付一覧を取得できる" do
+      it "正常に対象月・日付一覧・休み枠一覧を取得できる" do
         subject
-
         res = JSON.parse(response.body)
-
         expect(res["schedule_month"]["id"]).to eq(schedule_month.id)
         expect(res["schedule_month"]["schedule_days"].first["id"]).to eq(schedule_day.id)
+        expect(res["schedule_month"]["schedule_days"].first["day_off_slots"].first["id"]).to eq(day_off_slot.id)
+        expect(res["schedule_month"]["schedule_days"].first["day_off_slots"].first["max_slots"]).to eq(5)
+        expect(res["schedule_month"]["schedule_days"].first["day_off_slots"].first["day_off_type"]["id"]).to eq(day_off_type.id)
+        expect(res["schedule_month"]["schedule_days"].first["day_off_slots"].first["day_off_type"]["name"]).to eq("休み")
         expect(response).to have_http_status(:ok)
       end
     end
@@ -90,11 +94,19 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
+      let(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み") }
+
+      before do
+        (0..7).each do |weekday|
+          create(:day_off_slot_rule, facility: user.facility, day_off_type: day_off_type, weekday: weekday, max_slots: 5)
+        end
+      end
 
       it "正常に対象月のシフトを作成できる" do
         expect { subject }
           .to change { ScheduleMonth.count }.by(1)
                 .and change { ScheduleDay.count }.by(31)
+                       .and change { DayOffSlot.count }.by(31)
 
         res = JSON.parse(response.body)
         schedule_month = user.facility.schedule_months.find_by(year: 2026, month: 1)
@@ -108,6 +120,22 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
         subject
         schedule_month = user.facility.schedule_months.find_by(year: 2026, month: 1)
         expect(schedule_month.schedule_days.count).to eq(31)
+      end
+
+      it "対象月の日数分 day_off_slots が作成される" do
+        subject
+        schedule_month = user.facility.schedule_months.find_by(year: 2026, month: 1)
+        expect(DayOffSlot.joins(schedule_day: :schedule_month).where(schedule_months: { id: schedule_month.id }).count).to eq(31)
+      end
+
+      it "休み枠ルールの max_slots を使って day_off_slots が作成される" do
+        subject
+
+        schedule_month = user.facility.schedule_months.find_by(year: 2026, month: 1)
+        schedule_day = schedule_month.schedule_days.find_by(date: Date.new(2026, 1, 2))
+        day_off_slot = schedule_day.day_off_slots.find_by(day_off_type: day_off_type)
+
+        expect(day_off_slot.max_slots).to eq(5)
       end
 
       it "祝日は is_holiday が true で作成される" do
