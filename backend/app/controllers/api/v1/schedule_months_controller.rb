@@ -17,9 +17,9 @@ module Api
 
       def show
         schedule_month = current_user.facility.schedule_months
-                           .includes(:schedule_days)
+                           .includes(schedule_days: { day_off_slots: :day_off_type })
                            .find(params[:id])
-        render json: { schedule_month: schedule_month.as_json(include: :schedule_days) }
+        render json: { schedule_month: schedule_month.as_json(include: { schedule_days: { include: { day_off_slots: { include: :day_off_type } } } }) }
       end
 
       def create
@@ -27,19 +27,12 @@ module Api
 
         ScheduleMonth.transaction do
           unless schedule_month.save
-            return render json: { message: "対象月のシフト作成に失敗しました。", errors: schedule_month.errors.to_hash(true) },
-                          status: :unprocessable_content
+            return render json: {
+              message: "対象月のシフト作成に失敗しました。",
+              errors: schedule_month.errors.to_hash(true)
+            }, status: :unprocessable_content
           end
-
-          start_date = Date.new(schedule_month.year, schedule_month.month, 1)
-          end_date = start_date.end_of_month
-
-          (start_date..end_date).each do |date|
-            schedule_month.schedule_days.create!(
-              date: date,
-              is_holiday: HolidayJapan.check(date)
-            )
-          end
+          create_schedule_days_with_day_off_slots!(schedule_month)
         end
 
         render json: { message: "対象月のシフトを作成しました。" }, status: :created
@@ -74,6 +67,29 @@ module Api
 
       def schedule_month_update_params
         params.require(:schedule_month).permit(:monthly_days_off)
+      end
+
+      def create_schedule_days_with_day_off_slots!(schedule_month)
+        day_off_slot_rules_by_weekday = current_user.facility.day_off_slot_rules.group_by(&:weekday)
+
+        start_date = Date.new(schedule_month.year, schedule_month.month, 1)
+        end_date = start_date.end_of_month
+
+        (start_date..end_date).each do |date|
+          is_holiday = HolidayJapan.check(date)
+
+          schedule_day = schedule_month.schedule_days.create!(date: date, is_holiday: is_holiday)
+
+          weekday = is_holiday ? 7 : date.wday
+          day_off_slot_rules = day_off_slot_rules_by_weekday[weekday] || []
+
+          day_off_slot_rules.each do |rule|
+            schedule_day.day_off_slots.create!(
+              day_off_type_id: rule.day_off_type_id,
+              max_slots: rule.max_slots
+            )
+          end
+        end
       end
     end
   end

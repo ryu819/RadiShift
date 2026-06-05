@@ -7,6 +7,7 @@ module Api
       before_action :require_facility!
       before_action :require_admin!, only: [:create, :update, :destroy]
       before_action :set_day_off_slot_rule, only: [:update, :destroy]
+      before_action :validate_day_off_type_for_facility!, only: [:create]
 
       def index
         day_off_slot_rules = current_user.facility.day_off_slot_rules
@@ -16,8 +17,6 @@ module Api
       end
 
       def create
-        return render_day_off_type_not_found unless valid_day_off_type_for_facility?
-
         day_off_slot_rule = current_user.facility.day_off_slot_rules.build(day_off_slot_rule_params)
 
         if day_off_slot_rule.save
@@ -31,9 +30,7 @@ module Api
       end
 
       def update
-        return render_day_off_type_not_found unless valid_day_off_type_for_facility?
-
-        if @day_off_slot_rule.update(day_off_slot_rule_params)
+        if @day_off_slot_rule.update(day_off_slot_rule_update_params)
           render json: { message: "休み枠ルールを更新しました。" }, status: :ok
         else
           render json: {
@@ -59,15 +56,16 @@ module Api
         params.require(:day_off_slot_rule).permit(:day_off_type_id, :weekday, :max_slots)
       end
 
-      def valid_day_off_type_for_facility?
-        day_off_type_id = day_off_slot_rule_params[:day_off_type_id]
-
-        return false if day_off_type_id.blank?
-
-        current_user.facility.day_off_types.exists?(id: day_off_type_id)
+      def day_off_slot_rule_update_params
+        params.require(:day_off_slot_rule).permit(:max_slots)
       end
 
-      def render_day_off_type_not_found
+      def validate_day_off_type_for_facility!
+        day_off_type_id = day_off_slot_rule_params[:day_off_type_id]
+
+        return if day_off_type_id.blank?
+        return if current_user.facility.day_off_types.exists?(id: day_off_type_id)
+
         render json: { message: "休みパターンが存在しません。" }, status: :not_found
       end
     end
