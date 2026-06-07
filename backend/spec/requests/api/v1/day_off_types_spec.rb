@@ -14,7 +14,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
 
       let!(:inactive_day_off_type) { create(:day_off_type, facility: user.facility, name: "午後休み", day_off_unit: 0.5, is_active: false) }
 
-      let!(:other_facility_day_off_type) { create(:day_off_type, name: "午前休み", day_off_unit: 1.0, is_active: true) }
+      let!(:other_facility_day_off_type) { create(:day_off_type, facility: create(:facility), name: "午前休み", day_off_unit: 1.0, is_active: true) }
 
       it "ログインユーザーの施設の有効な休みパターンだけを返す" do
         subject
@@ -215,8 +215,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
 
     context "別施設の休みパターンを更新しようとした時" do
       let(:user) { create(:user, :admin) }
-      let(:other_facility) { create(:facility) }
-      let(:day_off_type) { create(:day_off_type, facility: other_facility, name: "休み") }
+      let(:day_off_type) { create(:day_off_type, facility: create(:facility), name: "休み") }
 
       it "not_found エラーが返る" do
         subject
@@ -267,8 +266,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
 
     context "別施設の休みパターンを削除しようとした時" do
       let(:user) { create(:user, :admin) }
-      let(:other_facility) { create(:facility) }
-      let(:day_off_type) { create(:day_off_type, facility: other_facility, name: "休み") }
+      let(:day_off_type) { create(:day_off_type, facility: create(:facility), name: "休み") }
 
       it "not_found エラーが返る" do
         subject

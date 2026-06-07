@@ -12,7 +12,7 @@ RSpec.describe "Api::V1::ModalityTypes", type: :request do
     context "施設に所属している時" do
       let!(:active_modality_type) { create(:modality_type, facility: user.facility, name: "CT", is_active: true) }
       let!(:inactive_modality_type) { create(:modality_type, facility: user.facility, name: "MRI", is_active: false) }
-      let!(:other_facility_modality_type) { create(:modality_type, name: "一般撮影", is_active: true) }
+      let!(:other_facility_modality_type) { create(:modality_type, facility: create(:facility), name: "一般撮影", is_active: true) }
 
       it "ログインユーザーの施設の有効なモダリティパターンだけを返す" do
         subject
@@ -174,8 +174,7 @@ RSpec.describe "Api::V1::ModalityTypes", type: :request do
 
     context "別施設のモダリティパターンを更新しようとした時" do
       let(:user) { create(:user, :admin) }
-      let(:other_facility) { create(:facility) }
-      let(:modality_type) { create(:modality_type, facility: other_facility, name: "CT") }
+      let(:modality_type) { create(:modality_type, facility: create(:facility), name: "CT") }
 
       it "not_found エラーが返る" do
         subject
@@ -226,8 +225,7 @@ RSpec.describe "Api::V1::ModalityTypes", type: :request do
 
     context "別施設のモダリティパターンを削除しようとした時" do
       let(:user) { create(:user, :admin) }
-      let(:other_facility) { create(:facility) }
-      let(:modality_type) { create(:modality_type, facility: other_facility, name: "CT") }
+      let(:modality_type) { create(:modality_type, facility: create(:facility), name: "CT") }
 
       it "not_found エラーが返る" do
         subject
