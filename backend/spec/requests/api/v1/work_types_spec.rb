@@ -13,7 +13,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
       let!(:active_work_type) { create(:work_type, facility: user.facility, name: "日勤", is_active: true) }
       let!(:inactive_work_type) { create(:work_type, facility: user.facility, name: "夜勤", is_active: false) }
 
-      let!(:other_facility_work_type) { create(:work_type, name: "遅番", is_active: true) }
+      let!(:other_facility_work_type) { create(:work_type, facility: create(:facility), name: "遅番", is_active: true) }
 
       it "ログインユーザーの施設の有効な勤務パターンだけを返す" do
         subject
@@ -177,8 +177,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
     context "別施設の勤務パターンを更新しようとした時" do
       let(:user) { create(:user, :admin) }
-      let(:other_facility) { create(:facility) }
-      let(:work_type) { create(:work_type, facility: other_facility, name: "日勤") }
+      let(:work_type) { create(:work_type, facility: create(:facility), name: "日勤") }
 
       it "not_found エラーが返る" do
         subject
@@ -228,8 +227,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
     context "別施設の勤務パターンを削除しようとした時" do
       let(:user) { create(:user, :admin) }
-      let(:other_facility) { create(:facility) }
-      let(:work_type) { create(:work_type, facility: other_facility, name: "日勤") }
+      let(:work_type) { create(:work_type, facility: create(:facility), name: "日勤") }
 
       it "not_found エラーが返る" do
         subject
