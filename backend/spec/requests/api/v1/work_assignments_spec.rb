@@ -237,7 +237,7 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
     context "施設に所属していない時" do
       let(:user) { create(:user) }
       let(:work_assignment) { create(:work_assignment) }
-      let(:work_type) { create(:work_type) }
+      let(:params) { { work_assignment: { work_type_id: 1 } } }
 
       it "not_found エラーが返る" do
         subject
