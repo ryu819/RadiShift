@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       resources :day_off_slots, only: [:create, :update, :destroy]
       resources :work_assignments, only: [:index, :create, :update, :destroy]
       resources :day_off_assignments, only: [:index, :create, :update, :destroy]
+      resources :modality_assignments, only: [:index, :create, :update, :destroy]
       get "health_check", to: "health_check#index"
     end
   end
