@@ -26,3 +26,6 @@ ja:
         max_slots: 休み枠数
       day_off_slot:
         max_slots: 休み枠数
+      day_off_request:
+        request_status: 申請ステータス
+        is_return: 返上申請
