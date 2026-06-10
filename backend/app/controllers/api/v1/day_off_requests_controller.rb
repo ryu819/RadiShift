@@ -6,7 +6,8 @@ module Api
       before_action :authenticate_user!
       before_action :require_facility!
       before_action :require_admin!, only: [:update]
-      before_action :set_day_off_request, only: [:update, :destroy]
+      before_action :set_day_off_request_for_update, only: [:update]
+      before_action :set_day_off_request_for_destroy, only: [:destroy]
       before_action :validate_schedule_day_for_facility!, only: [:create]
       before_action :validate_day_off_type_for_facility!, only: [:create]
       before_action :validate_return_day_off_assignment!, only: [:create]
@@ -66,8 +67,12 @@ module Api
 
       private
 
-      def set_day_off_request
+      def set_day_off_request_for_update
         @day_off_request = current_user.facility.day_off_requests.find(params[:id])
+      end
+
+      def set_day_off_request_for_destroy
+        @day_off_request = current_user.day_off_requests.find(params[:id])
       end
 
       def day_off_request_params
