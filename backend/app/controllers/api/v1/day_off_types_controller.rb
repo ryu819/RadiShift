@@ -51,7 +51,7 @@ module Api
       end
 
       def day_off_type_params
-        params.require(:day_off_type).permit(:name, :day_off_unit, :color_code)
+        params.require(:day_off_type).permit(:name, :day_off_unit, :color_code, :uses_slot)
       end
     end
   end
