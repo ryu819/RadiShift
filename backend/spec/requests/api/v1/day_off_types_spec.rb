@@ -14,7 +14,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
 
       let!(:inactive_day_off_type) { create(:day_off_type, facility: user.facility, name: "午後休み", day_off_unit: 0.5, is_active: false) }
 
-      let!(:other_facility_day_off_type) { create(:day_off_type, facility: create(:facility), name: "午前休み", day_off_unit: 1.0, is_active: true) }
+      let!(:other_facility_day_off_type) { create(:day_off_type, facility: create(:facility), name: "午前休み", day_off_unit: 0.5, is_active: true) }
 
       it "ログインユーザーの施設の有効な休みパターンだけを返す" do
         subject
@@ -42,7 +42,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
   describe "POST /api/v1/day_off_types" do
     subject { post(api_v1_day_off_types_path, params: params, headers: { "Authorization": token }) }
 
-    let(:params) { { day_off_type: { name: "休み", day_off_unit: 1.0, color_code: "#FF0000" } } }
+    let(:params) { { day_off_type: { name: "休み", day_off_unit: 1.0, color_code: "#FF0000", uses_slot: false } } }
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
@@ -54,6 +54,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         expect(res["message"]).to eq("休みパターンを作成しました。")
         expect(day_off_type.day_off_unit).to eq(1.0)
         expect(day_off_type.color_code).to eq("#FF0000")
+        expect(day_off_type.uses_slot).to be false
         expect(day_off_type.facility).to eq(user.facility)
         expect(response).to have_http_status(:created)
       end
@@ -132,7 +133,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
   describe "PUT /api/v1/day_off_types/:id" do
     subject { put(api_v1_day_off_type_path(day_off_type), params: params, headers: { "Authorization": token }) }
 
-    let(:params) { { day_off_type: { name: "午後休み", day_off_unit: 0.5, color_code: "#0000FF" } } }
+    let(:params) { { day_off_type: { name: "午後休み", day_off_unit: 0.5, color_code: "#0000FF", uses_slot: false } } }
 
     let(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み", day_off_unit: 1.0, color_code: "#FF0000") }
 
@@ -146,6 +147,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         expect(day_off_type.reload.name).to eq("午後休み")
         expect(day_off_type.day_off_unit).to eq(0.5)
         expect(day_off_type.color_code).to eq("#0000FF")
+        expect(day_off_type.uses_slot).to be false
         expect(response).to have_http_status(:ok)
       end
 
@@ -176,7 +178,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
       end
 
       context "permitしていない項目を送る時" do
-        let(:params) { { day_off_type: { name: "午後休み", day_off_unit: 0.5, color_code: "#0000FF", is_active: false } } }
+        let(:params) { { day_off_type: { name: "午後休み", day_off_unit: 0.5, color_code: "#0000FF", uses_slot: false, is_active: false } } }
 
         it "is_active は更新されない" do
           original_is_active = day_off_type.is_active
@@ -185,6 +187,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
           expect(day_off_type.name).to eq("午後休み")
           expect(day_off_type.day_off_unit).to eq(0.5)
           expect(day_off_type.color_code).to eq("#0000FF")
+          expect(day_off_type.uses_slot).to be false
           expect(day_off_type.is_active).to eq(original_is_active)
           expect(response).to have_http_status(:ok)
         end

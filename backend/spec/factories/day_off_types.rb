@@ -7,5 +7,6 @@ FactoryBot.define do
     day_off_unit { 1.0 }
     is_active { true }
     color_code { "#FF0000" }
+    uses_slot { true }
   end
 end
