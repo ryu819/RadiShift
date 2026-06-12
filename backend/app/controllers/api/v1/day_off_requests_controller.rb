@@ -13,19 +13,23 @@ module Api
       before_action :validate_return_day_off_assignment!, only: [:create]
 
       def index
-        day_off_requests = if current_user.is_admin?
-                             current_user.facility.day_off_requests
-                           else
-                             current_user.day_off_requests
-                           end
+        if current_user.is_admin?
+          day_off_requests = current_user.facility.day_off_requests
+                               .includes(:user, :schedule_day, :day_off_type)
+                               .order(created_at: :desc)
 
-        day_off_requests = day_off_requests
-                             .includes(:user, :schedule_day, :day_off_type)
-                             .order(created_at: :desc)
+          render json: {
+            day_off_requests: day_off_requests.as_json(include: [:user, :schedule_day, :day_off_type])
+          }, status: :ok
+        else
+          day_off_requests = current_user.day_off_requests
+                               .includes(:schedule_day, :day_off_type)
+                               .order(created_at: :desc)
 
-        render json: {
-          day_off_requests: day_off_requests.as_json(include: [:user, :schedule_day, :day_off_type])
-        }, status: :ok
+          render json: {
+            day_off_requests: day_off_requests.as_json(include: [:schedule_day, :day_off_type])
+          }, status: :ok
+        end
       end
 
       def create
@@ -107,7 +111,7 @@ module Api
       end
 
       def validate_return_day_off_assignment!
-        return unless day_off_request_params[:is_return] == true
+        return unless day_off_request_params[:is_return].to_s == "true"
 
         schedule_day_id = day_off_request_params[:schedule_day_id]
         day_off_type_id = day_off_request_params[:day_off_type_id]
