@@ -51,7 +51,7 @@ module Api
       end
 
       def work_type_params
-        params.require(:work_type).permit(:name, :color_code)
+        params.require(:work_type).permit(:name, :color_code, :auto_approve)
       end
     end
   end
