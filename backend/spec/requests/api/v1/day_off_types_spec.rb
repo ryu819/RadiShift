@@ -135,7 +135,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
 
     let(:params) { { day_off_type: { name: "午後休み", day_off_unit: 0.5, color_code: "#0000FF", uses_slot: false } } }
 
-    let(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み", day_off_unit: 1.0, color_code: "#FF0000") }
+    let(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み", day_off_unit: 1.0, color_code: "#FF0000", uses_slot: true) }
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
