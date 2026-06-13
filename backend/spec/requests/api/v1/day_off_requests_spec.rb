@@ -64,7 +64,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
   describe "POST /api/v1/day_off_requests" do
     subject { post(api_v1_day_off_requests_path, params: params, headers: { "Authorization": token }) }
 
-    let(:schedule_day_date) { Date.current + 10.days }
+    let(:schedule_day_date) { Date.current + (user.facility.request_deadline + 1).days }
     let(:schedule_month) { create(:schedule_month, facility: user.facility, year: schedule_day_date.year, month: schedule_day_date.month) }
     let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: schedule_day_date) }
     let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: true) }
@@ -209,6 +209,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       let(:user) { create(:user) }
       let(:schedule_month) { create(:schedule_month, facility: create(:facility), year: 2026, month: 6) }
       let(:day_off_type) { create(:day_off_type) }
+      let(:schedule_day_date) { Date.current }
 
       it "not_found エラーが返る" do
         expect { subject }.not_to change { DayOffRequest.count }
