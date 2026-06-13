@@ -29,3 +29,6 @@ ja:
       day_off_request:
         request_status: 申請ステータス
         is_return: 返上申請
+      work_request:
+        request_status: 申請ステータス
+        is_return: 返上申請
