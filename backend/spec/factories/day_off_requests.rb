@@ -6,5 +6,7 @@ FactoryBot.define do
     user { association(:user, facility: facility) }
     schedule_day { association(:schedule_day, schedule_month: association(:schedule_month, facility: facility)) }
     day_off_type { association(:day_off_type, facility: facility) }
+    request_status { :pending }
+    is_return { false }
   end
 end
