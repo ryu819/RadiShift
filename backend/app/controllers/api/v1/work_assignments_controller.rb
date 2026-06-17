@@ -19,7 +19,20 @@ module Api
                              .order(:schedule_day_id, :user_id)
 
         render json: {
-          work_assignments: work_assignments.as_json(include: [:schedule_day, :user, :work_type])
+          work_assignments: work_assignments.as_json(
+            only: [:id, :schedule_day_id, :user_id, :work_type_id],
+            include: {
+              schedule_day: {
+                only: [:id, :date, :is_holiday]
+              },
+              user: {
+                only: [:id, :name]
+              },
+              work_type: {
+                only: [:id, :name, :color_code]
+              }
+            }
+          )
         }, status: :ok
       end
 

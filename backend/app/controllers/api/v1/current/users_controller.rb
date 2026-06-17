@@ -7,7 +7,9 @@ module Api
         before_action :authenticate_user!
 
         def show
-          render json: current_user.as_json.merge(
+          render json: current_user.as_json(
+            only: [:id, :name, :email, :facility_id, :is_admin]
+          ).merge(
             avatar_image_url: avatar_image_url
           )
         end

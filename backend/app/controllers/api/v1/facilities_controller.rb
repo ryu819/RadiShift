@@ -9,7 +9,9 @@ module Api
       before_action :require_no_facility!, only: [:create, :join]
 
       def show
-        render json: current_facility
+        render json: current_facility.as_json(
+          only: [:id, :name, :request_deadline, :rules_text]
+        ), status: :ok
       end
 
       def create

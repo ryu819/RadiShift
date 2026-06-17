@@ -16,18 +16,45 @@ module Api
         if current_user.is_admin?
           day_off_requests = current_user.facility.day_off_requests
                                .includes(:user, :schedule_day, :day_off_type)
-                               .order(created_at: :desc)
+                               .order(created_at: :asc)
 
           render json: {
-            day_off_requests: day_off_requests.as_json(include: [:user, :schedule_day, :day_off_type])
+            day_off_requests: day_off_requests.as_json(
+              {
+                only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
+                include: {
+                  user: {
+                    only: [:id, :name]
+                  },
+                  schedule_day: {
+                    only: [:id, :date, :is_holiday]
+                  },
+                  day_off_type: {
+                    only: [:id, :name, :color_code]
+                  }
+                }
+              }
+            )
           }, status: :ok
         else
           day_off_requests = current_user.day_off_requests
                                .includes(:schedule_day, :day_off_type)
-                               .order(created_at: :desc)
+                               .order(created_at: :asc)
 
           render json: {
-            day_off_requests: day_off_requests.as_json(include: [:schedule_day, :day_off_type])
+            day_off_requests: day_off_requests.as_json(
+              {
+                only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
+                include: {
+                  schedule_day: {
+                    only: [:id, :date, :is_holiday]
+                  },
+                  day_off_type: {
+                    only: [:id, :name, :color_code]
+                  }
+                }
+              }
+            )
           }, status: :ok
         end
       end
