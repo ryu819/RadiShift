@@ -19,7 +19,22 @@ module Api
                                 .order(:schedule_day_id, :user_id)
 
         render json: {
-          day_off_assignments: day_off_assignments.as_json(include: [:schedule_day, :user, :day_off_type])
+          day_off_assignments: day_off_assignments.as_json(
+            {
+              only: [:id, :schedule_day_id, :user_id, :day_off_type_id],
+              include: {
+                schedule_day: {
+                  only: [:id, :date, :is_holiday]
+                },
+                user: {
+                  only: [:id, :name]
+                },
+                day_off_type: {
+                  only: [:id, :name, :day_off_unit, :color_code, :uses_slot]
+                }
+              }
+            }
+          )
         }, status: :ok
       end
 

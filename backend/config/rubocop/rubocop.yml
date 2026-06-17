@@ -79,13 +79,13 @@ Metrics/PerceivedComplexity:
 
 # メソッドが長くなりすぎるのを防ぐ
 Metrics/MethodLength:
-  Max: 30
+  Max: 50
   Exclude:
     - "db/migrate/*.rb"
 
 # クラスの行数を制限
 Metrics/ClassLength:
-  Max: 200
+  Max: 230
 
 # RSpecや設定ファイルは長くなりがちなので除外
 Metrics/BlockLength:

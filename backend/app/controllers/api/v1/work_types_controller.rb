@@ -11,7 +11,11 @@ module Api
       def index
         work_types = current_user.facility.work_types.active.order(:id)
 
-        render json: { work_types: work_types }, status: :ok
+        render json: {
+          work_types: work_types.as_json(
+            only: [:id, :name, :color_code, :auto_approve]
+          )
+        }, status: :ok
       end
 
       def create

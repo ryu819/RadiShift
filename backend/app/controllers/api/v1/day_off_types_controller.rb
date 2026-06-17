@@ -11,7 +11,11 @@ module Api
       def index
         day_off_types = current_user.facility.day_off_types.active.order(:id)
 
-        render json: { day_off_types: day_off_types }, status: :ok
+        render json: {
+          day_off_types: day_off_types.as_json(
+            only: [:id, :name, :day_off_unit, :color_code, :uses_slot]
+          )
+        }, status: :ok
       end
 
       def create
