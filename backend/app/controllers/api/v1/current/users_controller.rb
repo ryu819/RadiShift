@@ -5,6 +5,7 @@ module Api
     module Current
       class UsersController < ApplicationController
         before_action :authenticate_user!
+        before_action :reject_deleted_user!
 
         def show
           render json: current_user.as_json(
@@ -27,7 +28,29 @@ module Api
         end
 
         def destroy
-          current_user.destroy!
+          return render json: { message: "管理者は削除できません。（管理者権限の移譲が必要です。）" }, status: :forbidden if current_user.is_admin?
+
+          random_password = SecureRandom.urlsafe_base64(32)
+
+          User.transaction do
+            current_user.avatar_image.purge if current_user.avatar_image.attached?
+
+            current_user.skip_reconfirmation!
+
+            current_user.update!(
+              facility_id: nil,
+              email: "deleted_user_#{current_user.id}@example.invalid",
+              password: random_password,
+              password_confirmation: random_password,
+              reset_password_token: nil,
+              reset_password_sent_at: nil,
+              confirmation_token: nil,
+              confirmation_sent_at: nil,
+              unconfirmed_email: nil,
+              is_deleted: true
+            )
+          end
+
           render json: { message: "アカウントを削除しました。" }, status: :ok
         end
 

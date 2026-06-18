@@ -4,6 +4,7 @@ module Api
   module V1
     class WorkRequestsController < ApplicationController
       before_action :authenticate_user!
+      before_action :reject_deleted_user!
       before_action :require_facility!
       before_action :require_admin!, only: [:update]
       before_action :set_work_request_for_update, only: [:update]

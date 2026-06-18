@@ -4,6 +4,7 @@ module Api
   module V1
     class ModalityTypesController < ApplicationController
       before_action :authenticate_user!
+      before_action :reject_deleted_user!
       before_action :require_facility!
       before_action :require_admin!, only: [:create, :update, :destroy]
       before_action :set_modality_type, only: [:update, :destroy]
