@@ -5,9 +5,9 @@ class User < ApplicationRecord
   has_one_attached :avatar_image
   has_many :day_off_requests, dependent: :destroy
   has_many :work_requests, dependent: :destroy
-  has_many :work_assignments, dependent: :destroy
-  has_many :day_off_assignments, dependent: :destroy
-  has_many :modality_assignments, dependent: :destroy
+  has_many :work_assignments, dependent: :restrict_with_error
+  has_many :day_off_assignments, dependent: :restrict_with_error
+  has_many :modality_assignments, dependent: :restrict_with_error
   validates :name, presence: true
   validates :avatar_image,   content_type: { in: %w[image/jpeg image/png],
                                              message: "対応している画像形式（JPEG・PNG）のファイルを選択してください。" },

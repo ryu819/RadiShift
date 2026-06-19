@@ -22,4 +22,10 @@ class ApplicationController < ActionController::API
   def require_admin!
     render json: { message: "管理者権限がありません。" }, status: :forbidden unless current_user.is_admin?
   end
+
+  def reject_deleted_user!
+    return unless current_user.is_deleted?
+
+    render json: { message: "削除済みのアカウントです。" }, status: :unauthorized
+  end
 end

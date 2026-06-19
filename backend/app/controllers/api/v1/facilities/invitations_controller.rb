@@ -8,6 +8,7 @@ module Api
         INVITE_EXPIRATION = 1.week
 
         before_action :authenticate_user!
+        before_action :reject_deleted_user!
         before_action :require_facility!, only: [:show, :create, :destroy]
         before_action :require_admin!, only: [:show, :create, :destroy]
 

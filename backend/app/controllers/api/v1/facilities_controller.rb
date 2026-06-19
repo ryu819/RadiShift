@@ -4,6 +4,7 @@ module Api
   module V1
     class FacilitiesController < ApplicationController
       before_action :authenticate_user!
+      before_action :reject_deleted_user!
       before_action :require_facility!, only: [:show, :update, :destroy, :leave]
       before_action :require_admin!, only: [:update, :destroy]
       before_action :require_no_facility!, only: [:create, :join]

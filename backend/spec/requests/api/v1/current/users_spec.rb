@@ -28,6 +28,17 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         expect(response).to have_http_status(:unauthorized)
       end
     end
+
+    context "削除済みユーザーの時" do
+      before { user.update!(is_deleted: true) }
+
+      it "unauthorized エラーが返る" do
+        subject
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("削除済みのアカウントです。")
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
   end
 
   describe "PUT /api/v1/current/user" do
@@ -90,13 +101,30 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
     subject { delete(api_v1_current_user_path, headers: { "Authorization": token }) }
 
     context "自分のアカウントを削除する時" do
-      it "正常にレコードを削除できる" do
-        expect { subject }
-          .to change { User.count }.by(-1)
+      it "ユーザーを物理削除せず、削除済み状態に更新できる" do
+        original_name = user.name
+        original_encrypted_password = user.encrypted_password
 
+        expect { subject }.not_to change { User.count }
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("アカウントを削除しました。")
+        expect(user.reload.name).to eq(original_name)
+        expect(user.reload.email).to eq("deleted_user_#{user.id}@example.invalid")
+        expect(user.reload.encrypted_password).not_to eq(original_encrypted_password)
+        expect(user.reload.is_deleted).to be true
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "管理者である時" do
+      let(:user) { create(:user, :admin) }
+
+      it "削除できない" do
+        expect { subject }.not_to change { User.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("管理者は削除できません。（管理者権限の移譲が必要です。）")
+        expect(user.reload.is_deleted).to be false
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end
