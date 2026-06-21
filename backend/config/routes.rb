@@ -33,6 +33,12 @@ Rails.application.routes.draw do
         resource :invitation, only: [:show, :create, :destroy],
                               module: :facilities
       end
+      resources :members, only: [:index, :update, :destroy] do
+        member do
+          patch :add_admin
+          patch :remove_admin
+        end
+      end
       resources :schedule_months, only: [:index, :show, :create, :update, :destroy]
       resources :schedule_days, only: [:update]
       resources :work_types, only: [:index, :create, :update, :destroy]
