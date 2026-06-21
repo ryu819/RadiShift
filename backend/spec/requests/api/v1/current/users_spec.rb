@@ -50,7 +50,7 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         subject
         res = JSON.parse(response.body)
         expect(user.reload.name).to eq("テスト変更")
-        expect(res["message"]).to eq("アカウント情報を更新しました。")
+        expect(res["message"]).to eq("アカウントを更新しました。")
         expect(response).to have_http_status(:ok)
       end
     end

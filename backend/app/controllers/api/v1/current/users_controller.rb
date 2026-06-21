@@ -20,7 +20,7 @@ module Api
             if current_user.saved_change_to_unconfirmed_email?
               render json: { message: "確認メールを送信しました。メールをご確認ください。", confirmation: true }, status: :ok
             else
-              render json: { message: "アカウント情報を更新しました。" }, status: :ok
+              render json: { message: "アカウントを更新しました。" }, status: :ok
             end
           else
             render json: { message: "アカウントの更新に失敗しました。", errors: current_user.errors.to_hash(true) }, status: :unprocessable_content
