@@ -1,5 +1,5 @@
 import { Footer } from "@/components/footer/Footer";
-export default async function PrivateLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
