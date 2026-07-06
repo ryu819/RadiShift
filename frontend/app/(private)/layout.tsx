@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Auth } from "@/components/Auth";
 import { MobileFooterNav } from "@/components/footer/MobileFooterNav";
 import { AppSidebar } from "@/components/sidebar/AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 export default async function PrivateLayout({
   children,
 }: {
@@ -16,9 +16,10 @@ export default async function PrivateLayout({
       </Suspense>
       <SidebarProvider>
         <AppSidebar />
-        <main className="flex-1 flex items-center justify-center min-h-screen py-16 md:pb-0">
+
+        <SidebarInset className="overflow-x-hidden h-screen bg-slate-50 pt-16 pb-16 md:pb-0">
           {children}
-        </main>
+        </SidebarInset>
         <MobileFooterNav />
       </SidebarProvider>
     </>
