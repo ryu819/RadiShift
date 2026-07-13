@@ -13,28 +13,27 @@ module Api
       before_action :validate_work_type_for_facility!, only: [:create, :update]
 
       def index
-        work_assignments = WorkAssignment
-                             .joins(schedule_day: :schedule_month)
-                             .where(schedule_months: { facility_id: current_user.facility_id })
-                             .includes(:schedule_day, :user, :work_type)
-                             .order(:schedule_day_id, :user_id)
+        year = params[:year]
+        month = params[:month]
 
-        render json: {
-          work_assignments: work_assignments.as_json(
-            only: [:id, :schedule_day_id, :user_id, :work_type_id],
-            include: {
-              schedule_day: {
-                only: [:id, :date, :is_holiday]
-              },
-              user: {
-                only: [:id, :name]
-              },
-              work_type: {
-                only: [:id, :name, :color_code]
-              }
+        schedule_month = current_user.facility.schedule_months.find_by!(
+          year: year,
+          month: month
+        )
+
+        work_assignments = WorkAssignment
+                             .where(schedule_day: schedule_month.schedule_days)
+                             .includes(:work_type)
+                             .order(:schedule_day_id, :user_id, :created_at, :id)
+
+        render json: work_assignments.as_json(
+          only: [:id, :schedule_day_id, :user_id],
+          include: {
+            work_type: {
+              only: [:id, :name, :color_code]
             }
-          )
-        }, status: :ok
+          }
+        ), status: :ok
       end
 
       def create

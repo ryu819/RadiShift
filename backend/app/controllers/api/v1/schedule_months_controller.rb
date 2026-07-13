@@ -13,37 +13,39 @@ module Api
         schedule_months = current_user.facility.schedule_months
                             .order(year: :asc, month: :asc)
 
-        render json: {
-          schedule_months: schedule_months.as_json(
-            only: [:id, :year, :month, :monthly_days_off]
-          )
-        }, status: :ok
+        render json: schedule_months.as_json(
+          only: [:id, :year, :month, :monthly_days_off]
+        ), status: :ok
       end
 
       def show
         schedule_month = current_user.facility.schedule_months
                            .includes(schedule_days: { day_off_slots: :day_off_type })
                            .find(params[:id])
-        render json: {
-          schedule_month: schedule_month.as_json(
-            only: [:id, :year, :month, :monthly_days_off],
-            include: {
-              schedule_days: {
-                only: [:id, :date, :is_holiday],
-                include: {
-                  day_off_slots: {
-                    only: [:id, :schedule_day_id, :day_off_type_id, :max_slots],
-                    include: {
-                      day_off_type: {
-                        only: [:id, :name, :color_code]
-                      }
+        render json: schedule_month.as_json(
+          only: [:id, :year, :month, :monthly_days_off],
+          include: {
+            schedule_days: {
+              only: [:id, :date, :is_holiday],
+              methods: [
+                :day,
+                :weekday_label,
+                :is_sunday,
+                :is_saturday
+              ],
+              include: {
+                day_off_slots: {
+                  only: [:id, :schedule_day_id, :day_off_type_id, :max_slots],
+                  include: {
+                    day_off_type: {
+                      only: [:id, :name, :color_code]
                     }
                   }
                 }
               }
             }
-          )
-        }, status: :ok
+          }
+        ), status: :ok
       end
 
       def create

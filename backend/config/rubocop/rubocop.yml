@@ -109,7 +109,8 @@ Naming/PredicatePrefix:
     - "has_"
     - "have_"
   AllowedMethods:
-    - "is_a?"
+    - "is_sunday"
+    - "is_saturday"
 
 # 短い引数名を許容
 Naming/MethodParameterName:

@@ -10,15 +10,25 @@ class ScheduleDay < ApplicationRecord
   has_many :modality_assignments, dependent: :destroy
   validates :date, presence: true
 
-  def holiday_name
-    return if date.blank?
+  WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"].freeze
 
+  def holiday_name
     HolidayJapan.name(date)
   end
 
-  def weekday_type
-    return if date.blank?
+  def day
+    date.day
+  end
 
-    is_holiday ? 7 : date.wday
+  def weekday_label
+    WEEKDAY_LABELS[date.wday]
+  end
+
+  def is_sunday
+    date.sunday?
+  end
+
+  def is_saturday
+    date.saturday?
   end
 end
