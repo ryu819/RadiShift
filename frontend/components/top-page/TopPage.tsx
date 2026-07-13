@@ -12,5 +12,5 @@ export async function TopPage() {
 
   if (!hasFacility(user)) return <FacilityEntryPage />;
 
-  redirect("/dashboard");
+  redirect("/overview-shift");
 }

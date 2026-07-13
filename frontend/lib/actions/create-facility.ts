@@ -14,7 +14,7 @@ type ActionState = {
   };
 };
 
-type CreateFacilityError = {
+type CreateFacilityResponse = {
   message: string;
   errors: {
     name?: string[];
@@ -55,9 +55,14 @@ export async function createFacilityForm(
       };
     }
 
-    const data: CreateFacilityError = await res.json();
+    const data: CreateFacilityResponse = await res.json();
 
     if (isClientError(res.status)) {
+      await setFlashToast({
+        type: "failure",
+        message: data.message,
+      });
+
       return {
         errors: data.errors,
         values: { name },

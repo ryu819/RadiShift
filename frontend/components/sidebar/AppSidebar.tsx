@@ -16,9 +16,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
               <SidebarItem
-                href="/dashboard"
+                href="/overview-shift"
                 icon="house"
-                label="ダッシュボード"
+                label="全体シフト"
               />
               <SidebarItem href="/shifts" icon="calendar" label="シフト" />
               <SidebarItem href="/settings" icon="settings" label="設定" />
