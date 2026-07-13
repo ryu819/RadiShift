@@ -18,13 +18,13 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
       it "正常にログインユーザーの施設の対象月一覧を取得できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["schedule_months"].map { |schedule_month| schedule_month["id"] }).to eq(
+        expect(res.map { |schedule_month| schedule_month["id"] }).to eq(
           [
             january_schedule_month.id,
             february_schedule_month.id
           ]
         )
-        expect(res["schedule_months"].map { |schedule_month| schedule_month["id"] }).not_to include(
+        expect(res.map { |schedule_month| schedule_month["id"] }).not_to include(
           other_facility_schedule_month.id
         )
         expect(response).to have_http_status(:ok)
@@ -55,12 +55,12 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
       it "正常に対象月・日付一覧・休み枠一覧を取得できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["schedule_month"]["id"]).to eq(schedule_month.id)
-        expect(res["schedule_month"]["schedule_days"].first["id"]).to eq(schedule_day.id)
-        expect(res["schedule_month"]["schedule_days"].first["day_off_slots"].first["id"]).to eq(day_off_slot.id)
-        expect(res["schedule_month"]["schedule_days"].first["day_off_slots"].first["max_slots"]).to eq(5)
-        expect(res["schedule_month"]["schedule_days"].first["day_off_slots"].first["day_off_type"]["id"]).to eq(day_off_type.id)
-        expect(res["schedule_month"]["schedule_days"].first["day_off_slots"].first["day_off_type"]["name"]).to eq("休み")
+        expect(res["id"]).to eq(schedule_month.id)
+        expect(res["schedule_days"].first["id"]).to eq(schedule_day.id)
+        expect(res["schedule_days"].first["day_off_slots"].first["id"]).to eq(day_off_slot.id)
+        expect(res["schedule_days"].first["day_off_slots"].first["max_slots"]).to eq(5)
+        expect(res["schedule_days"].first["day_off_slots"].first["day_off_type"]["id"]).to eq(day_off_type.id)
+        expect(res["schedule_days"].first["day_off_slots"].first["day_off_type"]["name"]).to eq("休み")
         expect(response).to have_http_status(:ok)
       end
     end

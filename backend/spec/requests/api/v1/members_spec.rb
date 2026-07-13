@@ -18,7 +18,7 @@ RSpec.describe "Api::V1::Members", type: :request do
         it "同じ施設に所属する削除済みではないユーザー一覧を取得できる" do
           subject
           res = JSON.parse(response.body)
-          user_ids = res["users"].map { |member| member["id"] }
+          user_ids = res.map { |member| member["id"] }
           expect(user_ids).to eq([user.id, member.id])
           expect(user_ids).not_to include(other_facility_member.id)
           expect(user_ids).not_to include(deleted_member.id)

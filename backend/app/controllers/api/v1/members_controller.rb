@@ -13,11 +13,9 @@ module Api
                     .where(is_deleted: false)
                     .order(:id)
 
-        render json: {
-          users: members.as_json(
-            only: [:id, :name, :is_admin, :rules_text]
-          )
-        }, status: :ok
+        render json: members.as_json(
+          only: [:id, :name, :is_admin, :rules_text]
+        ), status: :ok
       end
 
       def update

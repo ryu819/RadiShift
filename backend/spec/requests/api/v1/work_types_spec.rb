@@ -18,7 +18,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
       it "ログインユーザーの施設の有効な勤務パターンだけを返す" do
         subject
         res = JSON.parse(response.body)
-        work_type_ids = res["work_types"].map { |work_type| work_type["id"] }
+        work_type_ids = res.map { |work_type| work_type["id"] }
         expect(work_type_ids).to include(active_work_type.id)
         expect(work_type_ids).not_to include(inactive_work_type.id)
         expect(work_type_ids).not_to include(other_facility_work_type.id)

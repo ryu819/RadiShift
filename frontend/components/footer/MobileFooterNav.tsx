@@ -6,9 +6,9 @@ export function MobileFooterNav() {
     <nav className="h-16 fixed bottom-0 z-20  border-t border-slate-200 w-full bg-white  md:hidden">
       <ul className="flex items-center justify-around py-3">
         <MobileFooterNavItem
-          href="/dashboard"
+          href="/overview-shift"
           icon="house"
-          label="ダッシュボード"
+          label="全体シフト"
         />
         <MobileFooterNavItem href="/shifts" icon="calendar" label="シフト" />
         <MobileFooterNavItem href="/settings" icon="settings" label="設定" />

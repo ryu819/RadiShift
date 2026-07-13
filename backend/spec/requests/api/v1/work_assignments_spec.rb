@@ -7,7 +7,11 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
   let(:token) { login_and_get_token(user) }
 
   describe "GET /api/v1/work_assignments" do
-    subject { get(api_v1_work_assignments_path, headers: { "Authorization": token }) }
+    subject do
+      get(api_v1_work_assignments_path, params: { year: schedule_month.year, month: schedule_month.month }, headers: { "Authorization": token })
+    end
+
+    let(:schedule_month) { work_assignment.schedule_day.schedule_month }
 
     context "施設に所属している時" do
       let!(:work_assignment) { create(:work_assignment, facility: user.facility) }
@@ -16,18 +20,17 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
       it "ログインユーザーの施設の勤務割当だけを返す" do
         subject
         res = JSON.parse(response.body)
-        work_assignment_ids = res["work_assignments"].map { |work_assignment| work_assignment["id"] }
+        work_assignment_ids = res.map { |work_assignment| work_assignment["id"] }
         expect(work_assignment_ids).to include(work_assignment.id)
         expect(work_assignment_ids).not_to include(other_facility_work_assignment.id)
-        expect(res["work_assignments"].first["schedule_day"]).to be_present
-        expect(res["work_assignments"].first["user"]).to be_present
-        expect(res["work_assignments"].first["work_type"]).to be_present
+        expect(res.first["work_type"]).to be_present
         expect(response).to have_http_status(:ok)
       end
     end
 
     context "施設に所属していない時" do
       let(:user) { create(:user) }
+      let!(:work_assignment) { create(:work_assignment) }
 
       it "not_found エラーが返る" do
         subject
