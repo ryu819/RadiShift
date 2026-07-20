@@ -1,3 +1,6 @@
+import { Suspense } from "react";
+
+import { AdminSidebarItem } from "@/components/sidebar/AdminSidebarItem";
 import { SidebarItem } from "@/components/sidebar/SidebarItem";
 import {
   Sidebar,
@@ -22,6 +25,9 @@ export function AppSidebar() {
               />
               <SidebarItem href="/shifts" icon="calendar" label="シフト" />
               <SidebarItem href="/settings" icon="settings" label="設定" />
+              <Suspense fallback={null}>
+                <AdminSidebarItem />
+              </Suspense>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

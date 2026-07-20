@@ -78,5 +78,5 @@ export async function createFacilityForm(
     };
   }
 
-  redirect("/dashboard");
+  redirect("/admin-dashboard");
 }

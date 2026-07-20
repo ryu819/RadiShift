@@ -69,5 +69,5 @@ export async function submitLoginForm(
     return { values: { email } };
   }
 
-  redirect("/dashboard");
+  redirect("/overview-shift");
 }

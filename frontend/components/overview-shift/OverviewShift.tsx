@@ -29,7 +29,7 @@ export function OverviewShift({
   const days = scheduleMonth?.scheduleDays;
 
   return (
-    <div className="flex min-h-0  flex-1 p-2 md:p-4">
+    <div className="flex min-h-0 flex-1 p-3 md:p-6">
       <div className="flex h-full   w-full flex-col gap-1.5 md:gap-6">
         <div className="flex  items-center justify-between">
           <div className="flex items-center gap-1 text-xs md:gap-2 md:text-sm">
