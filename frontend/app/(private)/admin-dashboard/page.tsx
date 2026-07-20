@@ -1,5 +1,5 @@
-import React from "react";
+import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
 
 export default function page() {
-  return <div>adminDashboard</div>;
+  return <AdminDashboard />;
 }
