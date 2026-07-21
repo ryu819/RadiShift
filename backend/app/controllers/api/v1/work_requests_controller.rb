@@ -152,7 +152,9 @@ module Api
       end
 
       def over_request_deadline?(work_request)
-        deadline_date = work_request.schedule_day.date - current_user.facility.request_deadline.days
+        deadline_date = current_user.facility.request_deadline_date_for(
+          work_request.schedule_day.date
+        )
 
         Date.current > deadline_date
       end
