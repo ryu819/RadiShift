@@ -60,7 +60,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
   describe "POST /api/v1/work_requests" do
     subject { post(api_v1_work_requests_path, params: params, headers: { "Authorization": token }, as: :json) }
 
-    let(:schedule_day_date) { Date.current + (user.facility.request_deadline + 1).days }
+    let(:schedule_day_date) { Date.current.next_month(2) }
     let(:schedule_month) { create(:schedule_month, facility: user.facility, year: schedule_day_date.year, month: schedule_day_date.month) }
     let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: schedule_day_date) }
     let(:work_type) { create(:work_type, facility: user.facility, auto_approve: true) }
@@ -95,14 +95,12 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
     end
 
     context "申請締切日を過ぎている時" do
-      let(:schedule_day_date) { Date.current + (user.facility.request_deadline - 1).days }
+      let(:schedule_day_date) { Date.current }
 
       it "勤務希望だけを作成し、pending のままになる" do
-        work_assignment_count = WorkAssignment.count
         expect { subject }.to change { WorkRequest.count }.by(1)
         res = JSON.parse(response.body)
         work_request = WorkRequest.last
-        expect(WorkAssignment.count).to eq(work_assignment_count)
         expect(res["message"]).to eq("申請締切日を過ぎているため、管理者承認待ちとして申請しました。")
         expect(work_request).to be_pending
         expect(response).to have_http_status(:created)

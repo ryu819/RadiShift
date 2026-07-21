@@ -11,7 +11,7 @@ module Api
 
       def show
         render json: current_facility.as_json(
-          only: [:id, :name, :request_deadline, :rules_text]
+          only: [:id, :name, :request_deadline_day, :rules_text]
         ), status: :ok
       end
 
@@ -75,7 +75,7 @@ module Api
       private
 
       def facility_params
-        params.require(:facility).permit(:name, :request_deadline, :rules_text)
+        params.require(:facility).permit(:name, :request_deadline_day, :rules_text)
       end
 
       def current_facility

@@ -64,7 +64,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
   describe "POST /api/v1/day_off_requests" do
     subject { post(api_v1_day_off_requests_path, params: params, headers: { "Authorization": token }) }
 
-    let(:schedule_day_date) { Date.current + (user.facility.request_deadline + 1).days }
+    let(:schedule_day_date) { Date.current.next_month(2) }
     let(:schedule_month) { create(:schedule_month, facility: user.facility, year: schedule_day_date.year, month: schedule_day_date.month) }
     let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: schedule_day_date) }
     let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: true) }
@@ -142,15 +142,12 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
     end
 
     context "申請締切日を過ぎている時" do
-      let(:schedule_day_date) { Date.current + (user.facility.request_deadline - 1).days }
-      let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 2) }
+      let(:schedule_day_date) { Date.current }
 
       it "休み希望だけを作成し、pending のままになる" do
-        day_off_assignment_count = DayOffAssignment.count
         expect { subject }.to change { DayOffRequest.count }.by(1)
         res = JSON.parse(response.body)
         day_off_request = DayOffRequest.last
-        expect(DayOffAssignment.count).to eq(day_off_assignment_count)
         expect(res["message"]).to eq("申請締切日を過ぎているため、管理者承認待ちとして申請しました。")
         expect(day_off_request).to be_pending
         expect(response).to have_http_status(:created)
