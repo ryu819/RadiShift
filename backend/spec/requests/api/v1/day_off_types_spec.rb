@@ -19,7 +19,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
       it "ログインユーザーの施設の有効な休みパターンだけを返す" do
         subject
         res = JSON.parse(response.body)
-        day_off_type_ids = res["day_off_types"].map { |day_off_type| day_off_type["id"] }
+        day_off_type_ids = res.map { |day_off_type| day_off_type["id"] }
         expect(day_off_type_ids).to include(active_day_off_type.id)
         expect(day_off_type_ids).not_to include(inactive_day_off_type.id)
         expect(day_off_type_ids).not_to include(other_facility_day_off_type.id)

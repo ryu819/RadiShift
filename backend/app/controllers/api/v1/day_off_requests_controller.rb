@@ -19,44 +19,40 @@ module Api
                                .includes(:user, :schedule_day, :day_off_type)
                                .order(created_at: :asc)
 
-          render json: {
-            day_off_requests: day_off_requests.as_json(
-              {
-                only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
-                include: {
-                  user: {
-                    only: [:id, :name]
-                  },
-                  schedule_day: {
-                    only: [:id, :date, :is_holiday]
-                  },
-                  day_off_type: {
-                    only: [:id, :name, :color_code]
-                  }
+          render json: day_off_requests.as_json(
+            {
+              only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
+              include: {
+                user: {
+                  only: [:name]
+                },
+                schedule_day: {
+                  only: [:date, :is_holiday]
+                },
+                day_off_type: {
+                  only: [:name, :color_code]
                 }
               }
-            )
-          }, status: :ok
+            }
+          ), status: :ok
         else
           day_off_requests = current_user.day_off_requests
                                .includes(:schedule_day, :day_off_type)
                                .order(created_at: :asc)
 
-          render json: {
-            day_off_requests: day_off_requests.as_json(
-              {
-                only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
-                include: {
-                  schedule_day: {
-                    only: [:id, :date, :is_holiday]
-                  },
-                  day_off_type: {
-                    only: [:id, :name, :color_code]
-                  }
+          render json: day_off_requests.as_json(
+            {
+              only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
+              include: {
+                schedule_day: {
+                  only: [:date, :is_holiday]
+                },
+                day_off_type: {
+                  only: [:name, :color_code]
                 }
               }
-            )
-          }, status: :ok
+            }
+          ), status: :ok
         end
       end
 
