@@ -19,7 +19,9 @@ export async function getFacility() {
 
     if (!res.ok) return null;
 
-    const data: Facility = camelcaseKeys(await res.json());
+    const data: Facility = camelcaseKeys(await res.json(), {
+      deep: true,
+    });
 
     return data;
   } catch {
