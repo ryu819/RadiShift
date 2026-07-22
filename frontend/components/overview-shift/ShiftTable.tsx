@@ -12,13 +12,13 @@ import {
 import { cn } from "@/lib/utils";
 import { Member } from "@/types/member";
 import { ScheduleDay } from "@/types/schedule-day";
-import { WorkAssignments } from "@/types/work-assignments";
-import { WorkTypes } from "@/types/work-types";
+import { WorkAssignment } from "@/types/work-assignment";
+import { WorkType } from "@/types/work-type";
 
 type Props = {
   members: Member[] | null;
-  workTypes: WorkTypes[] | null;
-  workAssignments: WorkAssignments[] | null;
+  workTypes: WorkType[] | null;
+  workAssignments: WorkAssignment[] | null;
   days: ScheduleDay[] | undefined;
   year: number | undefined;
   month: number | undefined;

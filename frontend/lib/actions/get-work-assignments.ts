@@ -2,7 +2,7 @@
 import camelcaseKeys from "camelcase-keys";
 
 import { getJwt } from "@/lib/actions/jwt";
-import { WorkAssignments } from "@/types/work-assignments";
+import { WorkAssignment } from "@/types/work-assignment";
 
 export async function getWorkAssignments(year: number, month: number) {
   const jwt = await getJwt();
@@ -20,7 +20,7 @@ export async function getWorkAssignments(year: number, month: number) {
 
     if (!res.ok) return null;
 
-    const data: WorkAssignments[] = camelcaseKeys(await res.json(), {
+    const data: WorkAssignment[] = camelcaseKeys(await res.json(), {
       deep: true,
     });
 

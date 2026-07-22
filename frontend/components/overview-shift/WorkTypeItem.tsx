@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { createWorkAssignmentForm } from "@/lib/actions/create-work-assignment";
 import { deleteWorkAssignmentForm } from "@/lib/actions/delete-work-assignment";
 import { cn } from "@/lib/utils";
-import { WorkAssignments } from "@/types/work-assignments";
-import { WorkTypes } from "@/types/work-types";
+import { WorkAssignment } from "@/types/work-assignment";
+import { WorkType } from "@/types/work-type";
 
 type WorkTypeItemProps = {
-  workType: WorkTypes;
-  selectedWorkAssignment?: WorkAssignments;
+  workType: WorkType;
+  selectedWorkAssignment?: WorkAssignment;
   scheduleDayId: number;
   userId: number;
 };

@@ -2,7 +2,7 @@
 import camelcaseKeys from "camelcase-keys";
 
 import { getJwt } from "@/lib/actions/jwt";
-import { WorkTypes } from "@/types/work-types";
+import { WorkType } from "@/types/work-type";
 
 export async function getWorkTypes() {
   const jwt = await getJwt();
@@ -17,7 +17,7 @@ export async function getWorkTypes() {
 
     if (!res.ok) return null;
 
-    const data: WorkTypes[] = camelcaseKeys(await res.json());
+    const data: WorkType[] = camelcaseKeys(await res.json());
 
     return data;
   } catch {
