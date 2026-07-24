@@ -13,7 +13,8 @@ export type WorkRequest = {
 
   scheduleDay: {
     date: string;
-    isHoliday: boolean;
+    day: number;
+    weekdayLabel: string;
   };
 
   workType: {

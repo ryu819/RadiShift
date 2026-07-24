@@ -13,7 +13,8 @@ export type DayOffRequest = {
 
   scheduleDay: {
     date: string;
-    isHoliday: boolean;
+    day: number;
+    weekdayLabel: string;
   };
 
   dayOffType: {
