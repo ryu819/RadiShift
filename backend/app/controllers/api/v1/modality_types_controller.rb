@@ -12,11 +12,9 @@ module Api
       def index
         modality_types = current_user.facility.modality_types.active.order(:id)
 
-        render json: {
-          modality_types: modality_types.as_json(
-            only: [:id, :name, :color_code]
-          )
-        }, status: :ok
+        render json: modality_types.as_json(
+          only: [:id, :name, :color_code]
+        ), status: :ok
       end
 
       def create

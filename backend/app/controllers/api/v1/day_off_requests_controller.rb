@@ -27,7 +27,11 @@ module Api
                   only: [:name]
                 },
                 schedule_day: {
-                  only: [:date, :is_holiday]
+                  only: [:date],
+                  methods: [
+                    :day,
+                    :weekday_label
+                  ]
                 },
                 day_off_type: {
                   only: [:name, :color_code]
@@ -45,7 +49,11 @@ module Api
               only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
               include: {
                 schedule_day: {
-                  only: [:date, :is_holiday]
+                  only: [:date],
+                  methods: [
+                    :day,
+                    :weekday_label
+                  ]
                 },
                 day_off_type: {
                   only: [:name, :color_code]

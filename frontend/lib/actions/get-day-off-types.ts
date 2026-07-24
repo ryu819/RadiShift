@@ -1,5 +1,3 @@
-// lib/actions/get-day-off-types.ts
-
 "use server";
 
 import camelcaseKeys from "camelcase-keys";
