@@ -25,7 +25,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       it "同じ施設の休み希望を全て返す" do
         subject
         res = JSON.parse(response.body)
-        day_off_request_ids = res["day_off_requests"].map { |day_off_request| day_off_request["id"] }
+        day_off_request_ids = res.map { |day_off_request| day_off_request["id"] }
         expect(day_off_request_ids).to include(own_day_off_request.id)
         expect(day_off_request_ids).to include(other_user_day_off_request.id)
         expect(day_off_request_ids).not_to include(other_facility_day_off_request.id)
@@ -42,7 +42,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       it "自分の休み希望だけを返す" do
         subject
         res = JSON.parse(response.body)
-        day_off_request_ids = res["day_off_requests"].map { |day_off_request| day_off_request["id"] }
+        day_off_request_ids = res.map { |day_off_request| day_off_request["id"] }
         expect(day_off_request_ids).to include(own_day_off_request.id)
         expect(day_off_request_ids).not_to include(other_user_day_off_request.id)
         expect(response).to have_http_status(:ok)

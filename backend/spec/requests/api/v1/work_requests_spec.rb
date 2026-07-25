@@ -23,7 +23,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
       it "同じ施設の勤務希望を全て返す" do
         subject
         res = JSON.parse(response.body)
-        work_request_ids = res["work_requests"].map { |work_request| work_request["id"] }
+        work_request_ids = res.map { |work_request| work_request["id"] }
         expect(work_request_ids).to include(own_work_request.id)
         expect(work_request_ids).to include(other_user_work_request.id)
         expect(work_request_ids).not_to include(other_facility_work_request.id)
@@ -38,7 +38,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
       it "自分の勤務希望だけを返す" do
         subject
         res = JSON.parse(response.body)
-        work_request_ids = res["work_requests"].map { |work_request| work_request["id"] }
+        work_request_ids = res.map { |work_request| work_request["id"] }
         expect(work_request_ids).to include(own_work_request.id)
         expect(work_request_ids).not_to include(other_user_work_request.id)
         expect(response).to have_http_status(:ok)

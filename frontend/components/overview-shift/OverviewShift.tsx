@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Member } from "@/types/member";
 import { ScheduleMonth } from "@/types/schedule-month";
 import { ScheduleMonths } from "@/types/schedule-months";
-import { WorkAssignments } from "@/types/work-assignments";
-import { WorkTypes } from "@/types/work-types";
+import { WorkAssignment } from "@/types/work-assignment";
+import { WorkType } from "@/types/work-type";
 
 type Props = {
   members: Member[] | null;
-  workTypes: WorkTypes[] | null;
-  workAssignments: WorkAssignments[] | null;
+  workTypes: WorkType[] | null;
+  workAssignments: WorkAssignment[] | null;
   scheduleMonths: ScheduleMonths[];
   scheduleMonth: ScheduleMonth | null;
   selectedScheduleMonthId: number;

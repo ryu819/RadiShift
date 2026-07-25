@@ -17,7 +17,7 @@ RSpec.describe "Api::V1::ModalityTypes", type: :request do
       it "ログインユーザーの施設の有効なモダリティパターンだけを返す" do
         subject
         res = JSON.parse(response.body)
-        modality_type_ids = res["modality_types"].map { |modality_type| modality_type["id"] }
+        modality_type_ids = res.map { |modality_type| modality_type["id"] }
         expect(modality_type_ids).to include(active_modality_type.id)
         expect(modality_type_ids).not_to include(inactive_modality_type.id)
         expect(modality_type_ids).not_to include(other_facility_modality_type.id)

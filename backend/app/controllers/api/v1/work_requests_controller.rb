@@ -19,40 +19,44 @@ module Api
                             .includes(:user, :schedule_day, :work_type)
                             .order(created_at: :asc)
 
-          render json: {
-            work_requests: work_requests.as_json(
-              only: [:id, :user_id, :schedule_day_id, :work_type_id, :request_status, :is_return, :created_at],
-              include: {
-                user: {
-                  only: [:id, :name]
-                },
-                schedule_day: {
-                  only: [:id, :date, :is_holiday]
-                },
-                work_type: {
-                  only: [:id, :name, :color_code]
-                }
+          render json: work_requests.as_json(
+            only: [:id, :user_id, :schedule_day_id, :work_type_id, :request_status, :is_return, :created_at],
+            include: {
+              user: {
+                only: [:name]
+              },
+              schedule_day: {
+                only: [:date],
+                methods: [
+                  :day,
+                  :weekday_label
+                ]
+              },
+              work_type: {
+                only: [:name, :color_code]
               }
-            )
-          }, status: :ok
+            }
+          ), status: :ok
         else
           work_requests = current_user.work_requests
                             .includes(:schedule_day, :work_type)
                             .order(created_at: :asc)
 
-          render json: {
-            work_requests: work_requests.as_json(
-              only: [:id, :user_id, :schedule_day_id, :work_type_id, :request_status, :is_return, :created_at],
-              include: {
-                schedule_day: {
-                  only: [:id, :date, :is_holiday]
-                },
-                work_type: {
-                  only: [:id, :name, :color_code]
-                }
+          render json: work_requests.as_json(
+            only: [:id, :user_id, :schedule_day_id, :work_type_id, :request_status, :is_return, :created_at],
+            include: {
+              schedule_day: {
+                only: [:date],
+                methods: [
+                  :day,
+                  :weekday_label
+                ]
+              },
+              work_type: {
+                only: [:name, :color_code]
               }
-            )
-          }, status: :ok
+            }
+          ), status: :ok
         end
       end
 

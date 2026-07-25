@@ -11,7 +11,8 @@ module Api
 
       def show
         render json: current_facility.as_json(
-          only: [:id, :name, :request_deadline_day, :rules_text]
+          only: [:id, :name, :request_deadline_day, :rules_text],
+          methods: [:next_request_deadline]
         ), status: :ok
       end
 

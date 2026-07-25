@@ -78,6 +78,38 @@ RSpec.describe Facility, type: :model do
     end
   end
 
+  describe "#next_request_deadline" do
+    context "今月の締切日前の時" do
+      it "翌月シフトの締切情報を返す" do
+        date = Date.new(2026, 7, 10)
+        res = facility.next_request_deadline(date)
+        expect(res).to eq(
+          {
+            year: 2026,
+            month: 8,
+            deadline_date: Date.new(2026, 7, 15),
+            days_remaining: 5
+          }
+        )
+      end
+    end
+
+    context "今月の締切日を過ぎている時" do
+      it "翌々月シフトの締切情報を返す" do
+        date = Date.new(2026, 7, 20)
+        res = facility.next_request_deadline(date)
+        expect(res).to eq(
+          {
+            year: 2026,
+            month: 9,
+            deadline_date: Date.new(2026, 8, 15),
+            days_remaining: 26
+          }
+        )
+      end
+    end
+  end
+
   context "施設を削除したとき" do
     it "ユーザーのfacility_idがnilになる" do
       facility.destroy!

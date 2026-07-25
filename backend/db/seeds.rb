@@ -3,9 +3,11 @@
 ActiveRecord::Base.transaction do
   facility = Facility.create!(
     name: "デモ病院",
-    request_deadline: 7,
+    request_deadline_day: 15,
     rules_text: "デモ用の施設です。"
   )
+
+  users = []
 
   admin_user = User.create!(
     name: "管理者",
@@ -17,8 +19,10 @@ ActiveRecord::Base.transaction do
     confirmed_at: Time.current
   )
 
+  users << admin_user
+
   29.times do |i|
-    User.create!(
+    user = User.create!(
       name: "ユーザー#{i + 1}",
       email: "demo#{i + 1}@example.com",
       password: "password",
@@ -26,6 +30,8 @@ ActiveRecord::Base.transaction do
       facility: facility,
       confirmed_at: Time.current
     )
+
+    users << user
   end
 
   day_work = WorkType.create!(
@@ -34,23 +40,84 @@ ActiveRecord::Base.transaction do
     color_code: "#f59e0b"
   )
 
-  WorkType.create!(
+  night_work = WorkType.create!(
     facility: facility,
     name: "夜勤",
     color_code: "#6366f1"
   )
 
-  WorkType.create!(
+  overtime_work = WorkType.create!(
     facility: facility,
-    name: "残業",
+    name: "拘束",
     color_code: "#ff40f1"
   )
 
-  DayOffType.create!(
+  day_off = DayOffType.create!(
     facility: facility,
     name: "休み",
     color_code: "#94a3b8",
     day_off_unit: 1
+  )
+
+  DayOffType.create!(
+    facility: facility,
+    name: "午後休み",
+    color_code: "#94a3b8",
+    day_off_unit: 0.5
+  )
+  DayOffType.create!(
+    facility: facility,
+    name: "残業✕",
+    color_code: "#94a3b8",
+    day_off_unit: 0
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "MRI",
+    color_code: "#6366F1"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "CT",
+    color_code: "#0EA5E9"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "アンギオ",
+    color_code: "#EF4444"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "一般撮影",
+    color_code: "#F59E0B"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "透視",
+    color_code: "#14B8A6"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "マンモグラフィ",
+    color_code: "#EC4899"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "核医学",
+    color_code: "#8B5CF6"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "放射線治療",
+    color_code: "#22C55E"
   )
 
   3.times do |i|
@@ -61,10 +128,15 @@ ActiveRecord::Base.transaction do
       monthly_days_off: i + 8
     )
 
-    start_date = Date.new(schedule_month.year, schedule_month.month, 1)
+    start_date = Date.new(
+      schedule_month.year,
+      schedule_month.month,
+      1
+    )
+
     end_date = start_date.end_of_month
 
-    (start_date..end_date).each do |date|
+    schedule_days = (start_date..end_date).map do |date|
       ScheduleDay.create!(
         schedule_month: schedule_month,
         date: date,
@@ -72,15 +144,93 @@ ActiveRecord::Base.transaction do
       )
     end
 
-    first_schedule_day = ScheduleDay.find_by!(
-      schedule_month: schedule_month,
-      date: start_date
-    )
-
+    # 管理者の勤務割当
     WorkAssignment.create!(
-      schedule_day: first_schedule_day,
+      schedule_day: schedule_days[0],
       user: admin_user,
       work_type: day_work
+    )
+
+    # -------------------------
+    # 勤務希望
+    # -------------------------
+
+    # 承認待ち
+    WorkRequest.create!(
+      facility: facility,
+      user: users[1],
+      schedule_day: schedule_days[1],
+      work_type: day_work,
+      request_status: :pending,
+      is_return: false
+    )
+
+    # 承認済み
+    WorkRequest.create!(
+      facility: facility,
+      user: users[2],
+      schedule_day: schedule_days[2],
+      work_type: night_work,
+      request_status: :approved,
+      is_return: false
+    )
+
+    # 承認済みなので勤務割当も作る
+    WorkAssignment.create!(
+      schedule_day: schedule_days[2],
+      user: users[2],
+      work_type: night_work
+    )
+
+    # 否認済み
+    WorkRequest.create!(
+      facility: facility,
+      user: users[3],
+      schedule_day: schedule_days[3],
+      work_type: overtime_work,
+      request_status: :rejected,
+      is_return: false
+    )
+
+    # -------------------------
+    # 休み希望
+    # -------------------------
+
+    # 承認待ち
+    DayOffRequest.create!(
+      facility: facility,
+      user: users[4],
+      schedule_day: schedule_days[4],
+      day_off_type: day_off,
+      request_status: :pending,
+      is_return: false
+    )
+
+    # 承認済み
+    DayOffRequest.create!(
+      facility: facility,
+      user: users[5],
+      schedule_day: schedule_days[5],
+      day_off_type: day_off,
+      request_status: :approved,
+      is_return: false
+    )
+
+    # 承認済みなので休み割当も作る
+    DayOffAssignment.create!(
+      schedule_day: schedule_days[5],
+      user: users[5],
+      day_off_type: day_off
+    )
+
+    # 否認済み
+    DayOffRequest.create!(
+      facility: facility,
+      user: users[6],
+      schedule_day: schedule_days[6],
+      day_off_type: day_off,
+      request_status: :rejected,
+      is_return: false
     )
   end
 end
