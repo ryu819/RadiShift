@@ -48,7 +48,7 @@ ActiveRecord::Base.transaction do
 
   overtime_work = WorkType.create!(
     facility: facility,
-    name: "残業",
+    name: "拘束",
     color_code: "#ff40f1"
   )
 
@@ -57,6 +57,19 @@ ActiveRecord::Base.transaction do
     name: "休み",
     color_code: "#94a3b8",
     day_off_unit: 1
+  )
+
+  DayOffType.create!(
+    facility: facility,
+    name: "午後休み",
+    color_code: "#94a3b8",
+    day_off_unit: 0.5
+  )
+  DayOffType.create!(
+    facility: facility,
+    name: "残業✕",
+    color_code: "#94a3b8",
+    day_off_unit: 0
   )
 
   ModalityType.create!(
@@ -81,6 +94,30 @@ ActiveRecord::Base.transaction do
     facility: facility,
     name: "一般撮影",
     color_code: "#F59E0B"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "透視",
+    color_code: "#14B8A6"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "マンモグラフィ",
+    color_code: "#EC4899"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "核医学",
+    color_code: "#8B5CF6"
+  )
+
+  ModalityType.create!(
+    facility: facility,
+    name: "放射線治療",
+    color_code: "#22C55E"
   )
 
   3.times do |i|
