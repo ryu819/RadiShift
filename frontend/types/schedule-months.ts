@@ -3,4 +3,5 @@ export type ScheduleMonths = {
   year: number;
   month: number;
   monthlyDaysOff: number;
+  status: string;
 };

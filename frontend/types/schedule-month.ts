@@ -5,5 +5,6 @@ export type ScheduleMonth = {
   year: number;
   month: number;
   monthlyDaysOff: number;
+  status: string;
   scheduleDays: ScheduleDay[];
 };

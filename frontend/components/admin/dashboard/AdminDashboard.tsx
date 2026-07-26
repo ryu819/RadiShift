@@ -284,7 +284,7 @@ export async function AdminDashboard() {
                   </CardHeader>
 
                   <CardContent>
-                    <div className="grid gap-2 grid-cols-2 sm:grid-cols-4 ">
+                    <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 ">
                       {scheduleMonths?.map((scheduleMonth) => (
                         <Link
                           key={scheduleMonth.id}
@@ -295,12 +295,22 @@ export async function AdminDashboard() {
                             {scheduleMonth.year}年 {scheduleMonth.month}月
                           </div>
 
-                          <Badge
-                            variant="secondary"
-                            className="bg-emerald-100 text-emerald-700 "
-                          >
-                            {/* {scheduleMonth.status} */}test
-                          </Badge>
+                          {scheduleMonth.status === "accepting_requests" && (
+                            <Badge
+                              variant="secondary"
+                              className="bg-emerald-100 text-emerald-700 "
+                            >
+                              申請受付中
+                            </Badge>
+                          )}
+                          {scheduleMonth.status === "published" && (
+                            <Badge
+                              variant="secondary"
+                              className="bg-blue-100 text-blue-700"
+                            >
+                              シフト公開済み
+                            </Badge>
+                          )}
                         </Link>
                       ))}
                     </div>
@@ -432,7 +442,7 @@ export async function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-2 border-b pb-2 sm:flex-row sm:items-center sm:gap-6 ">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6 ">
                       <h3 className="text-sm font-semibold shrink-0">
                         モダリティ
                       </h3>
