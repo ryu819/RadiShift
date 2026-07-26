@@ -14,7 +14,7 @@ module Api
                             .order(year: :asc, month: :asc)
 
         render json: schedule_months.as_json(
-          only: [:id, :year, :month, :monthly_days_off]
+          only: [:id, :year, :month, :monthly_days_off, :status]
         ), status: :ok
       end
 
@@ -23,7 +23,7 @@ module Api
                            .includes(schedule_days: { day_off_slots: :day_off_type })
                            .find(params[:id])
         render json: schedule_month.as_json(
-          only: [:id, :year, :month, :monthly_days_off],
+          only: [:id, :year, :month, :monthly_days_off, :status],
           include: {
             schedule_days: {
               only: [:id, :date, :is_holiday],
@@ -92,7 +92,7 @@ module Api
       end
 
       def schedule_month_update_params
-        params.require(:schedule_month).permit(:monthly_days_off)
+        params.require(:schedule_month).permit(:monthly_days_off, :status)
       end
 
       def create_schedule_days_with_day_off_slots!(schedule_month)
