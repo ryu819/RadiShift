@@ -102,4 +102,15 @@ RSpec.describe ScheduleMonth, type: :model do
       expect(schedule_month).to be_invalid
     end
   end
+
+  describe "status" do
+    it "公開状態の種類を持つ" do
+      expect(ScheduleMonth.statuses).to eq(
+        {
+          "accepting_requests" => 0,
+          "published" => 1
+        }
+      )
+    end
+  end
 end

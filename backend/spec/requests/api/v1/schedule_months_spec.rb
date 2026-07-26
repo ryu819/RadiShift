@@ -199,6 +199,16 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      context "statusをシフト公開済みに変更する時" do
+        let(:params) { { schedule_month: { status: "published" } } }
+
+        it "シフト公開済みに更新される" do
+          subject
+          expect(schedule_month.reload).to be_published
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
       context "バリデーションエラーの時" do
         let(:params) { { schedule_month: { monthly_days_off: "" } } }
 
