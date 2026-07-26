@@ -6,5 +6,6 @@ FactoryBot.define do
     year { 2026 }
     month { 1 }
     monthly_days_off { 8.0 }
+    status { :accepting_requests }
   end
 end
