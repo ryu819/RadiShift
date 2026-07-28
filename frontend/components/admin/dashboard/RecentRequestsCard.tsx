@@ -1,4 +1,5 @@
 import { FileText } from "lucide-react";
+import { Suspense } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +42,26 @@ function formatCreatedAt(dateString: string) {
   }).format(new Date(dateString));
 }
 
-export async function RecentRequestsCard() {
+export function RecentRequestsCard() {
+  return (
+    <Card className="gap-4 py-5 shadow-none">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <FileText className="size-5" />
+          未処理の申請
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <Suspense fallback={<RequestListSkeleton />}>
+          <RecentRequestsList />
+        </Suspense>
+      </CardContent>
+    </Card>
+  );
+}
+
+async function RecentRequestsList() {
   const [workRequests, dayOffRequests] = await Promise.all([
     getWorkRequests(),
     getDayOffRequests(),
@@ -85,64 +105,76 @@ export async function RecentRequestsCard() {
   const remainingRequests =
     recentRequests.length - visibleRecentRequests.length;
   return (
-    <Card className="gap-4 py-5 shadow-none">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <FileText className="size-5" />
-          未処理の申請
-        </CardTitle>
-      </CardHeader>
+    <>
+      {visibleRecentRequests.length > 0 ? (
+        <div>
+          {visibleRecentRequests.map((request, index) => (
+            <div key={index} className="mb-1">
+              <div className="flex items-center justify-between py-3">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">{request.userName}</p>
 
-      <CardContent>
-        {visibleRecentRequests.length > 0 ? (
-          <div>
-            {visibleRecentRequests.map((request, index) => (
-              <div key={index} className="mb-1">
-                <div className="flex items-center justify-between py-3">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">{request.userName}</p>
-
-                    <p className="text-xs text-muted-foreground">
-                      申請日時：{formatCreatedAt(request.createdAt)}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center">
-                    <p className="text-xs">
-                      {formatRequestedDate(
-                        request.requestedDate,
-                        request.requestWeekdayLabel,
-                      )}
-                    </p>
-                    <Badge
-                      className="font-semibold"
-                      style={getBadgeStyle(request.colorCode)}
-                    >
-                      {request.typeName}
-                    </Badge>
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    申請日時：{formatCreatedAt(request.createdAt)}
+                  </p>
                 </div>
 
-                {index < visibleRecentRequests.length - 1 && <Separator />}
+                <div className="flex items-center">
+                  <p className="text-xs">
+                    {formatRequestedDate(
+                      request.requestedDate,
+                      request.requestWeekdayLabel,
+                    )}
+                  </p>
+                  <Badge
+                    className="font-semibold"
+                    style={getBadgeStyle(request.colorCode)}
+                  >
+                    {request.typeName}
+                  </Badge>
+                </div>
               </div>
-            ))}
 
-            {remainingRequests > 0 && (
-              <>
-                <Separator />
+              {index < visibleRecentRequests.length - 1 && <Separator />}
+            </div>
+          ))}
 
-                <div className="flex items-center justify-center py-2 pt-4">
-                  ほか{remainingRequests}件
-                </div>
-              </>
-            )}
+          {remainingRequests > 0 && (
+            <>
+              <Separator />
+
+              <div className="flex items-center justify-center py-2 pt-4">
+                ほか{remainingRequests}件
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          未処理の申請はありません
+        </p>
+      )}
+    </>
+  );
+}
+
+function RequestListSkeleton() {
+  return (
+    <div className="space-y-0">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div key={index}>
+          <div className="flex items-center justify-between py-3">
+            <div className="space-y-2">
+              <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
+              <div className="h-3 w-32 animate-pulse rounded bg-slate-200" />
+            </div>
+
+            <div className="h-6 w-24 animate-pulse rounded bg-slate-200" />
           </div>
-        ) : (
-          <p className="py-8 text-center text-sm text-muted-foreground">
-            未処理の申請はありません
-          </p>
-        )}
-      </CardContent>
-    </Card>
+
+          {index < 3 && <Separator />}
+        </div>
+      ))}
+    </div>
   );
 }

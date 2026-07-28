@@ -1,5 +1,4 @@
 import { LayoutDashboard } from "lucide-react";
-import { Suspense } from "react";
 
 import { DeadlineSummaryCard } from "@/components/admin/dashboard/DeadlineSummaryCard";
 import { FacilityManagementCard } from "@/components/admin/dashboard/FacilityManagementCard";
@@ -53,40 +52,26 @@ export function AdminDashboard() {
 
           <TabsContent value="overview" className=" space-y-5">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Suspense>
-                <PublishedScheduleMonthSummaryCard />
-              </Suspense>
+              <PublishedScheduleMonthSummaryCard />
 
-              <Suspense>
-                <PendingRequestSummaryCard />
-              </Suspense>
+              <PendingRequestSummaryCard />
 
-              <Suspense>
-                <MemberCountSummaryCard />
-              </Suspense>
+              <MemberCountSummaryCard />
 
-              <Suspense>
-                <DeadlineSummaryCard />
-              </Suspense>
+              <DeadlineSummaryCard />
             </div>
 
             <div className="grid gap-5 lg:grid-cols-2">
               <div className="space-y-5">
-                <Suspense>
-                  <ScheduleMonthsCard />
-                </Suspense>
+                <ScheduleMonthsCard />
 
-                <Suspense>
-                  <RecentRequestsCard />
-                </Suspense>
+                <RecentRequestsCard />
               </div>
 
               <div className="space-y-5">
                 <FacilityManagementCard />
 
-                <Suspense>
-                  <TypeSettingsCard />
-                </Suspense>
+                <TypeSettingsCard />
               </div>
             </div>
           </TabsContent>
