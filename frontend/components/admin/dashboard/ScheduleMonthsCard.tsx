@@ -2,6 +2,7 @@ import { CalendarCheck2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { CreateScheduleMonthButton } from "@/components/admin/dashboard/CreateScheduleMonthButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,9 +17,15 @@ export function ScheduleMonthsCard() {
           シフト月
         </CardTitle>
 
-        <Button variant="outline" size="sm">
-          シフト月を追加
-        </Button>
+        <Suspense
+          fallback={
+            <Button type="button" variant="outline" size="sm" disabled>
+              シフト月を作成
+            </Button>
+          }
+        >
+          <CreateScheduleMonthButton />
+        </Suspense>
       </CardHeader>
 
       <CardContent>
