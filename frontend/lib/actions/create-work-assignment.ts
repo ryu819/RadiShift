@@ -1,5 +1,6 @@
 "use server";
 
+import camelcaseKeys from "camelcase-keys";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
@@ -10,18 +11,18 @@ import { setFlashToast } from "@/lib/set-flash-toast";
 
 export type ActionState = {
   errors?: {
-    schedule_day_id?: string[];
-    user_id?: string[];
-    work_type_id?: string[];
+    scheduleDayId?: string[];
+    userId?: string[];
+    workTypeId?: string[];
   };
 };
 
 type CreateWorkAssignmentResponse = {
   message: string;
   errors: {
-    schedule_day_id?: string[];
-    user_id?: string[];
-    work_type_id?: string[];
+    scheduleDayId?: string[];
+    userId?: string[];
+    workTypeId?: string[];
   };
 };
 
@@ -58,7 +59,9 @@ export async function createWorkAssignmentForm(
       return {};
     }
 
-    const data: CreateWorkAssignmentResponse = await res.json();
+    const data: CreateWorkAssignmentResponse = camelcaseKeys(await res.json(), {
+      deep: true,
+    });
 
     if (isClientError(res.status)) {
       return {
