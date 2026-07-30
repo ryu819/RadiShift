@@ -2,7 +2,7 @@ import { CalendarCheck2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { CreateScheduleMonthButton } from "@/components/admin/dashboard/CreateScheduleMonthButton";
+import { CreateScheduleMonthButton } from "@/components/admin/dashboard/schedule-months/CreateScheduleMonthButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
