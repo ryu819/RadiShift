@@ -24,7 +24,7 @@ type Props = {
 
 const DEFAULT_MONTHLY_DAYS_OFF = 9;
 
-export function CreateScheduleMonthDialog({ year, month }: Props) {
+export function CreateScheduleMonthDialogForm({ year, month }: Props) {
   const [_serverState, formAction, isPending] = useActionState(
     createScheduleMonthForm,
     {},
@@ -55,14 +55,16 @@ export function CreateScheduleMonthDialog({ year, month }: Props) {
             <input type="hidden" name="month" value={month} />
 
             <Field className="gap-2">
-              <Label htmlFor="monthly-days-off">公休数</Label>
+              <Label htmlFor="monthlyDaysOff">公休数</Label>
 
               <Input
-                id="monthly-days-off"
+                id="monthlyDaysOff"
+                name="monthlyDaysOff"
                 type="number"
                 min={0}
                 step={0.5}
                 defaultValue={DEFAULT_MONTHLY_DAYS_OFF}
+                required
               />
 
               <p className="mt-1 text-xs text-muted-foreground">
