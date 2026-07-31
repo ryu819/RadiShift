@@ -1,9 +1,8 @@
 import { CalendarCheck2 } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 
-import { CreateScheduleMonthButton } from "@/components/admin/dashboard/CreateScheduleMonthButton";
-import { Badge } from "@/components/ui/badge";
+import { CreateScheduleMonthButton } from "@/components/admin/dashboard/schedule-months/CreateScheduleMonthButton";
+import { ScheduleMonthSettingsDialogForm } from "@/components/admin/dashboard/schedule-months/ScheduleMonthSettingsDialogForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
@@ -42,29 +41,10 @@ async function ScheduleMonthsList() {
   return (
     <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 ">
       {scheduleMonths?.map((scheduleMonth) => (
-        <Link
+        <ScheduleMonthSettingsDialogForm
           key={scheduleMonth.id}
-          href={`/overview-shift?scheduleMonthId=${scheduleMonth.id}`}
-          className="flex flex-col items-center justify-center cursor-pointer gap-2 rounded-md border px-3 py-4 text-sm transition-colors hover:border-primary/40 hover:bg-primary/4"
-        >
-          <div className="font-semibold">
-            {scheduleMonth.year}年 {scheduleMonth.month}月
-          </div>
-
-          {scheduleMonth.status === "accepting_requests" && (
-            <Badge
-              variant="secondary"
-              className="bg-emerald-100 text-emerald-700 "
-            >
-              申請受付中
-            </Badge>
-          )}
-          {scheduleMonth.status === "published" && (
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-              シフト公開済み
-            </Badge>
-          )}
-        </Link>
+          scheduleMonth={scheduleMonth}
+        />
       ))}
     </div>
   );

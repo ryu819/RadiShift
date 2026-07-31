@@ -4,7 +4,7 @@ import { MemberCountSummaryCard } from "@/components/admin/dashboard/MemberCount
 import { PendingRequestSummaryCard } from "@/components/admin/dashboard/PendingRequestSummaryCard";
 import { PublishedScheduleMonthSummaryCard } from "@/components/admin/dashboard/PublishedScheduleMonthSummaryCard";
 import { RecentRequestsCard } from "@/components/admin/dashboard/RecentRequestsCard";
-import { ScheduleMonthsCard } from "@/components/admin/dashboard/ScheduleMonthsCard";
+import { ScheduleMonthsCard } from "@/components/admin/dashboard/schedule-months/ScheduleMonthsCard";
 import { TypeSettingsCard } from "@/components/admin/dashboard/TypeSettingsCard";
 
 export function Overview() {
