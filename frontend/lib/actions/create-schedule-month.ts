@@ -18,7 +18,7 @@ type ActionState = {
 
 type CreateScheduleMonthResponse = {
   message: string;
-  errors: {
+  errors?: {
     year?: string[];
     month?: string[];
     monthlyDaysOff?: string[];
