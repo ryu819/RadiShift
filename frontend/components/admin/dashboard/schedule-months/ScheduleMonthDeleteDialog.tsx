@@ -61,7 +61,7 @@ export function ScheduleMonthDeleteDialog({
             className="mt-1"
           />
           <label htmlFor="account-delete-agreement" className="text-sm">
-            内容を確認し、アカウント削除に同意します
+            内容を確認し、シフト月を削除します
           </label>
         </div>
 

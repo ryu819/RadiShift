@@ -47,12 +47,17 @@ export function CreateScheduleMonthDialogForm({ year, month }: Props) {
           </DialogHeader>
 
           <FieldGroup className="mt-4 gap-3">
-            <p className="text-xl font-medium text-center">
-              {year}年 {month}月
-            </p>
+            <Field className="gap-2">
+              <Label htmlFor="yearAndMonth">シフト月</Label>
 
-            <input type="hidden" name="year" value={year} />
-            <input type="hidden" name="month" value={month} />
+              <Input
+                id="yearAndMonth"
+                name="yearAndMonth"
+                type="month"
+                defaultValue={`${year}-${String(month).padStart(2, "0")}`}
+                required
+              />
+            </Field>
 
             <Field className="gap-2">
               <Label htmlFor="monthlyDaysOff">公休数</Label>

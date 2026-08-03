@@ -29,8 +29,10 @@ export async function createScheduleMonthForm(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const year = Number(formData.get("year"));
-  const month = Number(formData.get("month"));
+  const yearAndMonth = formData.get("yearAndMonth") as string;
+  const [yearText, monthText] = yearAndMonth.split("-");
+  const year = Number(yearText);
+  const month = Number(monthText);
   const monthlyDaysOff = Number(formData.get("monthlyDaysOff"));
 
   const jwt = await getJwt();
