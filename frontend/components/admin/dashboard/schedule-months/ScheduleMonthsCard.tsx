@@ -38,9 +38,27 @@ export function ScheduleMonthsCard() {
 
 async function ScheduleMonthsList() {
   const scheduleMonths = await getScheduleMonths();
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  const visibleScheduleMonths = scheduleMonths?.filter(
+    (scheduleMonth) =>
+      scheduleMonth.year > currentYear ||
+      (scheduleMonth.year === currentYear &&
+        scheduleMonth.month >= currentMonth),
+  );
+
+  if (!visibleScheduleMonths?.length) {
+    return (
+      <p className="py-6 text-center text-sm text-muted-foreground">
+        現在表示できるシフト月はありません
+      </p>
+    );
+  }
   return (
     <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 ">
-      {scheduleMonths?.map((scheduleMonth) => (
+      {visibleScheduleMonths.map((scheduleMonth) => (
         <ScheduleMonthSettingsDialogForm
           key={scheduleMonth.id}
           scheduleMonth={scheduleMonth}
