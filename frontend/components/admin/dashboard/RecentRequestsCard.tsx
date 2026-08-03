@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getDayOffRequests } from "@/lib/actions/get-day-off-requests";
 import { getWorkRequests } from "@/lib/actions/get-work-requests";
+import { badgeStyle } from "@/utils/badge-style";
 
 type RecentRequestItem = {
   key: string;
@@ -15,14 +16,6 @@ type RecentRequestItem = {
   typeName: string;
   colorCode: string;
   createdAt: string;
-};
-
-const getBadgeStyle = (colorCode: string) => {
-  return {
-    borderColor: `${colorCode}55`,
-    backgroundColor: `${colorCode}0D`,
-    color: colorCode,
-  };
 };
 
 function formatRequestedDate(dateString: string, weekdayLabel: string) {
@@ -128,7 +121,7 @@ async function RecentRequestsList() {
                   </p>
                   <Badge
                     className="font-semibold"
-                    style={getBadgeStyle(request.colorCode)}
+                    style={badgeStyle(request.colorCode)}
                   >
                     {request.typeName}
                   </Badge>

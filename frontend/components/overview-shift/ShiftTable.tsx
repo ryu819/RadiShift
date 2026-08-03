@@ -14,6 +14,7 @@ import { Member } from "@/types/member";
 import { ScheduleDay } from "@/types/schedule-day";
 import { WorkAssignment } from "@/types/work-assignment";
 import { WorkType } from "@/types/work-type";
+import { badgeStyle } from "@/utils/badge-style";
 
 type Props = {
   members: Member[] | null;
@@ -26,14 +27,6 @@ type Props = {
 
 const getCellKey = (memberId: number, date: string) => {
   return `${memberId}-${date}`;
-};
-
-const getBadgeStyle = (colorCode: string) => {
-  return {
-    borderColor: `${colorCode}55`,
-    backgroundColor: `${colorCode}0D`,
-    color: colorCode,
-  };
 };
 
 export function ShiftTable({
@@ -133,7 +126,7 @@ export function ShiftTable({
                                 className={
                                   "h-[14px]   rounded px-1 py-0 text-[10px] font-semibold leading-none  md:rounded-md md:px-1.5 md:py-0.5 "
                                 }
-                                style={getBadgeStyle(
+                                style={badgeStyle(
                                   workAssignment.workType.colorCode,
                                 )}
                               >
