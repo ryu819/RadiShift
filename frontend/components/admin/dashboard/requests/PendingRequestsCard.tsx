@@ -1,41 +1,26 @@
 import { FileText } from "lucide-react";
 import { Suspense } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { RequestReviewDialogForm } from "@/components/admin/dashboard/requests/RequestReviewDialogForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getDayOffRequests } from "@/lib/actions/get-day-off-requests";
 import { getWorkRequests } from "@/lib/actions/get-work-requests";
-import { badgeStyle } from "@/utils/badge-style";
 
-type RecentRequestItem = {
+export type PendingRequestItem = {
   key: string;
+  requestId: number;
+  requestKind: "work" | "dayOff";
   userName: string;
   requestedDate: string;
   requestWeekdayLabel: string;
   typeName: string;
   colorCode: string;
   createdAt: string;
+  isReturn: boolean;
 };
 
-function formatRequestedDate(dateString: string, weekdayLabel: string) {
-  const [_year, month, day] = dateString.split("-").map(Number);
-
-  return `${month}/${day}（${weekdayLabel}）`;
-}
-
-function formatCreatedAt(dateString: string) {
-  return new Intl.DateTimeFormat("ja-JP", {
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "Asia/Tokyo",
-  }).format(new Date(dateString));
-}
-
-export function RecentRequestsCard() {
+export function PendingRequestsCard() {
   return (
     <Card className="gap-4 py-5 shadow-none">
       <CardHeader>
@@ -47,14 +32,14 @@ export function RecentRequestsCard() {
 
       <CardContent>
         <Suspense fallback={<RequestListSkeleton />}>
-          <RecentRequestsList />
+          <PendingRequestsList />
         </Suspense>
       </CardContent>
     </Card>
   );
 }
 
-async function RecentRequestsList() {
+async function PendingRequestsList() {
   const [workRequests, dayOffRequests] = await Promise.all([
     getWorkRequests(),
     getDayOffRequests(),
@@ -69,66 +54,49 @@ async function RecentRequestsList() {
       (dayOffRequest) => dayOffRequest.requestStatus === "pending",
     ) ?? [];
 
-  const recentRequests: RecentRequestItem[] = [
+  const PendingRequests: PendingRequestItem[] = [
     ...pendingDayOffRequests.map((request) => ({
       key: `day-off-${request.id}`,
+      requestId: request.id,
+      requestKind: "dayOff" as const,
       userName: request.user?.name ?? "名前未設定",
       requestedDate: request.scheduleDay.date,
       requestWeekdayLabel: request.scheduleDay.weekdayLabel,
       typeName: request.dayOffType.name,
       colorCode: request.dayOffType.colorCode,
       createdAt: request.createdAt,
+      isReturn: request.isReturn,
     })),
 
     ...pendingWorkRequests.map((request) => ({
       key: `work-${request.id}`,
+      requestId: request.id,
+      requestKind: "work" as const,
       userName: request.user?.name ?? "名前未設定",
       requestedDate: request.scheduleDay.date,
       requestWeekdayLabel: request.scheduleDay.weekdayLabel,
       typeName: request.workType.name,
       colorCode: request.workType.colorCode,
       createdAt: request.createdAt,
+      isReturn: request.isReturn,
     })),
   ].sort(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
 
-  const visibleRecentRequests = recentRequests.slice(0, 5);
+  const visiblePendingRequests = PendingRequests.slice(0, 5);
 
   const remainingRequests =
-    recentRequests.length - visibleRecentRequests.length;
+    PendingRequests.length - visiblePendingRequests.length;
   return (
     <>
-      {visibleRecentRequests.length > 0 ? (
+      {visiblePendingRequests.length > 0 ? (
         <div>
-          {visibleRecentRequests.map((request, index) => (
-            <div key={index} className="mb-1">
-              <div className="flex items-center justify-between py-3">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{request.userName}</p>
+          {visiblePendingRequests.map((request, index) => (
+            <div key={request.key}>
+              <RequestReviewDialogForm request={request} />
 
-                  <p className="text-xs text-muted-foreground">
-                    申請日時：{formatCreatedAt(request.createdAt)}
-                  </p>
-                </div>
-
-                <div className="flex items-center">
-                  <p className="text-xs">
-                    {formatRequestedDate(
-                      request.requestedDate,
-                      request.requestWeekdayLabel,
-                    )}
-                  </p>
-                  <Badge
-                    className="font-semibold"
-                    style={badgeStyle(request.colorCode)}
-                  >
-                    {request.typeName}
-                  </Badge>
-                </div>
-              </div>
-
-              {index < visibleRecentRequests.length - 1 && <Separator />}
+              {index < visiblePendingRequests.length - 1 && <Separator />}
             </div>
           ))}
 

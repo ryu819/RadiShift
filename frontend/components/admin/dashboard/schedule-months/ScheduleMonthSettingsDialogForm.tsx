@@ -53,7 +53,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
         <DialogTrigger asChild>
           <button
             type="button"
-            className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border px-3 py-4 text-sm transition-colors hover:border-primary/40 hover:bg-primary/4"
+            className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border px-2 py-4 text-sm transition-colors hover:border-primary/40 hover:bg-primary/4"
           >
             <div className="font-semibold">
               {scheduleMonth.year}年 {scheduleMonth.month}月
@@ -70,7 +70,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
 
             {scheduleMonth.status === "published" && (
               <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                シフト公開済み
+                シフト公開
               </Badge>
             )}
           </button>

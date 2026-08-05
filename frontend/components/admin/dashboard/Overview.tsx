@@ -3,7 +3,7 @@ import { FacilityManagementCard } from "@/components/admin/dashboard/FacilityMan
 import { MemberCountSummaryCard } from "@/components/admin/dashboard/MemberCountSummaryCard";
 import { PendingRequestSummaryCard } from "@/components/admin/dashboard/PendingRequestSummaryCard";
 import { PublishedScheduleMonthSummaryCard } from "@/components/admin/dashboard/PublishedScheduleMonthSummaryCard";
-import { RecentRequestsCard } from "@/components/admin/dashboard/RecentRequestsCard";
+import { PendingRequestsCard } from "@/components/admin/dashboard/requests/PendingRequestsCard";
 import { ScheduleMonthsCard } from "@/components/admin/dashboard/schedule-months/ScheduleMonthsCard";
 import { TypeSettingsCard } from "@/components/admin/dashboard/TypeSettingsCard";
 
@@ -24,7 +24,7 @@ export function Overview() {
         <div className="space-y-5">
           <ScheduleMonthsCard />
 
-          <RecentRequestsCard />
+          <PendingRequestsCard />
         </div>
 
         <div className="space-y-5">
