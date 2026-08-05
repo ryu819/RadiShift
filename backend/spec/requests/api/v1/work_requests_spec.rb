@@ -203,7 +203,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
       it "勤務希望を更新し、勤務割当を作成する" do
         expect { subject }.to change { WorkAssignment.count }.by(1)
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("勤務希望を更新しました。")
+        expect(res["message"]).to eq("申請を承認し、シフトを変更しました。")
         expect(work_request.reload).to be_approved
         expect(WorkAssignment.last.user).to eq(target_user)
         expect(WorkAssignment.last.work_type).to eq(work_type)
@@ -231,7 +231,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
       it "勤務希望を更新し、勤務割当を削除する" do
         expect { subject }.to change { WorkAssignment.count }.by(-1)
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("勤務希望を更新しました。")
+        expect(res["message"]).to eq("申請を承認し、シフトを変更しました。")
         expect(work_request.reload).to be_approved
         expect(response).to have_http_status(:ok)
       end
@@ -242,6 +242,8 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
 
       it "勤務希望だけを更新する" do
         expect { subject }.not_to change { WorkAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("申請を否認しました。")
         expect(work_request.reload).to be_rejected
         expect(response).to have_http_status(:ok)
       end

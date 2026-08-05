@@ -124,8 +124,8 @@ ActiveRecord::Base.transaction do
     schedule_month = ScheduleMonth.create!(
       facility: facility,
       year: 2026,
-      month: i + 7,
-      monthly_days_off: i + 8
+      month: i + 9,
+      monthly_days_off: i + 9
     )
 
     start_date = Date.new(
@@ -182,6 +182,16 @@ ActiveRecord::Base.transaction do
       work_type: night_work
     )
 
+    # 返上リクエスト
+    WorkRequest.create!(
+      facility: facility,
+      user: users[2],
+      schedule_day: schedule_days[2],
+      work_type: night_work,
+      request_status: :pending,
+      is_return: true
+    )
+
     # 否認済み
     WorkRequest.create!(
       facility: facility,
@@ -221,6 +231,16 @@ ActiveRecord::Base.transaction do
       schedule_day: schedule_days[5],
       user: users[5],
       day_off_type: day_off
+    )
+
+    # 返上リクエスト
+    DayOffRequest.create!(
+      facility: facility,
+      user: users[5],
+      schedule_day: schedule_days[5],
+      day_off_type: day_off,
+      request_status: :pending,
+      is_return: true
     )
 
     # 否認済み
