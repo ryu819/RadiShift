@@ -20,7 +20,7 @@ export async function deleteWorkAssignmentForm(
 
   if (!jwt) redirect("/");
 
-  const workAssignmentId = formData.get("workAssignmentId");
+  const workAssignmentId = Number(formData.get("workAssignmentId"));
 
   try {
     const res = await fetch(

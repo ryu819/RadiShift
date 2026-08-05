@@ -43,12 +43,14 @@ export async function updateScheduleMonthForm(
           "Content-Type": "application/json",
           Authorization: jwt,
         },
-        body: JSON.stringify({
-          schedule_month: snakecaseKeys({
-            monthlyDaysOff,
-            status,
+        body: JSON.stringify(
+          snakecaseKeys({
+            scheduleMonth: {
+              monthlyDaysOff,
+              status,
+            },
           }),
-        }),
+        ),
       },
     );
 
