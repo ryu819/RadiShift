@@ -15,7 +15,7 @@ export async function deleteScheduleMonthForm(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const scheduleMonthId = formData.get("scheduleMonthId");
+  const scheduleMonthId = Number(formData.get("scheduleMonthId"));
 
   const jwt = await getJwt();
 

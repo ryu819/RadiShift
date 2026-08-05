@@ -44,13 +44,15 @@ export async function createWorkAssignmentForm(
         "Content-Type": "application/json",
         Authorization: jwt,
       },
-      body: JSON.stringify({
-        work_assignment: snakecaseKeys({
-          scheduleDayId,
-          userId,
-          workTypeId,
+      body: JSON.stringify(
+        snakecaseKeys({
+          workAssignment: {
+            scheduleDayId,
+            userId,
+            workTypeId,
+          },
         }),
-      }),
+      ),
     });
 
     if (isServerError(res.status)) {

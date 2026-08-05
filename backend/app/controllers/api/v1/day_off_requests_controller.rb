@@ -92,7 +92,13 @@ module Api
           apply_assignment_for_approved_request!(@day_off_request) if @day_off_request.approved?
         end
 
-        render json: { message: "休み希望を更新しました。" }, status: :ok
+        if @day_off_request.approved?
+          render json: { message: "申請を承認し、シフトを変更しました。" }, status: :ok
+        else
+          render json: {
+            message: "申請を否認しました。"
+          }, status: :ok
+        end
       end
 
       def destroy

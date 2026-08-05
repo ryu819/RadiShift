@@ -45,13 +45,15 @@ export async function createScheduleMonthForm(
         "Content-Type": "application/json",
         Authorization: jwt,
       },
-      body: JSON.stringify({
-        schedule_month: snakecaseKeys({
-          year,
-          month,
-          monthlyDaysOff,
+      body: JSON.stringify(
+        snakecaseKeys({
+          scheduleMonth: {
+            year,
+            month,
+            monthlyDaysOff,
+          },
         }),
-      }),
+      ),
     });
 
     if (isServerError(res.status)) {

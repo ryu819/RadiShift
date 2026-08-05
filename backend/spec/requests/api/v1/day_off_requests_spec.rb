@@ -235,7 +235,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       it "休み希望を更新し、休み割当を作成する" do
         expect { subject }.to change { DayOffAssignment.count }.by(1)
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("休み希望を更新しました。")
+        expect(res["message"]).to eq("申請を承認し、シフトを変更しました。")
         expect(day_off_request.reload).to be_approved
         expect(DayOffAssignment.last.user).to eq(target_user)
         expect(response).to have_http_status(:ok)
@@ -262,7 +262,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       it "休み希望を更新し、休み割当を削除する" do
         expect { subject }.to change { DayOffAssignment.count }.by(-1)
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("休み希望を更新しました。")
+        expect(res["message"]).to eq("申請を承認し、シフトを変更しました。")
         expect(day_off_request.reload).to be_approved
         expect(response).to have_http_status(:ok)
       end
@@ -273,6 +273,8 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
 
       it "休み希望だけを更新する" do
         expect { subject }.not_to change { DayOffAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("申請を否認しました。")
         expect(day_off_request.reload).to be_rejected
         expect(response).to have_http_status(:ok)
       end
