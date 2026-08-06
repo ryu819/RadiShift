@@ -4,21 +4,7 @@ import { Suspense } from "react";
 import { RequestReviewDialogForm } from "@/components/admin/dashboard/requests/RequestReviewDialogForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { getDayOffRequests } from "@/lib/actions/get-day-off-requests";
-import { getWorkRequests } from "@/lib/actions/get-work-requests";
-
-export type PendingRequestItem = {
-  key: string;
-  requestId: number;
-  requestKind: "work" | "dayOff";
-  userName: string;
-  requestedDate: string;
-  requestWeekdayLabel: string;
-  typeName: string;
-  colorCode: string;
-  createdAt: string;
-  isReturn: boolean;
-};
+import { getPendingRequests } from "@/lib/actions/get-pending-requests";
 
 export function PendingRequestsCard() {
   return (
@@ -40,60 +26,18 @@ export function PendingRequestsCard() {
 }
 
 async function PendingRequestsList() {
-  const [workRequests, dayOffRequests] = await Promise.all([
-    getWorkRequests(),
-    getDayOffRequests(),
-  ]);
+  const pendingRequests = (await getPendingRequests()) ?? [];
 
-  const pendingWorkRequests =
-    workRequests?.filter(
-      (workRequest) => workRequest.requestStatus === "pending",
-    ) ?? [];
-  const pendingDayOffRequests =
-    dayOffRequests?.filter(
-      (dayOffRequest) => dayOffRequest.requestStatus === "pending",
-    ) ?? [];
-
-  const PendingRequests: PendingRequestItem[] = [
-    ...pendingDayOffRequests.map((request) => ({
-      key: `day-off-${request.id}`,
-      requestId: request.id,
-      requestKind: "dayOff" as const,
-      userName: request.user?.name ?? "名前未設定",
-      requestedDate: request.scheduleDay.date,
-      requestWeekdayLabel: request.scheduleDay.weekdayLabel,
-      typeName: request.dayOffType.name,
-      colorCode: request.dayOffType.colorCode,
-      createdAt: request.createdAt,
-      isReturn: request.isReturn,
-    })),
-
-    ...pendingWorkRequests.map((request) => ({
-      key: `work-${request.id}`,
-      requestId: request.id,
-      requestKind: "work" as const,
-      userName: request.user?.name ?? "名前未設定",
-      requestedDate: request.scheduleDay.date,
-      requestWeekdayLabel: request.scheduleDay.weekdayLabel,
-      typeName: request.workType.name,
-      colorCode: request.workType.colorCode,
-      createdAt: request.createdAt,
-      isReturn: request.isReturn,
-    })),
-  ].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  );
-
-  const visiblePendingRequests = PendingRequests.slice(0, 5);
+  const visiblePendingRequests = pendingRequests.slice(0, 5);
 
   const remainingRequests =
-    PendingRequests.length - visiblePendingRequests.length;
+    pendingRequests.length - visiblePendingRequests.length;
   return (
     <>
       {visiblePendingRequests.length > 0 ? (
         <div>
           {visiblePendingRequests.map((request, index) => (
-            <div key={request.key}>
+            <div key={request.id + request.requestKind}>
               <RequestReviewDialogForm request={request} />
 
               {index < visiblePendingRequests.length - 1 && <Separator />}

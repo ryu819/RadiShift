@@ -3,7 +3,6 @@
 import { ChevronRight, Loader2, RotateCcw } from "lucide-react";
 import { useActionState, useState } from "react";
 
-import { PendingRequestItem } from "@/components/admin/dashboard/requests/PendingRequestsCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { updateRequestStatusForm } from "@/lib/actions/update-request-status";
+import { PendingRequest } from "@/types/pending-request";
 import { badgeStyle } from "@/utils/badge-style";
 
 function formatRequestedDate(dateString: string, weekdayLabel: string) {
@@ -38,7 +38,7 @@ function formatCreatedAt(dateString: string) {
 export function RequestReviewDialogForm({
   request,
 }: {
-  request: PendingRequestItem;
+  request: PendingRequest;
 }) {
   const [_serverState, formAction, isPending] = useActionState(
     updateRequestStatusForm,
@@ -162,7 +162,7 @@ export function RequestReviewDialogForm({
         </div>
 
         <form action={formAction}>
-          <input type="hidden" name="requestId" value={request.requestId} />
+          <input type="hidden" name="requestId" value={request.id} />
 
           <input type="hidden" name="requestKind" value={request.requestKind} />
 
