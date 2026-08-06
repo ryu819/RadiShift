@@ -66,7 +66,7 @@ export function RequestReviewDialogForm({
       <DialogTrigger asChild>
         <button
           type="button"
-          className="group cursor-pointer w-full rounded-sm px-2 text-left transition-colors hover:bg-muted/60"
+          className="group cursor-pointer w-full rounded-sm px-2 text-left transition-colors hover:bg-muted/60 active:bg-muted/60"
         >
           <div className="flex items-center justify-between py-3">
             <div className="space-y-1">
@@ -103,7 +103,7 @@ export function RequestReviewDialogForm({
                 {request.typeName}
               </Badge>
 
-              <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-active:translate-x-0.5" />
             </div>
           </div>
         </button>

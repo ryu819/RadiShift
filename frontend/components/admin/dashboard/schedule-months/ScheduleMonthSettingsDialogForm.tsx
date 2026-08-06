@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, ChevronRight, Loader2 } from "lucide-react";
+import { Calendar, ChevronRight, Loader2, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 
@@ -53,7 +53,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
         <DialogTrigger asChild>
           <button
             type="button"
-            className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border px-2 py-4 text-sm transition-colors hover:border-primary/40 hover:bg-primary/4"
+            className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border px-2 py-3 text-sm transition-colors hover:bg-muted/60 active:bg-muted/60"
           >
             <div className="font-semibold">
               {scheduleMonth.year}年 {scheduleMonth.month}月
@@ -62,21 +62,29 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
             {scheduleMonth.status === "accepting_requests" && (
               <Badge
                 variant="secondary"
-                className="bg-emerald-100 text-emerald-700"
+                className="bg-emerald-100 text-emerald-700 rounded-sm"
               >
                 申請受付中
               </Badge>
             )}
 
             {scheduleMonth.status === "published" && (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+              <Badge
+                variant="secondary"
+                className="bg-blue-100 text-blue-700 rounded-sm"
+              >
                 シフト公開
               </Badge>
             )}
+
+            <div className="flex w-full items-center justify-center gap-1 pt-1 text-xs text-foreground transition-transform group-hover:-translate-y-0.5 group-active:-translate-y-0.5">
+              <Pencil className="size-3.5" aria-hidden="true" />
+              <span>編集</span>
+            </div>
           </button>
         </DialogTrigger>
 
-        <DialogContent className="max-w-xs sm:max-w-md">
+        <DialogContent className="max-w-xs sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-center text-xl">
               {scheduleMonth.year}年 {scheduleMonth.month}月
@@ -139,7 +147,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
             <Link
               href={`/overview-shift?scheduleMonthId=${scheduleMonth.id}`}
               onClick={() => setSettingsOpen(false)}
-              className="group mt-3 flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-muted/60"
+              className="group mt-3 flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-muted/60 active:bg-muted/60"
             >
               <div className="flex items-center gap-2">
                 <Calendar className="size-4" />
@@ -149,7 +157,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
                 </div>
               </div>
 
-              <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-active:translate-x-0.5" />
             </Link>
           </form>
 
