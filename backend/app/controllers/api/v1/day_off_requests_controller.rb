@@ -14,54 +14,26 @@ module Api
       before_action :validate_return_day_off_assignment!, only: [:create]
 
       def index
-        if current_user.is_admin?
-          day_off_requests = current_user.facility.day_off_requests
-                               .includes(:user, :schedule_day, :day_off_type)
-                               .order(created_at: :asc)
+        day_off_requests = current_user.day_off_requests
+                             .includes(:schedule_day, :day_off_type)
+                             .order(created_at: :asc)
 
-          render json: day_off_requests.as_json(
-            {
-              only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
-              include: {
-                user: {
-                  only: [:name]
-                },
-                schedule_day: {
-                  only: [:date],
-                  methods: [
-                    :day,
-                    :weekday_label
-                  ]
-                },
-                day_off_type: {
-                  only: [:name, :color_code]
-                }
+        render json: day_off_requests.as_json(
+          {
+            only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
+            include: {
+              schedule_day: {
+                only: [:date],
+                methods: [
+                  :weekday_label
+                ]
+              },
+              day_off_type: {
+                only: [:name, :color_code]
               }
             }
-          ), status: :ok
-        else
-          day_off_requests = current_user.day_off_requests
-                               .includes(:schedule_day, :day_off_type)
-                               .order(created_at: :asc)
-
-          render json: day_off_requests.as_json(
-            {
-              only: [:id, :user_id, :schedule_day_id, :day_off_type_id, :request_status, :is_return, :created_at],
-              include: {
-                schedule_day: {
-                  only: [:date],
-                  methods: [
-                    :day,
-                    :weekday_label
-                  ]
-                },
-                day_off_type: {
-                  only: [:name, :color_code]
-                }
-              }
-            }
-          ), status: :ok
-        end
+          }
+        ), status: :ok
       end
 
       def create
