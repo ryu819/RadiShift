@@ -14,26 +14,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
     let(:day_off_type) { create(:day_off_type, facility: user.facility) }
     let(:other_user) { create(:user, facility: user.facility) }
 
-    context "管理者である時" do
-      let(:user) { create(:user, :admin) }
-      let!(:own_day_off_request) { create(:day_off_request, facility: user.facility, user: user, schedule_day: schedule_day, day_off_type: day_off_type) }
-      let!(:other_user_day_off_request) do
-        create(:day_off_request, facility: user.facility, user: other_user, schedule_day: schedule_day, day_off_type: day_off_type)
-      end
-      let!(:other_facility_day_off_request) { create(:day_off_request) }
-
-      it "同じ施設の休み希望を全て返す" do
-        subject
-        res = JSON.parse(response.body)
-        day_off_request_ids = res.map { |day_off_request| day_off_request["id"] }
-        expect(day_off_request_ids).to include(own_day_off_request.id)
-        expect(day_off_request_ids).to include(other_user_day_off_request.id)
-        expect(day_off_request_ids).not_to include(other_facility_day_off_request.id)
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context "管理者でない時" do
+    context "施設に所属している時" do
       let!(:own_day_off_request) { create(:day_off_request, facility: user.facility, user: user, schedule_day: schedule_day, day_off_type: day_off_type) }
       let!(:other_user_day_off_request) do
         create(:day_off_request, facility: user.facility, user: other_user, schedule_day: schedule_day, day_off_type: day_off_type)
