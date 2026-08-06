@@ -27,6 +27,9 @@ Rails.application.routes.draw do
           patch :avatar_image
         end
       end
+      namespace :admin do
+        resources :pending_requests, only: :index
+      end
       resource :facility, only: [:show, :create, :update, :destroy] do
         post :join
         delete :leave

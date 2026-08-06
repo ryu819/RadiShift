@@ -37,6 +37,9 @@ export async function deleteUser(
     const data: RailsResponse = await res.json();
 
     if (isClientError(res.status)) {
+      await setFlashToast({
+        type: "failure",
+      });
       return {
         error: data.error,
       };

@@ -5,7 +5,7 @@ module Api
     class MembersController < ApplicationController
       before_action :authenticate_user!
       before_action :require_facility!
-      before_action :require_admin!
+      before_action :require_admin!, only: [:update, :destroy, :add_admin, :remove_admin]
       before_action :set_member, only: [:update, :destroy, :add_admin, :remove_admin]
 
       def index

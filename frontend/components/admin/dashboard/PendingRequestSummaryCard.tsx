@@ -3,8 +3,7 @@ import { Suspense } from "react";
 
 import { SummaryValueSkeleton } from "@/components/admin/dashboard/SummaryValueSkeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { getDayOffRequests } from "@/lib/actions/get-day-off-requests";
-import { getWorkRequests } from "@/lib/actions/get-work-requests";
+import { getPendingRequests } from "@/lib/actions/get-pending-requests";
 
 export function PendingRequestSummaryCard() {
   return (
@@ -26,24 +25,11 @@ export function PendingRequestSummaryCard() {
 }
 
 async function PendingRequestCount() {
-  const [workRequests, dayOffRequests] = await Promise.all([
-    getWorkRequests(),
-    getDayOffRequests(),
-  ]);
+  const pendingRequests = (await getPendingRequests()) ?? [];
 
-  const pendingWorkRequests =
-    workRequests?.filter(
-      (workRequest) => workRequest.requestStatus === "pending",
-    ) ?? [];
-  const pendingDayOffRequests =
-    dayOffRequests?.filter(
-      (dayOffRequest) => dayOffRequest.requestStatus === "pending",
-    ) ?? [];
   return (
     <div className="flex items-baseline justify-center gap-1.5 pt-5">
-      <span className="text-3xl font-semibold">
-        {pendingWorkRequests.length + pendingDayOffRequests.length}
-      </span>
+      <span className="text-3xl font-semibold">{pendingRequests.length}</span>
 
       <span className="text-base font-medium text-muted-foreground">件</span>
     </div>

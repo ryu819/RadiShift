@@ -9,32 +9,19 @@ RSpec.describe "Api::V1::Members", type: :request do
   describe "GET /api/v1/members" do
     subject { get(api_v1_members_path, headers: { "Authorization": token }) }
 
-    context "管理者である時" do
+    context "施設に所属している時" do
       let!(:member) { create(:user, facility: user.facility) }
       let!(:other_facility_member) { create(:user) }
       let!(:deleted_member) { create(:user, facility: user.facility, is_deleted: true) }
 
-      context "管理者である時" do
-        it "同じ施設に所属する削除済みではないユーザー一覧を取得できる" do
-          subject
-          res = JSON.parse(response.body)
-          user_ids = res.map { |member| member["id"] }
-          expect(user_ids).to eq([user.id, member.id])
-          expect(user_ids).not_to include(other_facility_member.id)
-          expect(user_ids).not_to include(deleted_member.id)
-          expect(response).to have_http_status(:ok)
-        end
-      end
-    end
-
-    context "管理者でない時" do
-      let(:user) { create(:user, :with_facility) }
-
-      it "forbidden エラーが返る" do
+      it "同じ施設に所属する削除済みではないユーザー一覧を取得できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("管理者権限がありません。")
-        expect(response).to have_http_status(:forbidden)
+        user_ids = res.map { |member| member["id"] }
+        expect(user_ids).to eq([user.id, member.id])
+        expect(user_ids).not_to include(other_facility_member.id)
+        expect(user_ids).not_to include(deleted_member.id)
+        expect(response).to have_http_status(:ok)
       end
     end
 

@@ -14,24 +14,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
     let(:work_type) { create(:work_type, facility: user.facility) }
     let(:other_user) { create(:user, facility: user.facility) }
 
-    context "管理者である時" do
-      let(:user) { create(:user, :admin) }
-      let!(:own_work_request) { create(:work_request, facility: user.facility, user: user, schedule_day: schedule_day, work_type: work_type) }
-      let!(:other_user_work_request) { create(:work_request, facility: user.facility, user: other_user, schedule_day: schedule_day, work_type: work_type) }
-      let!(:other_facility_work_request) { create(:work_request) }
-
-      it "同じ施設の勤務希望を全て返す" do
-        subject
-        res = JSON.parse(response.body)
-        work_request_ids = res.map { |work_request| work_request["id"] }
-        expect(work_request_ids).to include(own_work_request.id)
-        expect(work_request_ids).to include(other_user_work_request.id)
-        expect(work_request_ids).not_to include(other_facility_work_request.id)
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context "管理者でない時" do
+    context "施設に所属している時" do
       let!(:own_work_request) { create(:work_request, facility: user.facility, user: user, schedule_day: schedule_day, work_type: work_type) }
       let!(:other_user_work_request) { create(:work_request, facility: user.facility, user: other_user, schedule_day: schedule_day, work_type: work_type) }
 
