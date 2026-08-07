@@ -69,40 +69,34 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 1) }
       let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, day_off_type: day_off_type) }
 
-      it "休み希望を作成し、rejected になる" do
-        day_off_assignment_count = DayOffAssignment.count
-        expect { subject }.to change { DayOffRequest.count }.by(1)
+      it "休み希望を作成せず、unprocessable_content エラーを返す" do
+        expect { subject }.not_to change { DayOffRequest.count }
         res = JSON.parse(response.body)
-        day_off_request = DayOffRequest.last
-        expect(DayOffAssignment.count).to eq(day_off_assignment_count)
-        expect(res["message"]).to eq("申請は否認されました。")
-        expect(day_off_request).to be_rejected
-        expect(response).to have_http_status(:created)
+        expect(res["message"]).to eq("休み枠に空きがないため、申請できません。")
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
     context "締切内だが DayOffSlot がない時" do
-      it "休み希望を作成し、pending のままになる" do
-        day_off_assignment_count = DayOffAssignment.count
-        expect { subject }.to change { DayOffRequest.count }.by(1)
+      it "休み希望を作成せず、unprocessable_content エラーを返す" do
+        expect { subject }.not_to change { DayOffRequest.count }
         res = JSON.parse(response.body)
-        day_off_request = DayOffRequest.last
-        expect(DayOffAssignment.count).to eq(day_off_assignment_count)
-        expect(res["message"]).to eq("申請しました。")
-        expect(day_off_request).to be_pending
-        expect(response).to have_http_status(:created)
+        expect(res["message"]).to eq("休み枠が設定されていないため、申請できません。")
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
     context "uses_slot が false の休みパターンの時" do
       let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: false) }
 
-      it "休み枠を見ずに休み割当を作成して approved になる" do
-        expect { subject }.to change { DayOffRequest.count }.by(1).and change { DayOffAssignment.count }.by(1)
+      it "休み希望だけを作成し、pending のままになる" do
+        day_off_assignment_count = DayOffAssignment.count
+        expect { subject }.to change { DayOffRequest.count }.by(1)
         res = JSON.parse(response.body)
         day_off_request = DayOffRequest.last
-        expect(res["message"]).to eq("申請は承認されました。")
-        expect(day_off_request).to be_approved
+        expect(DayOffAssignment.count).to eq(day_off_assignment_count)
+        expect(res["message"]).to eq("申請されました。")
+        expect(day_off_request).to be_pending
         expect(response).to have_http_status(:created)
       end
     end
@@ -110,26 +104,25 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
     context "すでに同じ休み割当がある時" do
       let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type) }
 
-      it "休み希望を作成し、rejected になる" do
+      it "休み希望を作成せず、unprocessable_content エラーを返す" do
         day_off_assignment_count = DayOffAssignment.count
-        expect { subject }.to change { DayOffRequest.count }.by(1)
+        expect { subject }.not_to change { DayOffRequest.count }
         res = JSON.parse(response.body)
-        day_off_request = DayOffRequest.last
         expect(DayOffAssignment.count).to eq(day_off_assignment_count)
-        expect(res["message"]).to eq("申請は否認されました。")
-        expect(day_off_request).to be_rejected
-        expect(response).to have_http_status(:created)
+        expect(res["message"]).to eq("すでに休みが割り当てられているため申請できません。")
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
     context "申請締切日を過ぎている時" do
       let(:schedule_day_date) { Date.current }
+      let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 2) }
 
       it "休み希望だけを作成し、pending のままになる" do
         expect { subject }.to change { DayOffRequest.count }.by(1)
         res = JSON.parse(response.body)
         day_off_request = DayOffRequest.last
-        expect(res["message"]).to eq("申請締切日を過ぎているため、管理者承認待ちとして申請しました。")
+        expect(res["message"]).to eq("申請締切日を過ぎているため、承認待ちとして申請されました。")
         expect(day_off_request).to be_pending
         expect(response).to have_http_status(:created)
       end
@@ -139,7 +132,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       let(:params) { { day_off_request: { schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, is_return: true } } }
       let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type) }
 
-      it "休み希望を作成し、休み割当を削除して approved になる" do
+      it "返上申請を作成し、休み割当を削除して approved になる" do
         expect { subject }.to change { DayOffRequest.count }.by(1).and change { DayOffAssignment.count }.by(-1)
         res = JSON.parse(response.body)
         day_off_request = DayOffRequest.last
@@ -205,7 +198,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
     let(:target_user) { create(:user, facility: user.facility) }
     let(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 6) }
     let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.new(2026, 6, 20)) }
-    let(:day_off_type) { create(:day_off_type, facility: user.facility) }
+    let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: true) }
     let(:day_off_request) do
       create(:day_off_request, facility: user.facility, user: target_user, schedule_day: schedule_day, day_off_type: day_off_type, request_status: :pending,
                                is_return: false)
@@ -213,6 +206,8 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
     let(:params) { { day_off_request: { request_status: "approved" } } }
 
     context "管理者が通常申請を approved にした時" do
+      let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 2) }
+
       it "休み希望を更新し、休み割当を作成する" do
         expect { subject }.to change { DayOffAssignment.count }.by(1)
         res = JSON.parse(response.body)
@@ -226,8 +221,47 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
     context "すでに休み割当がある通常申請を approved にした時" do
       let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: target_user, day_off_type: day_off_type) }
 
-      it "休み割当を重複作成しない" do
+      it "承認せず、unprocessable_content エラーを返す" do
         expect { subject }.not_to change { DayOffAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("すでに休みが割り当てられているため承認できません。")
+        expect(day_off_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "管理者が DayOffSlot のない通常申請を approved にした時" do
+      it "承認せず、unprocessable_content エラーを返す" do
+        expect { subject }.not_to change { DayOffAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("休み枠が設定されていないため、承認できません。")
+        expect(day_off_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "管理者が休み枠が満枠の通常申請を approved にした時" do
+      let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 1) }
+      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, day_off_type: day_off_type) }
+
+      it "承認せず、unprocessable_content エラーを返す" do
+        day_off_assignment_count = DayOffAssignment.count
+        subject
+        res = JSON.parse(response.body)
+        expect(DayOffAssignment.count).to eq(day_off_assignment_count)
+        expect(res["message"]).to eq("休み枠に空きがないため、承認できません。")
+        expect(day_off_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "管理者が uses_slot が false の通常申請を approved にした時" do
+      let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: false) }
+
+      it "休み枠を確認せず、休み割当を作成して approved にする" do
+        expect { subject }.to change { DayOffAssignment.count }.by(1)
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("申請を承認し、シフトを変更しました。")
         expect(day_off_request.reload).to be_approved
         expect(response).to have_http_status(:ok)
       end
