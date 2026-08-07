@@ -62,6 +62,7 @@ export async function updateRequestStatusForm(
     const data: RailsResponse = await res.json();
 
     if (isClientError(res.status)) {
+      await setFlashToast({ type: "failure", message: data.message });
       return {
         error: data.error,
       };
