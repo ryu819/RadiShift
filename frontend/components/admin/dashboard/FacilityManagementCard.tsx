@@ -49,7 +49,7 @@ export function FacilityManagementCard() {
               <Link
                 key={item.title}
                 href={item.href}
-                className="group flex items-center justify-between gap-3 rounded-lg border p-4 transition-colors hover:border-primary/40 hover:bg-primary/4"
+                className="group flex items-center justify-between gap-3 rounded-lg border p-4 transition-colors hover:bg-muted/60 active:bg-muted/60"
               >
                 <div className="flex gap-3 items-center">
                   <Icon className="size-5" />
@@ -63,7 +63,7 @@ export function FacilityManagementCard() {
                   </div>
                 </div>
 
-                <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-y-0.5" />
+                <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-active:translate-x-0.5" />
               </Link>
             );
           })}
