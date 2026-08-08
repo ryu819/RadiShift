@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
 import { Suspense } from "react";
 
-import { SummaryValueSkeleton } from "@/components/admin/dashboard/SummaryValueSkeleton";
+import { SummaryValueSkeleton } from "@/components/admin/dashboard/overview/summary/SummaryValueSkeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { getPendingRequests } from "@/lib/actions/get-pending-requests";
 

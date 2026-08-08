@@ -1,7 +1,7 @@
 import { LayoutDashboard } from "lucide-react";
 import { Metadata } from "next";
 
-import { Overview } from "@/components/admin/dashboard/Overview";
+import { Overview } from "@/components/admin/dashboard/overview/Overview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const metadata: Metadata = {
@@ -27,10 +27,10 @@ export default function AdminDashboardPage() {
             </TabsTrigger>
 
             <TabsTrigger
-              value="requests"
+              value="members"
               className="cursor-pointer text-secondary data-[state=active]:text-primary"
             >
-              申請
+              メンバー
             </TabsTrigger>
 
             <TabsTrigger
@@ -52,7 +52,7 @@ export default function AdminDashboardPage() {
             <Overview />
           </TabsContent>
 
-          <TabsContent value="requests"></TabsContent>
+          <TabsContent value="members"></TabsContent>
 
           <TabsContent value="types"></TabsContent>
 
