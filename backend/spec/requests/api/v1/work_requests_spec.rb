@@ -93,15 +93,13 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
     context "すでに同じ勤務割当がある時" do
       let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: user, work_type: work_type) }
 
-      it "勤務希望を作成し、rejected になる" do
+      it "勤務希望を作成せず、unprocessable_content エラーを返す" do
         work_assignment_count = WorkAssignment.count
-        expect { subject }.to change { WorkRequest.count }.by(1)
+        expect { subject }.not_to change { WorkRequest.count }
         res = JSON.parse(response.body)
-        work_request = WorkRequest.last
         expect(WorkAssignment.count).to eq(work_assignment_count)
-        expect(res["message"]).to eq("申請は否認されました。")
-        expect(work_request).to be_rejected
-        expect(response).to have_http_status(:created)
+        expect(res["message"]).to eq("すでにシフトが割り当てられているため申請できません。")
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -197,10 +195,12 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
     context "すでに勤務割当がある通常申請を approved にした時" do
       let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type) }
 
-      it "勤務割当を重複作成しない" do
+      it "承認せず、unprocessable_content エラーを返す" do
         expect { subject }.not_to change { WorkAssignment.count }
-        expect(work_request.reload).to be_approved
-        expect(response).to have_http_status(:ok)
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("すでにシフトが割り当てられているため承認できません。")
+        expect(work_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 

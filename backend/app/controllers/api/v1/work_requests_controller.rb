@@ -47,7 +47,14 @@ module Api
         end
 
         WorkRequest.transaction do
+          if work_assignment_exists?(work_request)
+            return render json: {
+              message: "すでにシフトが割り当てられているため申請できません。"
+            }, status: :unprocessable_content
+          end
+
           work_request.save!
+
           auto_process_work_request!(work_request) if work_request.work_type.auto_approve? && !over_request_deadline?(work_request)
         end
 
@@ -58,7 +65,14 @@ module Api
 
       def update
         WorkRequest.transaction do
+          if (work_request_update_params[:request_status] == "approved") && work_assignment_exists?(@work_request)
+            return render json: {
+              message: "すでにシフトが割り当てられているため承認できません。"
+            }, status: :unprocessable_content
+          end
+
           @work_request.update!(work_request_update_params)
+
           apply_assignment_for_approved_request!(@work_request) if @work_request.approved?
         end
 
@@ -164,11 +178,6 @@ module Api
       end
 
       def assign_work!(work_request)
-        if find_work_assignment(work_request)
-          work_request.rejected!
-          return
-        end
-
         create_work_assignment!(work_request)
         work_request.approved!
       end
@@ -181,6 +190,12 @@ module Api
             user_id: work_request.user_id,
             work_type_id: work_request.work_type_id
           )
+      end
+
+      def work_assignment_exists?(work_request)
+        return false if work_request.is_return?
+
+        find_work_assignment(work_request).present?
       end
 
       def create_work_assignment!(work_request)
@@ -196,8 +211,6 @@ module Api
           return_work!(work_request, update_status: false)
           return
         end
-
-        return if find_work_assignment(work_request)
 
         create_work_assignment!(work_request)
       end
