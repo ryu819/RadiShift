@@ -1,6 +1,7 @@
 import { LayoutDashboard } from "lucide-react";
 import { Metadata } from "next";
 
+import { Members } from "@/components/admin/dashboard/members/Members";
 import { Overview } from "@/components/admin/dashboard/overview/Overview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -52,7 +53,9 @@ export default function AdminDashboardPage() {
             <Overview />
           </TabsContent>
 
-          <TabsContent value="members"></TabsContent>
+          <TabsContent value="members">
+            <Members />
+          </TabsContent>
 
           <TabsContent value="types"></TabsContent>
 
