@@ -1,4 +1,4 @@
-import { CreateScheduleMonthDialogForm } from "@/components/admin/dashboard/schedule-months/CreateScheduleMonthDialogForm";
+import { CreateScheduleMonthDialogForm } from "@/components/admin/dashboard/overview/schedule-months/CreateScheduleMonthDialogForm";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
 import { ScheduleMonths } from "@/types/schedule-months";
 

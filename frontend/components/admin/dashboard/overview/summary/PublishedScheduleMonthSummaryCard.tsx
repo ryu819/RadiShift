@@ -1,7 +1,7 @@
 import { CalendarCheck2 } from "lucide-react";
 import { Suspense } from "react";
 
-import { SummaryValueSkeleton } from "@/components/admin/dashboard/SummaryValueSkeleton";
+import { SummaryValueSkeleton } from "@/components/admin/dashboard/overview/summary/SummaryValueSkeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
 

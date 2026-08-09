@@ -4,7 +4,7 @@ import { Calendar, ChevronRight, Loader2, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 
-import { ScheduleMonthDeleteDialog } from "@/components/admin/dashboard/schedule-months/ScheduleMonthDeleteDialog";
+import { ScheduleMonthDeleteDialog } from "@/components/admin/dashboard/overview/schedule-months/ScheduleMonthDeleteDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

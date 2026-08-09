@@ -11,11 +11,16 @@ module Api
       def index
         members = current_user.facility.users
                     .where(is_deleted: false)
+                    .with_attached_avatar_image
                     .order(:id)
 
-        render json: members.as_json(
-          only: [:id, :name, :is_admin, :rules_text]
-        ), status: :ok
+        render json: members.map { |member|
+          member.as_json(
+            only: [:id, :name, :is_admin, :rules_text]
+          ).merge(
+            avatar_image_url: avatar_image_url(member)
+          )
+        }, status: :ok
       end
 
       def update
@@ -64,6 +69,12 @@ module Api
 
       def member_params
         params.require(:user).permit(:rules_text)
+      end
+
+      def avatar_image_url(member)
+        return unless member.avatar_image.attached?
+
+        rails_blob_url(member.avatar_image, host: ENV.fetch("APP_HOST"))
       end
     end
   end

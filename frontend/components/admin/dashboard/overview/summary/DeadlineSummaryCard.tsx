@@ -1,7 +1,7 @@
 import { CalendarClock } from "lucide-react";
 import { Suspense } from "react";
 
-import { SummaryValueSkeleton } from "@/components/admin/dashboard/SummaryValueSkeleton";
+import { SummaryValueSkeleton } from "@/components/admin/dashboard/overview/summary/SummaryValueSkeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { getFacility } from "@/lib/actions/get-facility";
 

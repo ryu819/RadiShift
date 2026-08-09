@@ -1,8 +1,8 @@
 import { CalendarCheck2 } from "lucide-react";
 import { Suspense } from "react";
 
-import { CreateScheduleMonthButton } from "@/components/admin/dashboard/schedule-months/CreateScheduleMonthButton";
-import { ScheduleMonthSettingsDialogForm } from "@/components/admin/dashboard/schedule-months/ScheduleMonthSettingsDialogForm";
+import { CreateScheduleMonthButton } from "@/components/admin/dashboard/overview/schedule-months/CreateScheduleMonthButton";
+import { ScheduleMonthSettingsDialogForm } from "@/components/admin/dashboard/overview/schedule-months/ScheduleMonthSettingsDialogForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";

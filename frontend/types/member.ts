@@ -3,4 +3,5 @@ export type Member = {
   name: string;
   isAdmin: boolean;
   rulesText: string | null;
+  avatarImageUrl: string | null;
 };

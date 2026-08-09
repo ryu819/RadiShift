@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
 import { Suspense } from "react";
 
-import { RequestReviewDialogForm } from "@/components/admin/dashboard/requests/RequestReviewDialogForm";
+import { RequestReviewDialogForm } from "@/components/admin/dashboard/overview/requests/RequestReviewDialogForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getPendingRequests } from "@/lib/actions/get-pending-requests";
