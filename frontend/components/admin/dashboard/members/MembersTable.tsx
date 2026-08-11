@@ -3,6 +3,7 @@
 import { MoreHorizontal, Search } from "lucide-react";
 import { useState } from "react";
 
+import { InvitationDialogForm } from "@/components/admin/dashboard/members/InvitationDialogForm";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,9 +21,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FacilityInvitation } from "@/types/facility-invitation";
 import { Member } from "@/types/member";
 
-export function MembersTable({ members }: { members: Member[] }) {
+type Props = {
+  members: Member[];
+  invitation: FacilityInvitation | null;
+};
+
+export function MembersTable({ members, invitation }: Props) {
   const [searchText, setSearchText] = useState("");
 
   const filteredMembers = members.filter((member) => {
@@ -48,7 +55,7 @@ export function MembersTable({ members }: { members: Member[] }) {
               </InputGroupAddon>
             </InputGroup>
 
-            <Button className="max-sm:text-xs">メンバーを招待</Button>
+            <InvitationDialogForm invitation={invitation} />
           </div>
         </div>
 

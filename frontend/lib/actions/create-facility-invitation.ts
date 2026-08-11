@@ -1,0 +1,65 @@
+"use server";
+
+import { redirect } from "next/navigation";
+
+import { getFacilityInvitation } from "@/lib/actions/get-facility-invitation";
+import { getJwt } from "@/lib/actions/jwt";
+import { isClientError, isServerError } from "@/lib/http-status";
+import { setFlashToast } from "@/lib/set-flash-toast";
+import { FacilityInvitation } from "@/types/facility-invitation";
+
+type ActionState = {
+  invitation?: FacilityInvitation | null;
+  error?: string;
+};
+
+export async function createFacilityInvitationForm(
+  prevState: ActionState,
+  _formData: FormData,
+): Promise<ActionState> {
+  const jwt = await getJwt();
+
+  if (!jwt) redirect("/");
+
+  try {
+    const res = await fetch(
+      `${process.env.RAILS_API_URL}/facility/invitation`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: jwt,
+        },
+      },
+    );
+
+    if (isServerError(res.status)) {
+      await setFlashToast({ type: "failure" });
+
+      return {};
+    }
+
+    if (isClientError(res.status)) {
+      await setFlashToast({ type: "failure" });
+
+      return {};
+    }
+
+    const invitation = await getFacilityInvitation();
+
+    if (!invitation) {
+      return {
+        ...prevState,
+        error: "招待コードの取得に失敗しました。",
+      };
+    }
+
+    return {
+      invitation,
+    };
+  } catch {
+    return {
+      ...prevState,
+      error: "招待コードの発行に失敗しました。",
+    };
+  }
+}
