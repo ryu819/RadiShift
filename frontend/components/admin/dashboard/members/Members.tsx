@@ -2,10 +2,15 @@ import { ShieldCheck, Users } from "lucide-react";
 
 import { MembersTable } from "@/components/admin/dashboard/members/MembersTable";
 import { Card, CardContent } from "@/components/ui/card";
+import { getFacilityInvitation } from "@/lib/actions/get-facility-invitation";
 import { getMembers } from "@/lib/actions/get-members";
 
 export async function Members() {
-  const members = (await getMembers()) ?? [];
+  const [membersData, invitation] = await Promise.all([
+    getMembers(),
+    getFacilityInvitation(),
+  ]);
+  const members = membersData ?? [];
   const adminCount = members.filter((member) => member.isAdmin).length;
 
   return (
@@ -48,7 +53,7 @@ export async function Members() {
         </Card>
       </div>
 
-      <MembersTable members={members} />
+      <MembersTable members={members} invitation={invitation} />
     </div>
   );
 }
