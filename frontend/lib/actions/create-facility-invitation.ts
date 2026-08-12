@@ -1,8 +1,8 @@
 "use server";
 
+import camelcaseKeys from "camelcase-keys";
 import { redirect } from "next/navigation";
 
-import { getFacilityInvitation } from "@/lib/actions/get-facility-invitation";
 import { getJwt } from "@/lib/actions/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -11,6 +11,10 @@ import { FacilityInvitation } from "@/types/facility-invitation";
 type ActionState = {
   invitation?: FacilityInvitation | null;
   error?: string;
+};
+
+type CreateFacilityInvitationResponse = FacilityInvitation & {
+  message: string;
 };
 
 export async function createFacilityInvitationForm(
@@ -35,31 +39,31 @@ export async function createFacilityInvitationForm(
     if (isServerError(res.status)) {
       await setFlashToast({ type: "failure" });
 
-      return {};
+      return { ...prevState };
     }
 
     if (isClientError(res.status)) {
       await setFlashToast({ type: "failure" });
 
-      return {};
+      return { ...prevState };
     }
 
-    const invitation = await getFacilityInvitation();
-
-    if (!invitation) {
-      return {
-        ...prevState,
-        error: "招待コードの取得に失敗しました。",
-      };
-    }
+    const data: CreateFacilityInvitationResponse = camelcaseKeys(
+      await res.json(),
+      { deep: true },
+    );
 
     return {
-      invitation,
+      invitation: {
+        inviteCode: data.inviteCode,
+        inviteExpiresAt: data.inviteExpiresAt,
+      },
+      error: "",
     };
   } catch {
+    await setFlashToast({ type: "failure" });
     return {
       ...prevState,
-      error: "招待コードの発行に失敗しました。",
     };
   }
 }
