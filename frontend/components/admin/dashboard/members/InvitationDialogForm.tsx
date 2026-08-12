@@ -67,7 +67,7 @@ export function InvitationDialogForm({
             <div className="space-y-2">
               <p className="text-sm font-medium">招待コード</p>
 
-              <div className="relative flex items-center justify-center rounded-lg border bg-muted/40 p-2">
+              <div className="relative flex items-center justify-center rounded-lg border bg-muted/30 p-2">
                 <span className="text-lg font-semibold ">{inviteCode}</span>
 
                 <Button
@@ -96,7 +96,7 @@ export function InvitationDialogForm({
             </div>
           </div>
         ) : (
-          <div className="rounded-lg border bg-muted/40 p-5 flex justify-center items-center gap-2">
+          <div className="rounded-lg border bg-muted/30 p-5 flex justify-center items-center gap-2">
             <KeyRound className="size-4 text-primary" />
 
             <p className="text-sm font-medium">

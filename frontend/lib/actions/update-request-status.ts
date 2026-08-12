@@ -63,9 +63,7 @@ export async function updateRequestStatusForm(
 
     if (isClientError(res.status)) {
       await setFlashToast({ type: "failure", message: data.message });
-      return {
-        error: data.error,
-      };
+      return {};
     }
     await setFlashToast({ type: "success", message: data.message });
   } catch {
