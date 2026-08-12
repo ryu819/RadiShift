@@ -1,12 +1,12 @@
 "use client";
 
-import { MoreHorizontal, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState } from "react";
 
 import { InvitationDialogForm } from "@/components/admin/dashboard/members/InvitationDialogForm";
+import { MemberActionsMenu } from "@/components/admin/dashboard/members/MemberActionsMenu";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   InputGroup,
@@ -134,9 +134,7 @@ export function MembersTable({ members, invitation }: Props) {
 
                   <TableCell className="px-0">
                     <div className="flex items-center justify-center">
-                      <Button variant="ghost" size="icon-sm">
-                        <MoreHorizontal className="size-4 max-sm:size-3" />
-                      </Button>
+                      <MemberActionsMenu member={member} />
                     </div>
                   </TableCell>
                 </TableRow>
