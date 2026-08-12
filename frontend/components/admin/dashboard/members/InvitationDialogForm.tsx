@@ -38,7 +38,9 @@ export function InvitationDialogForm({
   const inviteCode = state.invitation?.inviteCode;
 
   const inviteExpiresAt = state.invitation?.inviteExpiresAt;
+
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
   const isCopied = copiedCode === inviteCode;
 
   const handleCopy = async () => {
@@ -49,8 +51,18 @@ export function InvitationDialogForm({
     setCopiedCode(inviteCode);
   };
 
+  const [open, setOpen] = useState(false);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      setCopiedCode(null);
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="max-sm:text-xs">メンバーを招待</Button>
       </DialogTrigger>

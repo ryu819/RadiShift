@@ -64,8 +64,8 @@ RSpec.describe "Api::V1::Facilities::Invitations", type: :request do
           res = JSON.parse(response.body)
 
           expect(res["message"]).to eq("招待コードを作成しました。")
-          expect(user.reload.facility.invite_code).to be_present
-          expect(user.facility.invite_expires_at).to be_present
+          expect(res["invite_code"]).to eq(user.reload.facility.invite_code)
+          expect(res["invite_expires_at"]).to eq(user.facility.invite_expires_at.as_json)
           expect(response).to have_http_status(:created)
         end
       end

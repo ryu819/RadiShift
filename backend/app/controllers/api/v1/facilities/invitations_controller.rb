@@ -32,7 +32,9 @@ module Api
             end
           end
 
-          render json: { message: "招待コードを作成しました。" }, status: :created
+          render json: { message: "招待コードを作成しました。",
+                         invite_code: facility.invite_code,
+                         invite_expires_at: facility.invite_expires_at }, status: :created
         end
 
         def destroy
