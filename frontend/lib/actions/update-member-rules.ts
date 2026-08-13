@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
@@ -9,7 +8,7 @@ import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 
 export type ActionState = {
-  success?: boolean;
+  success: boolean;
   errors?: {
     rulesText?: string[];
   };
@@ -55,20 +54,19 @@ export async function updateMemberRulesForm(
     if (isServerError(res.status)) {
       await setFlashToast({ type: "failure" });
 
-      return {};
+      return { success: false };
     }
 
     const data: updateMemberRulesResponse = await res.json();
 
     if (isClientError(res.status)) {
       return {
+        success: false,
         errors: data.errors ?? {
           rulesText: ["個別ルールの更新に失敗しました。"],
         },
       };
     }
-
-    revalidatePath("/admin-dashboard");
 
     return { success: true };
   } catch {
@@ -76,6 +74,6 @@ export async function updateMemberRulesForm(
       type: "failure",
     });
 
-    return {};
+    return { success: false };
   }
 }

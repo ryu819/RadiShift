@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -20,11 +21,13 @@ type Props = {
 };
 
 export function MemberRemoveDialogForm({ member, onOpenChange }: Props) {
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await removeMemberForm(prevState, formData);
       if (nextState.success) {
         onOpenChange(false);
+        router.refresh();
       }
 
       return nextState;

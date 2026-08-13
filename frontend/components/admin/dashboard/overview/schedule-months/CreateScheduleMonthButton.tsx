@@ -1,4 +1,4 @@
-import { CreateScheduleMonthDialogForm } from "@/components/admin/dashboard/overview/schedule-months/CreateScheduleMonthDialogForm";
+import { ScheduleMonthCreateDialogForm } from "@/components/admin/dashboard/overview/schedule-months/ScheduleMonthCreateDialogForm";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
 import { ScheduleMonths } from "@/types/schedule-months";
 
@@ -8,7 +8,7 @@ export async function CreateScheduleMonthButton() {
   const nextScheduleMonth = getNextScheduleMonth(scheduleMonths ?? []);
 
   return (
-    <CreateScheduleMonthDialogForm
+    <ScheduleMonthCreateDialogForm
       year={nextScheduleMonth.year}
       month={nextScheduleMonth.month}
     />

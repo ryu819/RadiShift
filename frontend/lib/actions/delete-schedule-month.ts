@@ -7,7 +7,8 @@ import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
 
-type ActionState = {
+export type ActionState = {
+  success: boolean;
   error?: string;
 };
 
@@ -37,7 +38,7 @@ export async function deleteScheduleMonthForm(
         type: "failure",
       });
 
-      return {};
+      return { success: false };
     }
 
     const data: RailsResponse = await res.json();
@@ -47,16 +48,17 @@ export async function deleteScheduleMonthForm(
         type: "failure",
       });
       return {
+        success: false,
         error: data.error,
       };
     }
+
+    return { success: true };
   } catch {
     await setFlashToast({
       type: "failure",
     });
 
-    return {};
+    return { success: false };
   }
-
-  redirect("/admin-dashboard");
 }

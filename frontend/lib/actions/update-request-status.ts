@@ -8,7 +8,8 @@ import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
 
-type ActionState = {
+export type ActionState = {
+  success: boolean;
   error?: string;
 };
 
@@ -56,23 +57,23 @@ export async function updateRequestStatusForm(
     if (isServerError(res.status)) {
       await setFlashToast({ type: "failure" });
 
-      return {};
+      return { success: false };
     }
 
     const data: RailsResponse = await res.json();
 
     if (isClientError(res.status)) {
       await setFlashToast({ type: "failure", message: data.message });
-      return {};
+      return { success: false };
     }
+
     await setFlashToast({ type: "success", message: data.message });
+    return { success: true };
   } catch {
     await setFlashToast({
       type: "failure",
     });
 
-    return {};
+    return { success: false };
   }
-
-  redirect("/admin-dashboard");
 }

@@ -2,6 +2,7 @@
 
 import { Calendar, ChevronRight, Loader2, Pencil } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useActionState, useState } from "react";
 
 import { ScheduleMonthDeleteDialog } from "@/components/admin/dashboard/overview/schedule-months/ScheduleMonthDeleteDialog";
@@ -25,7 +26,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateScheduleMonthForm } from "@/lib/actions/update-schedule-month";
+import {
+  ActionState,
+  updateScheduleMonthForm,
+} from "@/lib/actions/update-schedule-month";
 import type { ScheduleMonths } from "@/types/schedule-months";
 
 type Props = {
@@ -36,9 +40,19 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
+  const router = useRouter();
+
   const [_serverState, formAction, isPending] = useActionState(
-    updateScheduleMonthForm,
-    {},
+    async (prevState: ActionState, formData: FormData) => {
+      const nextState = await updateScheduleMonthForm(prevState, formData);
+      if (nextState.success) {
+        setSettingsOpen(false);
+        router.refresh();
+      }
+
+      return nextState;
+    },
+    { success: false, errors: {} },
   );
 
   const openDeleteDialog = () => {

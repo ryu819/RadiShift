@@ -37,7 +37,7 @@ export function MembersTable({ members, invitation }: Props) {
   });
 
   return (
-    <Card className="gap-0 px-3 max-sm:px-2 py-5 shadow-none">
+    <Card className="gap-0 px-3 max-sm:px-2 pt-5 pb-0 shadow-none">
       <CardHeader className="border-b px-3">
         <div className="flex items-center justify-between">
           <CardTitle className="">所属メンバー</CardTitle>
@@ -143,7 +143,7 @@ export function MembersTable({ members, invitation }: Props) {
               <TableRow>
                 <TableCell
                   colSpan={4}
-                  className="h-20 p-0 pt-3 text-center text-muted-foreground"
+                  className="h-20 p-0 py-3 text-center text-muted-foreground"
                 >
                   該当するメンバーはいません
                 </TableCell>

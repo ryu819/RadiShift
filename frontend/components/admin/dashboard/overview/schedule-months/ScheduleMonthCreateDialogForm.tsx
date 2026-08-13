@@ -1,7 +1,8 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +16,10 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createScheduleMonthForm } from "@/lib/actions/create-schedule-month";
+import {
+  ActionState,
+  createScheduleMonthForm,
+} from "@/lib/actions/create-schedule-month";
 
 type Props = {
   year: number;
@@ -24,14 +28,24 @@ type Props = {
 
 const DEFAULT_MONTHLY_DAYS_OFF = 9;
 
-export function CreateScheduleMonthDialogForm({ year, month }: Props) {
+export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
   const [_serverState, formAction, isPending] = useActionState(
-    createScheduleMonthForm,
-    {},
+    async (prevState: ActionState, formData: FormData) => {
+      const nextState = await createScheduleMonthForm(prevState, formData);
+      if (nextState.success) {
+        setOpen(false);
+        router.refresh();
+      }
+
+      return nextState;
+    },
+    { success: false, errors: {} },
   );
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button type="button" variant="outline" size="sm">
           シフト月を作成

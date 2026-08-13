@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -33,11 +34,14 @@ export function MemberAdminDialogForm({
   const action =
     actionType === "add" ? addMemberAdminForm : removeMemberAdminForm;
 
+  const router = useRouter();
+
   const [state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await action(prevState, formData);
       if (nextState.success) {
         onOpenChange(false);
+        router.refresh();
       }
 
       return nextState;

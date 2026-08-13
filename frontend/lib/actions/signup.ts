@@ -1,6 +1,5 @@
 "use server";
 import camelcaseKeys from "camelcase-keys";
-import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
 import { isClientError, isServerError } from "@/lib/http-status";
@@ -15,7 +14,8 @@ type SignupResponse = {
   };
 };
 
-type ActionState = {
+export type ActionState = {
+  success: boolean;
   errors?: {
     name?: string[];
     email?: string[];
@@ -59,6 +59,7 @@ export async function submitSignupForm(
       });
 
       return {
+        success: false,
         errors: {},
         values: { name, email },
       };
@@ -70,19 +71,23 @@ export async function submitSignupForm(
 
     if (isClientError(res.status)) {
       return {
+        success: false,
         errors: data.errors,
         values: { name, email },
       };
     }
 
     await setFlashToast({ type: "pending", message: data.message });
+
+    return { success: true, values: {} };
   } catch {
     await setFlashToast({ type: "failure" });
     return {
+      success: false,
       errors: {},
       values: { name, email },
     };
   }
 
-  redirect("/");
+  // redirect("/");
 }

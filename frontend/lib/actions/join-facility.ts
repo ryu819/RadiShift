@@ -67,5 +67,5 @@ export async function joinFacilityForm(
     };
   }
 
-  redirect("/dashboard");
+  redirect("/overview-shift");
 }

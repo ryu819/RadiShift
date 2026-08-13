@@ -8,7 +8,8 @@ import { getJwt } from "@/lib/actions/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 
-type ActionState = {
+export type ActionState = {
+  success: boolean;
   errors?: {
     year?: string[];
     month?: string[];
@@ -59,7 +60,7 @@ export async function createScheduleMonthForm(
     if (isServerError(res.status)) {
       await setFlashToast({ type: "failure" });
 
-      return {};
+      return { success: false };
     }
 
     const data: CreateScheduleMonthResponse = camelcaseKeys(await res.json(), {
@@ -68,13 +69,17 @@ export async function createScheduleMonthForm(
 
     if (isClientError(res.status)) {
       return {
+        success: false,
         errors: data.errors,
       };
     }
+
+    return {
+      success: true,
+    };
   } catch {
     await setFlashToast({ type: "failure" });
 
-    return {};
+    return { success: false };
   }
-  redirect("/admin-dashboard");
 }

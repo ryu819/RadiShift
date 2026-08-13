@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { getJwt } from "@/lib/actions/jwt";
@@ -9,7 +8,7 @@ import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
 
 export type ActionState = {
-  success?: boolean;
+  success: boolean;
   error?: string;
 };
 
@@ -37,18 +36,17 @@ export async function removeMemberForm(
     if (isServerError(res.status)) {
       await setFlashToast({ type: "failure" });
 
-      return {};
+      return { success: false };
     }
 
     const data: RailsResponse = await res.json();
 
     if (isClientError(res.status)) {
       return {
+        success: false,
         error: data.message ?? "メンバーの脱退処理に失敗しました。",
       };
     }
-
-    revalidatePath("/admin-dashboard");
 
     return {
       success: true,
@@ -56,6 +54,6 @@ export async function removeMemberForm(
   } catch {
     await setFlashToast({ type: "failure" });
 
-    return {};
+    return { success: false };
   }
 }
