@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, Loader2, RotateCcw } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useActionState, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { updateRequestStatusForm } from "@/lib/actions/update-request-status";
+import {
+  ActionState,
+  updateRequestStatusForm,
+} from "@/lib/actions/update-request-status";
 import { PendingRequest } from "@/types/pending-request";
 import { badgeStyle } from "@/utils/badge-style";
 
@@ -40,9 +44,24 @@ export function RequestReviewDialogForm({
 }: {
   request: PendingRequest;
 }) {
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false);
+
   const [_serverState, formAction, isPending] = useActionState(
-    updateRequestStatusForm,
-    {},
+    async (prevState: ActionState, formData: FormData) => {
+      const nextState = await updateRequestStatusForm(prevState, formData);
+      if (nextState.success) {
+        setOpen(false);
+        router.refresh();
+      }
+
+      return nextState;
+    },
+    {
+      success: false,
+      error: "",
+    },
   );
 
   const [clickedStatus, setClickedStatus] = useState<
@@ -62,7 +81,7 @@ export function RequestReviewDialogForm({
       : "休み希望";
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button
           type="button"

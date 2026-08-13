@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useState } from "react";
 import { Form, useForm, useWatch } from "react-hook-form";
 
@@ -17,13 +18,25 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { submitSignupForm } from "@/lib/actions/signup";
+import { ActionState, submitSignupForm } from "@/lib/actions/signup";
 import { signupSchema } from "@/validations/signup";
 
 export function SignUpForm() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+
   const [serverState, formAction, isPending] = useActionState(
-    submitSignupForm,
+    async (prevState: ActionState, formData: FormData) => {
+      const nextState = await submitSignupForm(prevState, formData);
+      if (nextState.success) {
+        setOpen(false);
+        router.refresh();
+      }
+
+      return nextState;
+    },
     {
+      success: false,
       errors: {},
       values: {},
     },
@@ -38,8 +51,6 @@ export function SignUpForm() {
     resolver: zodResolver(signupSchema),
     mode: "onChange",
   });
-
-  const [open, setOpen] = useState(false);
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
