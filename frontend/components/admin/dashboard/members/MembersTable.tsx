@@ -111,7 +111,7 @@ export function MembersTable({ members, invitation }: Props) {
                     <div className="flex items-center justify-center">
                       <Badge
                         variant={member.isAdmin ? "default" : "outline"}
-                        className="max-sm:text-[10px]"
+                        className="transition-none max-sm:text-[10px]"
                       >
                         {member.isAdmin ? "管理者" : "メンバー"}
                       </Badge>
