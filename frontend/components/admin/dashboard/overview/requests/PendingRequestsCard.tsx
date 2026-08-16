@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { RequestReviewDialogForm } from "@/components/admin/dashboard/overview/requests/RequestReviewDialogForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getPendingRequests } from "@/lib/actions/get-pending-requests";
 
 export function PendingRequestsCard() {
@@ -70,14 +71,15 @@ function RequestListSkeleton() {
         <div key={index}>
           <div className="flex items-center justify-between py-3">
             <div className="space-y-2">
-              <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
-              <div className="h-3 w-32 animate-pulse rounded bg-slate-200" />
+              <Skeleton className="h-4 w-24" />
+
+              <Skeleton className="h-3 w-32" />
             </div>
 
-            <div className="h-6 w-24 animate-pulse rounded bg-slate-200" />
+            <Skeleton className="h-6 w-24 " />
           </div>
 
-          {index < 3 && <Separator />}
+          {index < 4 && <Separator />}
         </div>
       ))}
     </div>

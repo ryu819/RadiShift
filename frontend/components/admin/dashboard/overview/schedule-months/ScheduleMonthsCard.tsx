@@ -5,6 +5,7 @@ import { CreateScheduleMonthButton } from "@/components/admin/dashboard/overview
 import { ScheduleMonthSettingsDialogForm } from "@/components/admin/dashboard/overview/schedule-months/ScheduleMonthSettingsDialogForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
 
 export function ScheduleMonthsCard() {
@@ -72,10 +73,7 @@ function ScheduleMonthsSkeleton() {
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
       {Array.from({ length: 3 }).map((_, index) => (
-        <div
-          key={index}
-          className="h-20 animate-pulse rounded-lg bg-slate-100"
-        />
+        <Skeleton key={index} className="h-20" />
       ))}
     </div>
   );

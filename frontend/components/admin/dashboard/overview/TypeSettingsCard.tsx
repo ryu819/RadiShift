@@ -2,6 +2,7 @@ import { Settings2 } from "lucide-react";
 import { Suspense } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getDayOffTypes } from "@/lib/actions/get-day-off-types";
 import { getModalityTypes } from "@/lib/actions/get-modality-types";
 import { getWorkTypes } from "@/lib/actions/get-work-types";
@@ -127,9 +128,9 @@ function TypeSettingRowSkeleton({ title }: TypeSettingRowSkeletonProps) {
       <h3 className="shrink-0 text-sm font-semibold">{title}</h3>
 
       <div className="flex gap-3 px-2 py-2">
-        <div className="h-4 w-14 animate-pulse rounded bg-slate-200" />
-        <div className="h-4 w-14 animate-pulse rounded bg-slate-200" />
-        <div className="h-4 w-14 animate-pulse rounded bg-slate-200" />
+        <Skeleton className="h-4 w-14" />
+        <Skeleton className="h-4 w-14" />
+        <Skeleton className="h-4 w-14" />
       </div>
     </div>
   );
