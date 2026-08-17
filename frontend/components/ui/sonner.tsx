@@ -16,7 +16,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
-      className="toaster group"
+      className="toaster group max-[600px]:!w-auto"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
         info: <InfoIcon className="size-4" />,
@@ -33,8 +33,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
         } as React.CSSProperties
       }
       toastOptions={{
+        style: {
+          width: "fit-content",
+        },
         classNames: {
-          toast: "cn-toast",
+          toast: "cn-toast max-[600px]:mx-auto",
         },
       }}
       {...props}

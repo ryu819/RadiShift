@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-const TOAST_POSITION = "top-center";
 const TOAST_DURATION = 6000;
 
 const TOAST_COLORS = {
@@ -24,24 +23,28 @@ export function FlashToaster({ flash }: { flash?: string }) {
 
     const data: Toast = JSON.parse(flash);
 
+    const isMobile = window.innerWidth <= 600;
+
+    const position = isMobile ? "top-center" : "top-right";
+
     if (data.type === "pending") {
       toast.dismiss();
       toast.info(data.message, {
-        position: TOAST_POSITION,
+        position,
         duration: TOAST_DURATION,
         style: { color: TOAST_COLORS.pending, fontSize: TOAST_FONT_SIZE },
       });
     } else if (data.type === "failure") {
       toast.dismiss();
       toast.error(data.message, {
-        position: TOAST_POSITION,
+        position,
         duration: TOAST_DURATION,
         style: { color: TOAST_COLORS.failure, fontSize: TOAST_FONT_SIZE },
       });
     } else if (data.type === "success") {
       toast.dismiss();
       toast.success(data.message, {
-        position: TOAST_POSITION,
+        position,
         duration: TOAST_DURATION,
         style: { color: TOAST_COLORS.success, fontSize: TOAST_FONT_SIZE },
       });
