@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter, useSelectedLayoutSegment } from "next/navigation";
+import Link from "next/link";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -9,53 +10,51 @@ export function AdminDashboardTabs({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const segment = useSelectedLayoutSegment();
 
   const activeTab = segment ?? "overview";
 
-  const handleTabChange = (tab: string) => {
-    if (tab === "overview") {
-      router.push("/admin-dashboard");
-      return;
-    }
-
-    router.push(`/admin-dashboard/${tab}`);
-  };
-
   return (
-    <Tabs
-      value={activeTab}
-      onValueChange={handleTabChange}
-      className="space-y-6"
-    >
+    <Tabs value={activeTab} activationMode="manual" className="space-y-6">
       <TabsList variant="line" className="w-full border-b">
         <TabsTrigger
           value="overview"
+          asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          概要
+          <Link href="/admin-dashboard" prefetch={true}>
+            概要
+          </Link>
         </TabsTrigger>
 
         <TabsTrigger
           value="members"
+          asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          メンバー
+          <Link href="/admin-dashboard/members" prefetch={true}>
+            メンバー
+          </Link>
         </TabsTrigger>
 
         <TabsTrigger
           value="shift-types"
+          asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          シフト設定
+          <Link href="/admin-dashboard/shift-types" prefetch={true}>
+            シフト設定
+          </Link>
         </TabsTrigger>
 
         <TabsTrigger
           value="day-off-slots"
+          asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          休み枠
+          <Link href="/admin-dashboard/day-off-slots" prefetch={true}>
+            休み枠
+          </Link>
         </TabsTrigger>
       </TabsList>
 
