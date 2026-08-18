@@ -46,13 +46,13 @@ export function AccountDeleteDialogButton() {
           </DialogHeader>
           <div className="mb-4 flex items-start gap-2">
             <input
-              id="account-delete-agreement"
+              id="deleteAgreement"
               type="checkbox"
               checked={isAgreed}
               onChange={(e) => setIsAgreed(e.target.checked)}
               className="mt-1"
             />
-            <label htmlFor="account-delete-agreement" className="text-sm">
+            <label htmlFor="deleteAgreement" className="text-sm">
               内容を確認し、アカウント削除に同意します
             </label>
           </div>
