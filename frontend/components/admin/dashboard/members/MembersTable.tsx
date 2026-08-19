@@ -40,7 +40,7 @@ export function MembersTable({ members, invitation }: Props) {
     <Card className="gap-0 px-3 max-sm:px-2 pt-5 pb-0 shadow-none">
       <CardHeader className="border-b px-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="">所属メンバー</CardTitle>
+          <CardTitle className="text-base">所属メンバー</CardTitle>
 
           <div className="flex items-center justify-center gap-2">
             <InputGroup className="max-sm:hidden">

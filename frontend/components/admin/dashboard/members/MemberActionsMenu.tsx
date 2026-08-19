@@ -35,11 +35,7 @@ export function MemberActionsMenu({ member }: { member: Member }) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`${member.name}の設定`}
-          >
+          <Button variant="ghost" size="icon-sm">
             <MoreHorizontal className="size-4 max-sm:size-3" />
           </Button>
         </DropdownMenuTrigger>

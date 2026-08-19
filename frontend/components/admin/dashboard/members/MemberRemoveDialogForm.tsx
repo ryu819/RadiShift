@@ -45,7 +45,7 @@ export function MemberRemoveDialogForm({ member, onOpenChange }: Props) {
       <DialogContent className="max-w-xs sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="text-center text-xl">
-            施設から脱退させますか？
+            施設から脱退
           </DialogTitle>
 
           <p className="my-1 text-left">

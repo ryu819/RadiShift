@@ -120,11 +120,11 @@ ActiveRecord::Base.transaction do
     color_code: "#22C55E"
   )
 
-  3.times do |i|
+  6.times do |i|
     schedule_month = ScheduleMonth.create!(
       facility: facility,
       year: 2026,
-      month: i + 9,
+      month: i + 7,
       monthly_days_off: i + 9
     )
 
