@@ -29,12 +29,13 @@ function ItemIcon({ icon }: { icon?: IconName }) {
 
 export function SidebarItem({ href, icon, label }: Props) {
   const pathname = usePathname();
+  const isActive = pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
         asChild
-        isActive={pathname === href}
+        isActive={isActive}
         className=" hover:opacity-70 transition"
       >
         <Link href={href} className="gap-3">

@@ -75,7 +75,7 @@ export function MembersTable({ members, invitation }: Props) {
       <CardContent className="p-0">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead className="w-[15%] text-center px-0">名前</TableHead>
 
               <TableHead className="w-[15%] text-center px-0">権限</TableHead>

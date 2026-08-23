@@ -34,17 +34,14 @@ export async function OverviewServer({ searchParams }: Props) {
   const currentMonth = today.getMonth() + 1;
 
   const selectedScheduleMonth =
-    // URLで指定された月
     scheduleMonthList.find(
       (scheduleMonth) => scheduleMonth.id === requestedScheduleMonthId,
     ) ??
-    // 今月
     scheduleMonthList.find(
       (scheduleMonth) =>
         scheduleMonth.year === currentYear &&
         scheduleMonth.month === currentMonth,
     ) ??
-    // 今月がなければ最後の月
     scheduleMonthList[scheduleMonthList.length - 1];
 
   const [scheduleMonth, workAssignments] = await Promise.all([

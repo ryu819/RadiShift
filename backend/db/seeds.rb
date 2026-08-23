@@ -59,18 +59,42 @@ ActiveRecord::Base.transaction do
     day_off_unit: 1
   )
 
-  DayOffType.create!(
+  afternoon_day_off = DayOffType.create!(
     facility: facility,
     name: "午後休み",
     color_code: "#94a3b8",
     day_off_unit: 0.5
   )
-  DayOffType.create!(
+
+  no_overtime = DayOffType.create!(
     facility: facility,
     name: "残業✕",
     color_code: "#94a3b8",
     day_off_unit: 0
   )
+
+  day_off_types = [
+    day_off,
+    afternoon_day_off,
+    no_overtime
+  ]
+
+  day_off_slot_settings = [
+    { day_off_type: day_off, max_slots: 5 },
+    { day_off_type: afternoon_day_off, max_slots: 2 },
+    { day_off_type: no_overtime, max_slots: 2 }
+  ]
+
+  day_off_slot_settings.each do |setting|
+    8.times do |weekday|
+      DayOffSlotRule.create!(
+        facility: facility,
+        day_off_type: setting[:day_off_type],
+        weekday: weekday,
+        max_slots: setting[:max_slots]
+      )
+    end
+  end
 
   ModalityType.create!(
     facility: facility,
@@ -120,7 +144,7 @@ ActiveRecord::Base.transaction do
     color_code: "#22C55E"
   )
 
-  6.times do |i|
+  3.times do |i|
     schedule_month = ScheduleMonth.create!(
       facility: facility,
       year: 2026,
@@ -142,6 +166,25 @@ ActiveRecord::Base.transaction do
         date: date,
         is_holiday: HolidayJapan.check(date)
       )
+    end
+
+    schedule_days.each do |schedule_day|
+      day_off_types.each do |day_off_type|
+        weekday =
+          schedule_day.is_holiday ? 7 : schedule_day.date.wday
+
+        rule = DayOffSlotRule.find_by!(
+          facility: facility,
+          day_off_type: day_off_type,
+          weekday: weekday
+        )
+
+        DayOffSlot.create!(
+          schedule_day: schedule_day,
+          day_off_type: day_off_type,
+          max_slots: rule.max_slots
+        )
+      end
     end
 
     # 管理者の勤務割当
