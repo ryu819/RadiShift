@@ -14,11 +14,9 @@ module Api
         day_off_slot_rules = current_user.facility.day_off_slot_rules
                                .order(:day_off_type_id, :weekday)
 
-        render json: {
-          day_off_slot_rules: day_off_slot_rules.as_json(
-            only: [:id, :day_off_type_id, :weekday, :max_slots]
-          )
-        }, status: :ok
+        render json: day_off_slot_rules.as_json(
+          only: [:id, :day_off_type_id, :weekday, :max_slots]
+        ), status: :ok
       end
 
       def create

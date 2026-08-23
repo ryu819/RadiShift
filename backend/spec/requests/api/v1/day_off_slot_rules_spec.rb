@@ -22,7 +22,7 @@ RSpec.describe "Api::V1::DayOffSlotRules", type: :request do
       it "ログインユーザーの施設の休み枠ルールだけを返す" do
         subject
         res = JSON.parse(response.body)
-        day_off_slot_rule_ids = res["day_off_slot_rules"].map { |rule| rule["id"] }
+        day_off_slot_rule_ids = res.map { |rule| rule["id"] }
         expect(day_off_slot_rule_ids).to include(day_off_slot_rule.id)
         expect(day_off_slot_rule_ids).not_to include(other_facility_day_off_slot_rule.id)
         expect(response).to have_http_status(:ok)
