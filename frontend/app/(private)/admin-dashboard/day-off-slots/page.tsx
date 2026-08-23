@@ -1,3 +1,22 @@
-export default function DayOffSlotsPage() {
-  return <></>;
+import { Metadata } from "next";
+import { Suspense } from "react";
+
+import { DayOffSlots } from "@/components/admin/dashboard/day-off-slots/DayOffSlots";
+
+export const metadata: Metadata = {
+  title: "休み枠",
+};
+
+type Props = {
+  searchParams: Promise<{
+    scheduleMonthId?: string;
+  }>;
+};
+
+export default function DayOffSlotsPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <DayOffSlots searchParams={searchParams} />
+    </Suspense>
+  );
 }
