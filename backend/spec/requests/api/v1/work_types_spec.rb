@@ -15,7 +15,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
       let!(:other_facility_work_type) { create(:work_type, facility: create(:facility), name: "遅番", is_active: true) }
 
-      it "ログインユーザーの施設の有効な勤務パターンだけを返す" do
+      it "ログインユーザーの施設の有効な勤務タイプだけを返す" do
         subject
         res = JSON.parse(response.body)
         work_type_ids = res.map { |work_type| work_type["id"] }
@@ -45,13 +45,13 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
-      it "勤務パターンを作成できる" do
+      it "勤務タイプを作成できる" do
         expect { subject }.to change { WorkType.count }.by(1)
 
         res = JSON.parse(response.body)
         work_type = user.facility.work_types.find_by(name: "日勤")
 
-        expect(res["message"]).to eq("勤務パターンを作成しました。")
+        expect(res["message"]).to eq("勤務タイプを作成しました。")
         expect(work_type.color_code).to eq("#FF0000")
         expect(work_type.auto_approve).to be true
         expect(work_type.facility).to eq(user.facility)
@@ -66,7 +66,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
           res = JSON.parse(response.body)
 
-          expect(res["message"]).to eq("勤務パターンの作成に失敗しました。")
+          expect(res["message"]).to eq("勤務タイプの作成に失敗しました。")
           expect(res["errors"]["name"]).to be_present
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -117,10 +117,10 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
-      it "勤務パターンを更新できる" do
+      it "勤務タイプを更新できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("勤務パターンを更新しました。")
+        expect(res["message"]).to eq("勤務タイプを更新しました。")
         expect(work_type.reload.name).to eq("夜勤")
         expect(work_type.color_code).to eq("#0000FF")
         expect(work_type.auto_approve).to be true
@@ -133,7 +133,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
         it "更新に失敗する" do
           subject
           res = JSON.parse(response.body)
-          expect(res["message"]).to eq("勤務パターンの更新に失敗しました。")
+          expect(res["message"]).to eq("勤務タイプの更新に失敗しました。")
           expect(res["errors"]["name"]).to be_present
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -178,7 +178,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
       end
     end
 
-    context "別施設の勤務パターンを更新しようとした時" do
+    context "別施設の勤務タイプを更新しようとした時" do
       let(:user) { create(:user, :admin) }
       let(:work_type) { create(:work_type, facility: create(:facility), name: "日勤") }
 
@@ -196,10 +196,10 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
-      it "勤務パターンを論理削除できる" do
+      it "勤務タイプを論理削除できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("勤務パターンを削除しました。")
+        expect(res["message"]).to eq("勤務タイプを削除しました。")
         expect(work_type.reload.is_active).to be false
         expect(response).to have_http_status(:ok)
       end
@@ -228,7 +228,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
       end
     end
 
-    context "別施設の勤務パターンを削除しようとした時" do
+    context "別施設の勤務タイプを削除しようとした時" do
       let(:user) { create(:user, :admin) }
       let(:work_type) { create(:work_type, facility: create(:facility), name: "日勤") }
 
