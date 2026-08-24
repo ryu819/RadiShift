@@ -53,7 +53,7 @@ async function ScheduleMonthsList() {
   if (!visibleScheduleMonths?.length) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
-        現在表示できるシフト月はありません
+        作成済みのシフト月はありません
       </p>
     );
   }
