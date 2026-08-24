@@ -2,7 +2,7 @@
 
 import { Loader2, Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -58,6 +58,7 @@ export function DayOffSlotDialogForm({
 
       if (nextState.success) {
         setOpen(false);
+        router.refresh();
       }
 
       return nextState;
@@ -67,12 +68,6 @@ export function DayOffSlotDialogForm({
       errors: {},
     },
   );
-
-  useEffect(() => {
-    if (!state.success) return;
-
-    router.refresh();
-  }, [state, router]);
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);

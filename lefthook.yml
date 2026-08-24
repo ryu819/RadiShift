@@ -1,0 +1,25 @@
+min_version: 2.1.11
+
+pre-commit:
+  setup:
+    - run: sh .lefthook/check-partially-staged.sh
+
+  jobs:
+    - name: frontend-eslint
+      root: frontend/
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs}"
+      run: docker compose -f ../docker-compose.yml exec -T front npm run lint:fix -- {staged_files}
+      stage_fixed: true
+      fail_text: "ESLintで自動修正できないエラーがあります。"
+
+    - name: frontend-prettier
+      root: frontend/
+      run: docker compose -f ../docker-compose.yml exec -T front npx prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+      fail_text: "Prettierの実行に失敗しました。"
+
+    - name: backend-rubocop
+      root: backend/
+      run: docker compose -f ../docker-compose.yml exec -T app bundle exec rubocop -a --force-exclusion --only-recognized-file-types -- {staged_files}
+      stage_fixed: true
+      fail_text: "RuboCopで自動修正できない違反があります。"
