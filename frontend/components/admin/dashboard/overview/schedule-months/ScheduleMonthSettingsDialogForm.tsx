@@ -67,7 +67,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
         <DialogTrigger asChild>
           <button
             type="button"
-            className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border px-2 py-3 text-sm transition-colors hover:bg-muted/60 active:bg-muted/60"
+            className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border px-2 py-3 text-sm transition-colors hover:bg-muted/50 active:bg-muted/60"
           >
             <div className="font-semibold">
               {scheduleMonth.year}年 {scheduleMonth.month}月
@@ -161,7 +161,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
             <Link
               href={`/overview-shift?scheduleMonthId=${scheduleMonth.id}`}
               onClick={() => setSettingsOpen(false)}
-              className="group mt-3 flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-muted/60 active:bg-muted/60"
+              className="group mt-3 flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-muted/50 active:bg-muted/60"
             >
               <div className="flex items-center gap-2">
                 <Calendar className="size-4" />

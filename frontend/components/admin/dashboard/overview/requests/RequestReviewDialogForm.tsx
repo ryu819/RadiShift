@@ -85,7 +85,7 @@ export function RequestReviewDialogForm({
       <DialogTrigger asChild>
         <button
           type="button"
-          className="group cursor-pointer w-full rounded-sm px-2 text-left transition-colors hover:bg-muted/60 active:bg-muted/60"
+          className="group cursor-pointer w-full rounded-sm px-2 text-left transition-colors hover:bg-muted/50 active:bg-muted/60"
         >
           <div className="flex items-center justify-between py-3">
             <div className="space-y-1">

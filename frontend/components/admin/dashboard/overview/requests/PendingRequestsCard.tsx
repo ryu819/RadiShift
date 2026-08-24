@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
 import { Suspense } from "react";
 
-import { RequestReviewDialogForm } from "@/components/admin/dashboard/overview/requests/RequestReviewDialogForm";
+import { PendingRequestsList } from "@/components/admin/dashboard/overview/requests/PendingRequestsList";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,49 +19,17 @@ export function PendingRequestsCard() {
 
       <CardContent>
         <Suspense fallback={<RequestListSkeleton />}>
-          <PendingRequestsList />
+          <PendingRequestsContent />
         </Suspense>
       </CardContent>
     </Card>
   );
 }
 
-async function PendingRequestsList() {
+async function PendingRequestsContent() {
   const pendingRequests = (await getPendingRequests()) ?? [];
 
-  const visiblePendingRequests = pendingRequests.slice(0, 5);
-
-  const remainingRequests =
-    pendingRequests.length - visiblePendingRequests.length;
-  return (
-    <>
-      {visiblePendingRequests.length > 0 ? (
-        <div>
-          {visiblePendingRequests.map((request, index) => (
-            <div key={request.id + request.requestKind}>
-              <RequestReviewDialogForm request={request} />
-
-              {index < visiblePendingRequests.length - 1 && <Separator />}
-            </div>
-          ))}
-
-          {remainingRequests > 0 && (
-            <>
-              <Separator />
-
-              <div className="flex items-center justify-center py-2 pt-4">
-                ほか{remainingRequests}件
-              </div>
-            </>
-          )}
-        </div>
-      ) : (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          未処理の申請はありません
-        </p>
-      )}
-    </>
-  );
+  return <PendingRequestsList pendingRequests={pendingRequests} />;
 }
 
 function RequestListSkeleton() {
@@ -76,7 +44,7 @@ function RequestListSkeleton() {
               <Skeleton className="h-3 w-32" />
             </div>
 
-            <Skeleton className="h-6 w-24 " />
+            <Skeleton className="h-6 w-24" />
           </div>
 
           {index < 4 && <Separator />}
