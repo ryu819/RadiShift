@@ -1,5 +1,6 @@
 "use client";
 
+import { calendarWeekdays } from "@/components/admin/dashboard/day-off-slots/calendar/day-off-slot-calendar-week-days";
 import { DayOffSlotDialogForm } from "@/components/admin/dashboard/day-off-slots/calendar/DayOffSlotDialogForm";
 import { cn } from "@/lib/utils";
 import type { DayOffType } from "@/types/day-off-type";
@@ -9,32 +10,6 @@ type Props = {
   scheduleDays: ScheduleDay[];
   selectedDayOffType: DayOffType | null;
 };
-
-const weekdays = [
-  {
-    label: "日",
-    className: "text-red-500 ",
-  },
-  {
-    label: "月",
-  },
-  {
-    label: "火",
-  },
-  {
-    label: "水",
-  },
-  {
-    label: "木",
-  },
-  {
-    label: "金",
-  },
-  {
-    label: "土",
-    className: "text-blue-500 ",
-  },
-];
 
 function getWeekday(date: string) {
   const [year, month, day] = date.split("-").map(Number);
@@ -65,7 +40,7 @@ export function DayOffSlotCalendar({
   return (
     <>
       <div className="grid grid-cols-7 border-b bg-muted/30">
-        {weekdays.map((weekday) => (
+        {calendarWeekdays.map((weekday) => (
           <div
             key={weekday.label}
             className={cn(
