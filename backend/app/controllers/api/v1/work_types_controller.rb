@@ -21,10 +21,10 @@ module Api
         work_type = current_user.facility.work_types.build(work_type_params)
 
         if work_type.save
-          render json: { message: "勤務パターンを作成しました。" }, status: :created
+          render json: { message: "勤務タイプを作成しました。" }, status: :created
         else
           render json: {
-            message: "勤務パターンの作成に失敗しました。",
+            message: "勤務タイプの作成に失敗しました。",
             errors: work_type.errors.to_hash(true)
           }, status: :unprocessable_content
         end
@@ -32,10 +32,10 @@ module Api
 
       def update
         if @work_type.update(work_type_params)
-          render json: { message: "勤務パターンを更新しました。" }, status: :ok
+          render json: { message: "勤務タイプを更新しました。" }, status: :ok
         else
           render json: {
-            message: "勤務パターンの更新に失敗しました。",
+            message: "勤務タイプの更新に失敗しました。",
             errors: @work_type.errors.to_hash(true)
           }, status: :unprocessable_content
         end
@@ -44,7 +44,7 @@ module Api
       def destroy
         @work_type.update!(is_active: false)
 
-        render json: { message: "勤務パターンを削除しました。" }, status: :ok
+        render json: { message: "勤務タイプを削除しました。" }, status: :ok
       end
 
       private
