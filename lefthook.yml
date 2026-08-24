@@ -23,3 +23,10 @@ pre-commit:
       run: docker compose -f ../docker-compose.yml exec -T app bundle exec rubocop -a --force-exclusion --only-recognized-file-types -- {staged_files}
       stage_fixed: true
       fail_text: "RuboCopで自動修正できない違反があります。"
+
+pre-push:
+  jobs:
+    - name: backend-rspec
+      root: backend/
+      run: docker compose -f ../docker-compose.yml exec -T -e RAILS_ENV=test app bundle exec rspec
+      fail_text: "RSpecで失敗しているテストがあります。"
