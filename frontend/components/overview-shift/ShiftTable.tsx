@@ -17,12 +17,12 @@ import { WorkType } from "@/types/work-type";
 import { badgeStyle } from "@/utils/badge-style";
 
 type Props = {
-  members: Member[] | null;
-  workTypes: WorkType[] | null;
-  workAssignments: WorkAssignment[] | null;
-  days: ScheduleDay[] | undefined;
-  year: number | undefined;
-  month: number | undefined;
+  members: Member[];
+  workTypes: WorkType[];
+  workAssignments: WorkAssignment[];
+  days?: ScheduleDay[];
+  year: number;
+  month: number;
 };
 
 const getCellKey = (memberId: number, date: string) => {
@@ -80,7 +80,7 @@ export function ShiftTable({
         </thead>
 
         <tbody>
-          {members?.map((member, rowIndex) => (
+          {members.map((member, rowIndex) => (
             <tr key={member.id}>
               <th
                 className={cn(
@@ -93,7 +93,7 @@ export function ShiftTable({
 
               {days?.map((day) => {
                 const cellKey = getCellKey(member.id, day.date);
-                const cellWorkAssignments = workAssignments?.filter(
+                const cellWorkAssignments = workAssignments.filter(
                   (workAssignment) =>
                     workAssignment.userId === member.id &&
                     workAssignment.scheduleDayId === day.id,
@@ -119,7 +119,7 @@ export function ShiftTable({
                           className="flex h-full w-full cursor-pointer items-center justify-center  p-0.5 transition hover:bg-blue-50 md:p-1"
                         >
                           <div className="flex  flex-col items-center gap-0.5 md:gap-1 ">
-                            {cellWorkAssignments?.map((workAssignment) => (
+                            {cellWorkAssignments.map((workAssignment) => (
                               <Badge
                                 key={workAssignment.id}
                                 variant="outline"
@@ -154,15 +154,15 @@ export function ShiftTable({
                             {member.name}
                           </p>
                           <p className="mt-1 text-xs text-secondary">
-                            {year && month && `${year}年 ${month}月`}
+                            {`${year}年 ${month}月`}
                             {day.day}日
                           </p>
                         </div>
 
                         <div className="space-y-0.5">
-                          {workTypes?.map((workType) => {
+                          {workTypes.map((workType) => {
                             const selectedWorkAssignment =
-                              cellWorkAssignments?.find(
+                              cellWorkAssignments.find(
                                 (workAssignment) =>
                                   workAssignment.workType.id === workType.id,
                               );

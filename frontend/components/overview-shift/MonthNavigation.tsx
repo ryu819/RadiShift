@@ -9,8 +9,8 @@ import { ScheduleMonths } from "@/types/schedule-months";
 type Props = {
   scheduleMonths: ScheduleMonths[];
   selectedScheduleMonthId: number;
-  year: number | undefined;
-  month: number | undefined;
+  year: number;
+  month: number;
 };
 
 export function MonthNavigation({
@@ -63,7 +63,7 @@ export function MonthNavigation({
       </Button>
 
       <h1 className="text-xl font-semibold md:text-2xl">
-        {year && month && `${year}年 ${month}月`}
+        {`${year}年 ${month}月`}
       </h1>
 
       <Button
