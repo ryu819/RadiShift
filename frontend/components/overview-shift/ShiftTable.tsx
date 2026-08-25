@@ -21,8 +21,8 @@ type Props = {
   workTypes: WorkType[];
   workAssignments: WorkAssignment[];
   days?: ScheduleDay[];
-  year?: number;
-  month?: number;
+  year: number;
+  month: number;
 };
 
 const getCellKey = (memberId: number, date: string) => {
@@ -154,7 +154,7 @@ export function ShiftTable({
                             {member.name}
                           </p>
                           <p className="mt-1 text-xs text-secondary">
-                            {year && month && `${year}年 ${month}月`}
+                            {`${year}年 ${month}月`}
                             {day.day}日
                           </p>
                         </div>
