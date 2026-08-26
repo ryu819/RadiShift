@@ -1,10 +1,11 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { ScheduleMonths } from "@/types/schedule-months";
+import type { ScheduleMonths } from "@/types/schedule-months";
 
 type Props = {
   scheduleMonths: ScheduleMonths[];
@@ -19,61 +20,60 @@ export function MonthNavigation({
   year,
   month,
 }: Props) {
-  const router = useRouter();
   const pathname = usePathname();
 
   const currentScheduleMonthIndex = scheduleMonths.findIndex(
     (scheduleMonth) => scheduleMonth.id === selectedScheduleMonthId,
   );
 
-  const hasPrevMonth = currentScheduleMonthIndex > 0;
+  const previousScheduleMonth =
+    currentScheduleMonthIndex > 0
+      ? scheduleMonths[currentScheduleMonthIndex - 1]
+      : null;
 
-  const hasNextMonth =
+  const nextScheduleMonth =
     currentScheduleMonthIndex >= 0 &&
-    currentScheduleMonthIndex < scheduleMonths.length - 1;
+    currentScheduleMonthIndex < scheduleMonths.length - 1
+      ? scheduleMonths[currentScheduleMonthIndex + 1]
+      : null;
 
-  const changeScheduleMonth = (nextIndex: number) => {
-    const nextScheduleMonth = scheduleMonths[nextIndex];
-
-    if (!nextScheduleMonth) return;
-
-    router.push(`${pathname}?scheduleMonthId=${nextScheduleMonth.id}`);
-  };
-
-  const handlePrevMonth = () => {
-    if (!hasPrevMonth) return;
-
-    changeScheduleMonth(currentScheduleMonthIndex - 1);
-  };
-
-  const handleNextMonth = () => {
-    if (!hasNextMonth) return;
-
-    changeScheduleMonth(currentScheduleMonthIndex + 1);
-  };
   return (
     <div className="flex items-center justify-center gap-1 md:gap-3">
-      <Button
-        variant="link"
-        size="icon"
-        onClick={handlePrevMonth}
-        disabled={!hasPrevMonth}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
+      {previousScheduleMonth ? (
+        <Button asChild variant="link" size="icon">
+          <Link
+            href={`${pathname}?scheduleMonthId=${previousScheduleMonth.id}`}
+            prefetch={false}
+            scroll={false}
+          >
+            <ChevronLeft className="size-4" aria-hidden="true" />
+          </Link>
+        </Button>
+      ) : (
+        <Button type="button" variant="link" size="icon" disabled>
+          <ChevronLeft className="size-4" aria-hidden="true" />
+        </Button>
+      )}
 
       <h1 className="text-xl font-semibold md:text-2xl">
         {`${year}年 ${month}月`}
       </h1>
 
-      <Button
-        variant="link"
-        size="icon"
-        onClick={handleNextMonth}
-        disabled={!hasNextMonth}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
+      {nextScheduleMonth ? (
+        <Button asChild variant="link" size="icon">
+          <Link
+            href={`${pathname}?scheduleMonthId=${nextScheduleMonth.id}`}
+            prefetch={false}
+            scroll={false}
+          >
+            <ChevronRight className="size-4" aria-hidden="true" />
+          </Link>
+        </Button>
+      ) : (
+        <Button type="button" variant="link" size="icon" disabled>
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
+        </Button>
+      )}
     </div>
   );
 }
