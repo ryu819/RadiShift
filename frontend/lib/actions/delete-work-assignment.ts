@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { ROUTES } from "@/constants/routes";
 import { getJwt } from "@/lib/actions/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -52,7 +53,7 @@ export async function deleteWorkAssignmentForm(
       };
     }
 
-    revalidatePath("/overview-shift");
+    revalidatePath(`${ROUTES.masterShift}`);
 
     return {};
   } catch {

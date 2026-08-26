@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { DayOffSlotCalendar } from "@/components/admin/dashboard/day-off-slots/calendar/DayOffSlotCalendar";
-import { MonthNavigation } from "@/components/overview-shift/MonthNavigation";
+import { MonthNavigation } from "@/components/master-shift/MonthNavigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,

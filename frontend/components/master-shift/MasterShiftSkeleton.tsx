@@ -11,7 +11,7 @@ const SkeletonMemberRows = Array.from({
 
 const SkeletonDays = Array.from({ length: 31 }, (_, index) => index + 1);
 
-export function OverviewShiftSkeleton() {
+export function MasterShiftSkeleton() {
   return (
     <>
       <div className="flex items-center justify-center gap-1 md:gap-3">

@@ -1,4 +1,5 @@
 import { SidebarItem } from "@/components/sidebar/SidebarItem";
+import { ROUTES } from "@/constants/routes";
 import { getCurrentUser } from "@/lib/actions/get-current-user";
 
 export async function AdminSidebarItem() {
@@ -8,7 +9,7 @@ export async function AdminSidebarItem() {
 
   return (
     <SidebarItem
-      href="/admin-dashboard"
+      href={`${ROUTES.adminDashboard}`}
       icon="layoutDashboard"
       label="管理画面TOP"
     />
