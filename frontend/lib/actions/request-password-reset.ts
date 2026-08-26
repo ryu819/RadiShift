@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { ROUTES } from "@/constants/routes";
 import { getCurrentUser } from "@/lib/actions/get-current-user";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -65,5 +66,5 @@ export async function requestPasswordReset(
     return { values: { email } };
   }
 
-  redirect("/settings");
+  redirect(`${ROUTES.settings}`);
 }

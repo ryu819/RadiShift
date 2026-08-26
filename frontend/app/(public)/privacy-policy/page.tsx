@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ROUTES } from "@/constants/routes";
+
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
 };
@@ -88,7 +90,7 @@ export default function PrivacyPolicyPage() {
       <p>
         お客様は、当サービスが保有するご自身の個人情報について、開示・訂正・削除を求めることができます。ご希望の場合は、
         <Link
-          href="/contact"
+          href={`${ROUTES.contact}`}
           className="text-primary underline hover:opacity-50 transition"
         >
           お問い合わせ

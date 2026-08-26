@@ -27,7 +27,7 @@ export function AppSidebar() {
               <SidebarItem
                 href={`${ROUTES.myShift}`}
                 icon="calendar"
-                label="シフト"
+                label="マイシフト"
               />
               <SidebarItem
                 href={`${ROUTES.settings}`}

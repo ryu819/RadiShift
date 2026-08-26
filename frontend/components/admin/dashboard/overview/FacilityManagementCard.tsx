@@ -8,24 +8,25 @@ import {
 import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ROUTES } from "@/constants/routes";
 
 const facilityManagementItems = [
   {
     title: "招待コードを確認",
     description: "新しいメンバー招待に必要です",
-    href: "/admin/members",
+    href: `${ROUTES.adminMembers}`,
     icon: KeyRound,
   },
   {
     title: "申請の締切を設定",
     description: "申請の締切日を管理しましょう",
-    href: "/admin/settings",
+    href: `${ROUTES.adminDashboard}`,
     icon: CalendarClock,
   },
   {
     title: "施設ルールの編集",
     description: "施設ルールを設定します",
-    href: "/admin/settings",
+    href: `${ROUTES.adminDashboard}`,
     icon: SlidersHorizontal,
   },
 ];
