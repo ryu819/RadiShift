@@ -1,9 +1,11 @@
 import { DayOffSlotCalendarCard } from "@/components/admin/dashboard/day-off-slots/calendar/DayOffSlotCalendarCard";
 import { DayOffSlotRuleSettingsCard } from "@/components/admin/dashboard/day-off-slots/rules/DayOffSlotRuleSettingsCard";
+import { APP_TIME_ZONE } from "@/constants/time-zone";
 import { getDayOffSlotRules } from "@/lib/actions/get-day-off-slot-rules";
 import { getDayOffTypes } from "@/lib/actions/get-day-off-types";
 import { getScheduleMonth } from "@/lib/actions/get-schedule-month";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
+import { dayjs } from "@/lib/dayjs";
 
 type Props = {
   searchParams: Promise<{
@@ -29,9 +31,9 @@ export async function DayOffSlots({ searchParams }: Props) {
 
   const scheduleMonthList = scheduleMonths ?? [];
 
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth() + 1;
+  const today = dayjs().tz(APP_TIME_ZONE);
+  const currentYear = today.year();
+  const currentMonth = Number(today.format("M"));
 
   const selectedScheduleMonth =
     scheduleMonthList.find(

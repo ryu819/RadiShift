@@ -14,11 +14,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { APP_TIME_ZONE } from "@/constants/time-zone";
 import {
   ActionState,
   createDayOffSlotForm,
 } from "@/lib/actions/create-day-off-slot";
 import { updateDayOffSlotForm } from "@/lib/actions/update-day-off-slot";
+import { dayjs } from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 import type { DayOffSlot } from "@/types/day-off-slot";
 import type { DayOffType } from "@/types/day-off-type";
@@ -31,12 +33,6 @@ type Props = {
   isLastColumn: boolean;
   dateClassName: string;
 };
-
-function formatDate(date: string) {
-  const [year, month, day] = date.split("-").map(Number);
-
-  return `${year}年${month}月${day}日`;
-}
 
 export function DayOffSlotDialogForm({
   scheduleDay,
@@ -112,7 +108,7 @@ export function DayOffSlotDialogForm({
       <DialogContent className="max-w-xs sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="text-center text-xl">
-            {formatDate(scheduleDay.date)}
+            {dayjs.tz(scheduleDay.date, APP_TIME_ZONE).format("YYYY年M月D日")}
           </DialogTitle>
 
           <DialogDescription className="text-center">

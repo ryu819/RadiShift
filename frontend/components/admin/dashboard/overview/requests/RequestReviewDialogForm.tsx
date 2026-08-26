@@ -14,29 +14,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { APP_TIME_ZONE } from "@/constants/time-zone";
 import {
   ActionState,
   updateRequestStatusForm,
 } from "@/lib/actions/update-request-status";
+import { dayjs } from "@/lib/dayjs";
 import { PendingRequest } from "@/types/pending-request";
 import { badgeStyle } from "@/utils/badge-style";
 
 function formatRequestedDate(dateString: string, weekdayLabel: string) {
-  const [_year, month, day] = dateString.split("-").map(Number);
+  const requestedDate = dayjs.tz(dateString, APP_TIME_ZONE).format("M/D");
 
-  return `${month}/${day}（${weekdayLabel}）`;
+  return `${requestedDate}（${weekdayLabel}）`;
 }
 
 function formatCreatedAt(dateString: string) {
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "Asia/Tokyo",
-  }).format(new Date(dateString));
+  return dayjs(dateString).tz(APP_TIME_ZONE).format("YYYY/M/D HH:mm");
 }
 
 export function RequestReviewDialogForm({

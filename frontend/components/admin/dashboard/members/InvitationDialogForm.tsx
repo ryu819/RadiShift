@@ -12,17 +12,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { APP_TIME_ZONE } from "@/constants/time-zone";
 import { createFacilityInvitationForm } from "@/lib/actions/create-facility-invitation";
+import { dayjs } from "@/lib/dayjs";
 import { FacilityInvitation } from "@/types/facility-invitation";
 
 function formatExpirationDate(date: string | null | undefined) {
   if (!date) return "未設定";
 
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(new Date(date));
+  return dayjs(date).tz(APP_TIME_ZONE).format("YYYY年M月D日");
 }
 
 export function InvitationDialogForm({

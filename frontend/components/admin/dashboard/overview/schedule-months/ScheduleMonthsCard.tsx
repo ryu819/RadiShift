@@ -6,7 +6,9 @@ import { ScheduleMonthSettingsDialogForm } from "@/components/admin/dashboard/ov
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { APP_TIME_ZONE } from "@/constants/time-zone";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
+import { dayjs } from "@/lib/dayjs";
 
 export function ScheduleMonthsCard() {
   return (
@@ -39,9 +41,9 @@ export function ScheduleMonthsCard() {
 
 async function ScheduleMonthsList() {
   const scheduleMonths = await getScheduleMonths();
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
+  const today = dayjs().tz(APP_TIME_ZONE);
+  const currentYear = today.year();
+  const currentMonth = Number(today.format("M"));
 
   const visibleScheduleMonths = scheduleMonths?.filter(
     (scheduleMonth) =>
