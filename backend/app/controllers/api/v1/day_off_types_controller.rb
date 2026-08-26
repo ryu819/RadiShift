@@ -21,10 +21,10 @@ module Api
         day_off_type = current_user.facility.day_off_types.build(day_off_type_params)
 
         if day_off_type.save
-          render json: { message: "休みパターンを作成しました。" }, status: :created
+          render json: { message: "休みタイプを作成しました。" }, status: :created
         else
           render json: {
-            message: "休みパターンの作成に失敗しました。",
+            message: "休みタイプの作成に失敗しました。",
             errors: day_off_type.errors.to_hash(true)
           }, status: :unprocessable_content
         end
@@ -32,10 +32,10 @@ module Api
 
       def update
         if @day_off_type.update(day_off_type_params)
-          render json: { message: "休みパターンを更新しました。" }, status: :ok
+          render json: { message: "休みタイプを更新しました。" }, status: :ok
         else
           render json: {
-            message: "休みパターンの更新に失敗しました。",
+            message: "休みタイプの更新に失敗しました。",
             errors: @day_off_type.errors.to_hash(true)
           }, status: :unprocessable_content
         end
@@ -44,7 +44,7 @@ module Api
       def destroy
         @day_off_type.update!(is_active: false)
 
-        render json: { message: "休みパターンを削除しました。" }, status: :ok
+        render json: { message: "休みタイプを削除しました。" }, status: :ok
       end
 
       private
