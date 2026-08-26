@@ -2,6 +2,8 @@
 
 import { calendarWeekdays } from "@/components/admin/dashboard/day-off-slots/calendar/day-off-slot-calendar-week-days";
 import { DayOffSlotDialogForm } from "@/components/admin/dashboard/day-off-slots/calendar/DayOffSlotDialogForm";
+import { APP_TIME_ZONE } from "@/constants/time-zone";
+import { dayjs } from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 import type { DayOffType } from "@/types/day-off-type";
 import type { ScheduleDay } from "@/types/schedule-day";
@@ -11,17 +13,11 @@ type Props = {
   selectedDayOffType: DayOffType | null;
 };
 
-function getWeekday(date: string) {
-  const [year, month, day] = date.split("-").map(Number);
-
-  return new Date(year, month - 1, day).getDay();
-}
-
 export function DayOffSlotCalendar({
   scheduleDays,
   selectedDayOffType,
 }: Props) {
-  const firstWeekday = getWeekday(scheduleDays[0].date) ?? 0;
+  const firstWeekday = dayjs.tz(scheduleDays[0].date, APP_TIME_ZONE).day() ?? 0;
 
   const calendarCells: (ScheduleDay | null)[] = [];
 

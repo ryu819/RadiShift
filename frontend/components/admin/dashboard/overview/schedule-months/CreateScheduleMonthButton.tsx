@@ -1,5 +1,7 @@
 import { ScheduleMonthCreateDialogForm } from "@/components/admin/dashboard/overview/schedule-months/ScheduleMonthCreateDialogForm";
+import { APP_TIME_ZONE } from "@/constants/time-zone";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
+import { dayjs } from "@/lib/dayjs";
 import { ScheduleMonths } from "@/types/schedule-months";
 
 export async function CreateScheduleMonthButton() {
@@ -19,11 +21,11 @@ function getNextScheduleMonth(scheduleMonths: ScheduleMonths[]) {
   const latestScheduleMonth = scheduleMonths[scheduleMonths.length - 1];
 
   if (!latestScheduleMonth) {
-    const today = new Date();
+    const currentMonth = dayjs().tz(APP_TIME_ZONE);
 
     return {
-      year: today.getFullYear(),
-      month: today.getMonth(),
+      year: currentMonth.year(),
+      month: Number(currentMonth.format("M")),
     };
   }
 
