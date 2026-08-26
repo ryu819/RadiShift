@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ROUTES } from "@/constants/routes";
 import { logout } from "@/lib/actions/logout";
 import { User } from "@/types/user";
 
@@ -28,7 +29,7 @@ export function UserDropdownMenu({ user }: { user: User | null }) {
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/settings" className="cursor-pointer">
+            <Link href={`${ROUTES.settings}`} className="cursor-pointer">
               <BadgeCheckIcon />
               アカウント設定
             </Link>

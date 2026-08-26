@@ -9,6 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ROUTES } from "@/constants/routes";
 
 export function MoreNavItem() {
   return (
@@ -24,20 +25,26 @@ export function MoreNavItem() {
           </SheetHeader>
           <div className="flex flex-col text-secondary mx-4 mb-2 gap-2 divide-y ">
             <SheetClose asChild>
-              <Link href="/terms" className="hover:opacity-70 transition">
+              <Link
+                href={`${ROUTES.terms}`}
+                className="hover:opacity-70 transition"
+              >
                 利用規約
               </Link>
             </SheetClose>
             <SheetClose asChild>
               <Link
-                href="/privacy-policy"
+                href={`${ROUTES.privacyPolicy}`}
                 className="hover:opacity-70 transition"
               >
                 プライバシーポリシー
               </Link>
             </SheetClose>
             <SheetClose asChild>
-              <Link href="/contact" className="hover:opacity-70 transition">
+              <Link
+                href={`${ROUTES.contact}`}
+                className="hover:opacity-70 transition"
+              >
                 お問い合わせ
               </Link>
             </SheetClose>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ROUTES } from "@/constants/routes";
 
 export function AdminDashboardTabs({
   children,
@@ -22,7 +23,7 @@ export function AdminDashboardTabs({
           asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          <Link href="/admin-dashboard" prefetch={true}>
+          <Link href={`${ROUTES.adminDashboard}`} prefetch={true}>
             概要
           </Link>
         </TabsTrigger>
@@ -32,7 +33,7 @@ export function AdminDashboardTabs({
           asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          <Link href="/admin-dashboard/members" prefetch={true}>
+          <Link href={`${ROUTES.adminMembers}`} prefetch={true}>
             メンバー
           </Link>
         </TabsTrigger>
@@ -42,7 +43,7 @@ export function AdminDashboardTabs({
           asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          <Link href="/admin-dashboard/shift-types" prefetch={true}>
+          <Link href={`${ROUTES.adminShiftTypes}`} prefetch={true}>
             シフト設定
           </Link>
         </TabsTrigger>
@@ -52,7 +53,7 @@ export function AdminDashboardTabs({
           asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          <Link href="/admin-dashboard/day-off-slots" prefetch={true}>
+          <Link href={`${ROUTES.adminDayOffSlots}`} prefetch={true}>
             休み枠
           </Link>
         </TabsTrigger>
