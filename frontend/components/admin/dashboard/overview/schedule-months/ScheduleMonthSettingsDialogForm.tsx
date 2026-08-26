@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ROUTES } from "@/constants/routes";
 import {
   ActionState,
   updateScheduleMonthForm,
@@ -159,7 +160,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
             </Button>
 
             <Link
-              href={`/overview-shift?scheduleMonthId=${scheduleMonth.id}`}
+              href={`/${ROUTES.masterShift}?scheduleMonthId=${scheduleMonth.id}`}
               onClick={() => setSettingsOpen(false)}
               className="group mt-3 flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-muted/50 active:bg-muted/60"
             >

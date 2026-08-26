@@ -16,7 +16,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
 
       let!(:other_facility_day_off_type) { create(:day_off_type, facility: create(:facility), name: "午前休み", day_off_unit: 0.5, is_active: true) }
 
-      it "ログインユーザーの施設の有効な休みパターンだけを返す" do
+      it "ログインユーザーの施設の有効な休みタイプだけを返す" do
         subject
         res = JSON.parse(response.body)
         day_off_type_ids = res.map { |day_off_type| day_off_type["id"] }
@@ -47,11 +47,11 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
 
-      it "休みパターンを作成できる" do
+      it "休みタイプを作成できる" do
         expect { subject }.to change { DayOffType.count }.by(1)
         res = JSON.parse(response.body)
         day_off_type = user.facility.day_off_types.find_by(name: "休み")
-        expect(res["message"]).to eq("休みパターンを作成しました。")
+        expect(res["message"]).to eq("休みタイプを作成しました。")
         expect(day_off_type.day_off_unit).to eq(1.0)
         expect(day_off_type.color_code).to eq("#FF0000")
         expect(day_off_type.uses_slot).to be false
@@ -65,8 +65,8 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         it "作成に失敗する" do
           expect { subject }.not_to change { DayOffType.count }
           res = JSON.parse(response.body)
-          expect(res["message"]).to eq("休みパターンの作成に失敗しました。")
-          expect(res["errors"]["name"]).to include("休みパターン名を入力してください")
+          expect(res["message"]).to eq("休みタイプの作成に失敗しました。")
+          expect(res["errors"]["name"]).to include("休みタイプ名を入力してください")
           expect(response).to have_http_status(:unprocessable_content)
         end
       end
@@ -77,7 +77,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         it "作成に失敗する" do
           expect { subject }.not_to change { DayOffType.count }
           res = JSON.parse(response.body)
-          expect(res["message"]).to eq("休みパターンの作成に失敗しました。")
+          expect(res["message"]).to eq("休みタイプの作成に失敗しました。")
           expect(res["errors"]["day_off_unit"]).to be_present
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -89,7 +89,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         it "作成に失敗する" do
           expect { subject }.not_to change { DayOffType.count }
           res = JSON.parse(response.body)
-          expect(res["message"]).to eq("休みパターンの作成に失敗しました。")
+          expect(res["message"]).to eq("休みタイプの作成に失敗しました。")
           expect(res["errors"]["day_off_unit"]).to be_present
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -140,10 +140,10 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
 
-      it "休みパターンを更新できる" do
+      it "休みタイプを更新できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("休みパターンを更新しました。")
+        expect(res["message"]).to eq("休みタイプを更新しました。")
         expect(day_off_type.reload.name).to eq("午後休み")
         expect(day_off_type.day_off_unit).to eq(0.5)
         expect(day_off_type.color_code).to eq("#0000FF")
@@ -157,7 +157,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         it "更新に失敗する" do
           subject
           res = JSON.parse(response.body)
-          expect(res["message"]).to eq("休みパターンの更新に失敗しました。")
+          expect(res["message"]).to eq("休みタイプの更新に失敗しました。")
           expect(res["errors"]["name"]).to be_present
           expect(day_off_type.reload.name).to eq("休み")
           expect(response).to have_http_status(:unprocessable_content)
@@ -170,7 +170,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         it "更新に失敗する" do
           subject
           res = JSON.parse(response.body)
-          expect(res["message"]).to eq("休みパターンの更新に失敗しました。")
+          expect(res["message"]).to eq("休みタイプの更新に失敗しました。")
           expect(res["errors"]["day_off_unit"]).to be_present
           expect(day_off_type.reload.day_off_unit).to eq(1.0)
           expect(response).to have_http_status(:unprocessable_content)
@@ -216,7 +216,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
       end
     end
 
-    context "別施設の休みパターンを更新しようとした時" do
+    context "別施設の休みタイプを更新しようとした時" do
       let(:user) { create(:user, :admin) }
       let(:day_off_type) { create(:day_off_type, facility: create(:facility), name: "休み") }
 
@@ -235,10 +235,10 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
 
-      it "休みパターンを論理削除できる" do
+      it "休みタイプを論理削除できる" do
         subject
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("休みパターンを削除しました。")
+        expect(res["message"]).to eq("休みタイプを削除しました。")
         expect(day_off_type.reload.is_active).to be false
         expect(response).to have_http_status(:ok)
       end
@@ -267,7 +267,7 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
       end
     end
 
-    context "別施設の休みパターンを削除しようとした時" do
+    context "別施設の休みタイプを削除しようとした時" do
       let(:user) { create(:user, :admin) }
       let(:day_off_type) { create(:day_off_type, facility: create(:facility), name: "休み") }
 

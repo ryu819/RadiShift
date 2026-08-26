@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
+import { ROUTES } from "@/constants/routes";
 import { getJwt } from "@/lib/actions/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -67,5 +68,5 @@ export async function joinFacilityForm(
     };
   }
 
-  redirect("/overview-shift");
+  redirect(`${ROUTES.masterShift}`);
 }

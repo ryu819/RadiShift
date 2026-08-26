@@ -2,6 +2,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { ROUTES } from "@/constants/routes";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
@@ -69,5 +70,5 @@ export async function submitLoginForm(
     return { values: { email } };
   }
 
-  redirect("/overview-shift");
+  redirect(`${ROUTES.masterShift}`);
 }

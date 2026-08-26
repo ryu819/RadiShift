@@ -2,8 +2,8 @@ import { CalendarDays, Printer } from "lucide-react";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
-import { OverviewShift } from "@/components/overview-shift/OverviewShift";
-import { OverviewShiftSkeleton } from "@/components/overview-shift/OverviewShiftSkeleton";
+import { MasterShift } from "@/components/master-shift/MasterShift";
+import { MasterShiftSkeleton } from "@/components/master-shift/MasterShiftSkeleton";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ type Props = {
   }>;
 };
 
-export default function OverviewShiftPage({ searchParams }: Props) {
+export default function MasterShiftPage({ searchParams }: Props) {
   return (
     <div className="flex min-h-0 flex-1 p-3 md:p-6">
       <div className="flex h-full   w-full flex-col gap-1.5 md:gap-6">
@@ -32,8 +32,8 @@ export default function OverviewShiftPage({ searchParams }: Props) {
           </Button>
         </div>
 
-        <Suspense fallback={<OverviewShiftSkeleton />}>
-          <OverviewShift searchParams={searchParams} />
+        <Suspense fallback={<MasterShiftSkeleton />}>
+          <MasterShift searchParams={searchParams} />
         </Suspense>
       </div>
     </div>

@@ -31,7 +31,7 @@ RSpec.describe ScheduleDay, type: :model do
 
   describe "holiday_nameメソッド" do
     context "祝日の時" do
-      let(:schedule_day) { build(:schedule_day, :holiday) }
+      let(:schedule_day) { build(:schedule_day, date: Date.new(2026, 1, 1)) }
 
       it "祝日名を返す" do
         expect(schedule_day.holiday_name).to eq("元日")
@@ -47,7 +47,7 @@ RSpec.describe ScheduleDay, type: :model do
 
   describe "#day" do
     it "日にちを返す" do
-      expect(schedule_day.day).to eq(2)
+      expect(schedule_day.day).to eq(1)
     end
   end
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { WorkTypeItem } from "@/components/overview-shift/WorkTypeItem";
+import { WorkTypeItem } from "@/components/master-shift/WorkTypeItem";
 import { Badge } from "@/components/ui/badge";
 import {
   Popover,
@@ -10,17 +10,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
 import { Member } from "@/types/member";
 import { ScheduleDay } from "@/types/schedule-day";
-import { WorkAssignment } from "@/types/work-assignment";
+import { WorkAssignmentsByUserAndDay } from "@/types/work-assignment";
 import { WorkType } from "@/types/work-type";
 import { badgeStyle } from "@/utils/badge-style";
 
 type Props = {
   members: Member[];
   workTypes: WorkType[];
-  workAssignments: WorkAssignment[];
-  days?: ScheduleDay[];
+  workAssignmentsByUserAndDay: WorkAssignmentsByUserAndDay;
+  dayOffAssignmentsByUserAndDay: DayOffAssignmentsByUserAndDay;
+  days: ScheduleDay[];
   year: number;
   month: number;
 };
@@ -32,7 +34,8 @@ const getCellKey = (memberId: number, date: string) => {
 export function ShiftTable({
   members,
   workTypes,
-  workAssignments,
+  workAssignmentsByUserAndDay,
+  dayOffAssignmentsByUserAndDay,
   days,
   year,
   month,
@@ -50,7 +53,7 @@ export function ShiftTable({
               スタッフ
             </th>
 
-            {days?.map((day) => (
+            {days.map((day) => (
               <th
                 key={day.date}
                 className="w-9 min-w-9 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center last:border-r-0 md:w-12 md:min-w-12 md:p-1"
@@ -91,13 +94,17 @@ export function ShiftTable({
                 <span className="block truncate">{member.name}</span>
               </th>
 
-              {days?.map((day) => {
+              {days.map((day) => {
                 const cellKey = getCellKey(member.id, day.date);
-                const cellWorkAssignments = workAssignments.filter(
-                  (workAssignment) =>
-                    workAssignment.userId === member.id &&
-                    workAssignment.scheduleDayId === day.id,
-                );
+                const cellWorkAssignments =
+                  workAssignmentsByUserAndDay?.[String(member.id)]?.[
+                    String(day.id)
+                  ] ?? [];
+
+                const cellDayOffAssignments =
+                  dayOffAssignmentsByUserAndDay?.[String(member.id)]?.[
+                    String(day.id)
+                  ] ?? [];
 
                 return (
                   <td
@@ -135,6 +142,25 @@ export function ShiftTable({
                                 </span>
                                 <span className="hidden md:inline">
                                   {workAssignment.workType.name}
+                                </span>
+                              </Badge>
+                            ))}
+                            {cellDayOffAssignments.map((dayOffAssignment) => (
+                              <Badge
+                                key={dayOffAssignment.id}
+                                variant="outline"
+                                className={
+                                  "h-[14px]   rounded px-1 py-0 text-[10px] font-semibold leading-none  md:rounded-md md:px-1.5 md:py-0.5 "
+                                }
+                                style={badgeStyle(
+                                  dayOffAssignment.dayOffType.colorCode,
+                                )}
+                              >
+                                <span className="md:hidden">
+                                  {dayOffAssignment.dayOffType.name.slice(0, 1)}
+                                </span>
+                                <span className="hidden md:inline">
+                                  {dayOffAssignment.dayOffType.name}
                                 </span>
                               </Badge>
                             ))}

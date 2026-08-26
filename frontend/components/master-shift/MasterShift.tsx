@@ -1,10 +1,10 @@
-import { MonthNavigation } from "@/components/overview-shift/MonthNavigation";
-import { OverviewShiftEmpty } from "@/components/overview-shift/OverviewShiftEmpty";
-import { ShiftTable } from "@/components/overview-shift/ShiftTable";
+import { MasterShiftEmpty } from "@/components/master-shift/MasterShiftEmpty";
+import { MonthNavigation } from "@/components/master-shift/MonthNavigation";
+import { ShiftTable } from "@/components/master-shift/ShiftTable";
+import { getMasterShiftAssignments } from "@/lib/actions/get-master-shift-assignments";
 import { getMembers } from "@/lib/actions/get-members";
 import { getScheduleMonth } from "@/lib/actions/get-schedule-month";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
-import { getWorkAssignments } from "@/lib/actions/get-work-assignments";
 import { getWorkTypes } from "@/lib/actions/get-work-types";
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
   }>;
 };
 
-export async function OverviewShift({ searchParams }: Props) {
+export async function MasterShift({ searchParams }: Props) {
   const [params, members, workTypes, scheduleMonths] = await Promise.all([
     searchParams,
     getMembers(),
@@ -28,7 +28,7 @@ export async function OverviewShift({ searchParams }: Props) {
   const scheduleMonthList = scheduleMonths ?? [];
 
   if (scheduleMonthList.length === 0) {
-    return <OverviewShiftEmpty />;
+    return <MasterShiftEmpty />;
   }
 
   const today = new Date();
@@ -46,9 +46,12 @@ export async function OverviewShift({ searchParams }: Props) {
     ) ??
     scheduleMonthList[scheduleMonthList.length - 1];
 
-  const [scheduleMonth, workAssignments] = await Promise.all([
+  const [scheduleMonth, masterShiftAssignments] = await Promise.all([
     getScheduleMonth(selectedScheduleMonth.id),
-    getWorkAssignments(selectedScheduleMonth.year, selectedScheduleMonth.month),
+    getMasterShiftAssignments(
+      selectedScheduleMonth.year,
+      selectedScheduleMonth.month,
+    ),
   ]);
 
   return (
@@ -63,8 +66,13 @@ export async function OverviewShift({ searchParams }: Props) {
       <ShiftTable
         members={members ?? []}
         workTypes={workTypes ?? []}
-        workAssignments={workAssignments ?? []}
-        days={scheduleMonth?.scheduleDays}
+        workAssignmentsByUserAndDay={
+          masterShiftAssignments?.workAssignmentsByUserAndDay ?? {}
+        }
+        dayOffAssignmentsByUserAndDay={
+          masterShiftAssignments?.dayOffAssignmentsByUserAndDay ?? {}
+        }
+        days={scheduleMonth?.scheduleDays ?? []}
         year={selectedScheduleMonth.year}
         month={selectedScheduleMonth.month}
       />

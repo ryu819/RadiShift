@@ -10,6 +10,7 @@ import {
   SidebarGroupContent,
   SidebarMenu,
 } from "@/components/ui/sidebar";
+import { ROUTES } from "@/constants/routes";
 
 export function AppSidebar() {
   return (
@@ -19,12 +20,20 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
               <SidebarItem
-                href="/overview-shift"
+                href={`${ROUTES.masterShift}`}
                 icon="house"
                 label="全体シフト"
               />
-              <SidebarItem href="/shifts" icon="calendar" label="シフト" />
-              <SidebarItem href="/settings" icon="settings" label="設定" />
+              <SidebarItem
+                href={`${ROUTES.myShift}`}
+                icon="calendar"
+                label="シフト"
+              />
+              <SidebarItem
+                href={`${ROUTES.settings}`}
+                icon="settings"
+                label="設定"
+              />
               <Suspense fallback={null}>
                 <AdminSidebarItem />
               </Suspense>

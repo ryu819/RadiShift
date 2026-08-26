@@ -8,21 +8,26 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
 
   describe "GET /api/v1/work_assignments" do
     subject do
-      get(api_v1_work_assignments_path, params: { year: schedule_month.year, month: schedule_month.month }, headers: { "Authorization": token })
+      get(api_v1_work_assignments_path, params: { year: year, month: month }, headers: { "Authorization": token })
     end
 
-    let(:schedule_month) { work_assignment.schedule_day.schedule_month }
+    let(:year) { 2026 }
+    let(:month) { 9 }
 
     context "施設に所属している時" do
-      let!(:work_assignment) { create(:work_assignment, facility: user.facility) }
-      let!(:other_facility_work_assignment) { create(:work_assignment, facility: create(:facility)) }
+      let(:schedule_month) { create(:schedule_month, facility: user.facility, year: year, month: month) }
+      let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
+      let!(:work_assignment) { create(:work_assignment, facility: user.facility, user: user, schedule_day: schedule_day) }
+      let(:other_user) { create(:user, facility: user.facility) }
+      let!(:other_user_work_assignment) { create(:work_assignment, facility: user.facility, user: other_user, schedule_day: schedule_day) }
 
-      it "ログインユーザーの施設の勤務割当だけを返す" do
+      it "ログインユーザー自身の勤務割当だけを返す" do
         subject
         res = JSON.parse(response.body)
         work_assignment_ids = res.map { |work_assignment| work_assignment["id"] }
         expect(work_assignment_ids).to include(work_assignment.id)
-        expect(work_assignment_ids).not_to include(other_facility_work_assignment.id)
+        expect(work_assignment_ids).not_to include(other_user_work_assignment.id)
+        expect(res.first["user_id"]).to eq(user.id)
         expect(res.first["work_type"]).to be_present
         expect(response).to have_http_status(:ok)
       end
@@ -30,7 +35,6 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
 
     context "施設に所属していない時" do
       let(:user) { create(:user) }
-      let!(:work_assignment) { create(:work_assignment) }
 
       it "not_found エラーが返る" do
         subject

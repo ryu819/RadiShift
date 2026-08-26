@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       end
       namespace :admin do
         resources :pending_requests, only: :index
+        resource :master_shift, only: :show
       end
       resource :facility, only: [:show, :create, :update, :destroy] do
         post :join

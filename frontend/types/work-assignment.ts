@@ -8,3 +8,8 @@ export type WorkAssignment = {
     colorCode: string;
   };
 };
+
+export type WorkAssignmentsByUserAndDay = Record<
+  string,
+  Record<string, WorkAssignment[]>
+>;
