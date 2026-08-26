@@ -1,13 +1,12 @@
 import { MasterShiftEmpty } from "@/components/master-shift/MasterShiftEmpty";
 import { MonthNavigation } from "@/components/master-shift/MonthNavigation";
 import { ShiftTable } from "@/components/master-shift/ShiftTable";
-import { APP_TIME_ZONE } from "@/constants/time-zone";
 import { getMasterShiftAssignments } from "@/lib/actions/get-master-shift-assignments";
 import { getMembers } from "@/lib/actions/get-members";
 import { getScheduleMonth } from "@/lib/actions/get-schedule-month";
 import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
 import { getWorkTypes } from "@/lib/actions/get-work-types";
-import { dayjs } from "@/lib/dayjs";
+import { selectScheduleMonth } from "@/lib/select-schedule-month";
 
 type Props = {
   searchParams: Promise<{
@@ -33,20 +32,10 @@ export async function MasterShift({ searchParams }: Props) {
     return <MasterShiftEmpty />;
   }
 
-  const today = dayjs().tz(APP_TIME_ZONE);
-  const currentYear = today.year();
-  const currentMonth = Number(today.format("M"));
-
-  const selectedScheduleMonth =
-    scheduleMonthList.find(
-      (scheduleMonth) => scheduleMonth.id === requestedScheduleMonthId,
-    ) ??
-    scheduleMonthList.find(
-      (scheduleMonth) =>
-        scheduleMonth.year === currentYear &&
-        scheduleMonth.month === currentMonth,
-    ) ??
-    scheduleMonthList[scheduleMonthList.length - 1];
+  const selectedScheduleMonth = selectScheduleMonth({
+    scheduleMonths: scheduleMonthList,
+    requestedScheduleMonthId,
+  });
 
   const [scheduleMonth, masterShiftAssignments] = await Promise.all([
     getScheduleMonth(selectedScheduleMonth.id),
