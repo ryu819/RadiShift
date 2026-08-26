@@ -21,10 +21,10 @@ module Api
         modality_type = current_user.facility.modality_types.build(modality_type_params)
 
         if modality_type.save
-          render json: { message: "モダリティパターンを作成しました。" }, status: :created
+          render json: { message: "モダリティを作成しました。" }, status: :created
         else
           render json: {
-            message: "モダリティパターンの作成に失敗しました。",
+            message: "モダリティの作成に失敗しました。",
             errors: modality_type.errors.to_hash(true)
           }, status: :unprocessable_content
         end
@@ -32,10 +32,10 @@ module Api
 
       def update
         if @modality_type.update(modality_type_params)
-          render json: { message: "モダリティパターンを更新しました。" }, status: :ok
+          render json: { message: "モダリティを更新しました。" }, status: :ok
         else
           render json: {
-            message: "モダリティパターンの更新に失敗しました。",
+            message: "モダリティの更新に失敗しました。",
             errors: @modality_type.errors.to_hash(true)
           }, status: :unprocessable_content
         end
@@ -44,7 +44,7 @@ module Api
       def destroy
         @modality_type.update!(is_active: false)
 
-        render json: { message: "モダリティパターンを削除しました。" }, status: :ok
+        render json: { message: "モダリティを削除しました。" }, status: :ok
       end
 
       private
