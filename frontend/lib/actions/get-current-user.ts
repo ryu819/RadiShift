@@ -1,4 +1,5 @@
-"use server";
+import "server-only";
+
 import camelcaseKeys from "camelcase-keys";
 
 import { getJwt } from "@/lib/actions/jwt";

@@ -1,16 +1,26 @@
-"use server";
+import "server-only";
+
 import camelcaseKeys from "camelcase-keys";
+import { cacheTag } from "next/cache";
 
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/actions/jwt";
-import { ScheduleMonth } from "@/types/schedule-month";
+import type { ScheduleMonth } from "@/types/schedule-month";
 
-export async function getScheduleMonth(ScheduleMonthId: number) {
+export async function getScheduleMonth(scheduleMonthId: number) {
+  "use cache: private";
+
+  cacheTag(
+    CACHE_TAGS.allScheduleMonth,
+    CACHE_TAGS.scheduleMonth(scheduleMonthId),
+  );
+
   const jwt = await getJwt();
   if (!jwt) return null;
 
   try {
     const res = await fetch(
-      `${process.env.RAILS_API_URL}/schedule_months/${ScheduleMonthId}`,
+      `${process.env.RAILS_API_URL}/schedule_months/${scheduleMonthId}`,
       {
         headers: {
           Authorization: jwt,

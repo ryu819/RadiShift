@@ -1,11 +1,17 @@
-"use server";
+import "server-only";
 
 import camelcaseKeys from "camelcase-keys";
+import { cacheTag } from "next/cache";
 
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/actions/jwt";
 import type { DayOffSlotRule } from "@/types/day-off-slot-rule";
 
 export async function getDayOffSlotRules() {
+  "use cache: private";
+
+  cacheTag(CACHE_TAGS.dayOffSlotRules);
+
   const jwt = await getJwt();
 
   if (!jwt) return null;

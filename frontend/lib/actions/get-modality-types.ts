@@ -1,11 +1,17 @@
-"use server";
+import "server-only";
 
 import camelcaseKeys from "camelcase-keys";
+import { cacheTag } from "next/cache";
 
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/actions/jwt";
 import type { ModalityType } from "@/types/modality-type";
 
 export async function getModalityTypes() {
+  "use cache: private";
+
+  cacheTag(CACHE_TAGS.modalityTypes);
+
   const jwt = await getJwt();
 
   if (!jwt) return null;

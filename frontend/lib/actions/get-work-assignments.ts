@@ -1,11 +1,19 @@
-"use server";
-import camelcaseKeys from "camelcase-keys";
+import "server-only";
 
+import camelcaseKeys from "camelcase-keys";
+import { cacheTag } from "next/cache";
+
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/actions/jwt";
 import { WorkAssignment } from "@/types/work-assignment";
 
 export async function getWorkAssignments(year: number, month: number) {
+  "use cache: private";
+
+  cacheTag(CACHE_TAGS.workAssignments);
+
   const jwt = await getJwt();
+
   if (!jwt) return null;
 
   try {
