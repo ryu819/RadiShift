@@ -1,7 +1,7 @@
 import "server-only";
 
 import camelcaseKeys from "camelcase-keys";
-import { cacheTag } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/actions/jwt";
@@ -9,6 +9,8 @@ import { WorkType } from "@/types/work-type";
 
 export async function getWorkTypes() {
   "use cache: private";
+
+  cacheLife("minutes");
 
   cacheTag(CACHE_TAGS.workTypes);
 

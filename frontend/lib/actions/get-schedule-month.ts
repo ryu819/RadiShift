@@ -1,7 +1,7 @@
 import "server-only";
 
 import camelcaseKeys from "camelcase-keys";
-import { cacheTag } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/actions/jwt";
@@ -10,10 +10,9 @@ import type { ScheduleMonth } from "@/types/schedule-month";
 export async function getScheduleMonth(scheduleMonthId: number) {
   "use cache: private";
 
-  cacheTag(
-    CACHE_TAGS.allScheduleMonth,
-    CACHE_TAGS.scheduleMonth(scheduleMonthId),
-  );
+  cacheLife("minutes");
+
+  cacheTag(CACHE_TAGS.scheduleMonth(scheduleMonthId));
 
   const jwt = await getJwt();
   if (!jwt) return null;
