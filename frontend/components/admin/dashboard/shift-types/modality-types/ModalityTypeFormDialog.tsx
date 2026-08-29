@@ -17,8 +17,8 @@ import { Label } from "@/components/ui/label";
 import {
   ActionState,
   createModalityTypeForm,
-} from "@/lib/actions/create-modality-type";
-import { updateModalityTypeForm } from "@/lib/actions/update-modality-type";
+} from "@/lib/actions/shift-types/create-modality-type";
+import { updateModalityTypeForm } from "@/lib/actions/shift-types/update-modality-type";
 import type { ModalityType } from "@/types/modality-type";
 
 type Props = {

@@ -15,7 +15,7 @@ import {
 import {
   ActionState,
   deleteModalityTypeForm,
-} from "@/lib/actions/delete-modality-type";
+} from "@/lib/actions/shift-types/delete-modality-type";
 import type { ModalityType } from "@/types/modality-type";
 
 type Props = {

@@ -16,8 +16,8 @@ import {
 import {
   ActionState,
   addMemberAdminForm,
-} from "@/lib/actions/add-member-admin";
-import { removeMemberAdminForm } from "@/lib/actions/remove-member-admin";
+} from "@/lib/actions/members/add-member-admin";
+import { removeMemberAdminForm } from "@/lib/actions/members/remove-member-admin";
 import { Member } from "@/types/member";
 
 type Props = {

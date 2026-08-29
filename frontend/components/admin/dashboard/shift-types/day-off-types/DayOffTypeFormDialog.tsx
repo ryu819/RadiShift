@@ -18,8 +18,8 @@ import { Switch } from "@/components/ui/switch";
 import {
   ActionState,
   createDayOffTypeForm,
-} from "@/lib/actions/create-day-off-type";
-import { updateDayOffTypeForm } from "@/lib/actions/update-day-off-type";
+} from "@/lib/actions/shift-types/create-day-off-type";
+import { updateDayOffTypeForm } from "@/lib/actions/shift-types/update-day-off-type";
 import type { DayOffType } from "@/types/day-off-type";
 
 type Props = {

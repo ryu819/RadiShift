@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { submitPasswordResetForm } from "@/lib/actions/password-reset";
+import { submitPasswordResetForm } from "@/lib/actions/auth/password-reset";
 import { passwordResetSchema } from "@/validations/password-reset";
 
 export function PasswordResetForm({

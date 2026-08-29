@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteUser } from "@/lib/actions/delete-user";
+import { deleteUser } from "@/lib/actions/account/delete-user";
 
 export function AccountDeleteDialogButton() {
   const [_serverState, formAction, isPending] = useActionState(deleteUser, {

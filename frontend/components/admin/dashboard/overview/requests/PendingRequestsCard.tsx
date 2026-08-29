@@ -5,7 +5,7 @@ import { PendingRequestsList } from "@/components/admin/dashboard/overview/reque
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPendingRequests } from "@/lib/actions/get-pending-requests";
+import { getPendingRequests } from "@/lib/actions/requests/get-pending-requests";
 
 export function PendingRequestsCard() {
   return (

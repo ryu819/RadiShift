@@ -2,8 +2,8 @@ import { ShieldCheck, Users } from "lucide-react";
 
 import { MembersTable } from "@/components/admin/dashboard/members/MembersTable";
 import { Card, CardContent } from "@/components/ui/card";
-import { getFacilityInvitation } from "@/lib/actions/get-facility-invitation";
-import { getMembers } from "@/lib/actions/get-members";
+import { getFacilityInvitation } from "@/lib/actions/facility/get-facility-invitation";
+import { getMembers } from "@/lib/actions/members/get-members";
 
 export async function Members() {
   const [membersData, invitation] = await Promise.all([

@@ -18,8 +18,8 @@ import { Switch } from "@/components/ui/switch";
 import {
   ActionState,
   createWorkTypeForm,
-} from "@/lib/actions/create-work-type";
-import { updateWorkTypeForm } from "@/lib/actions/update-work-type";
+} from "@/lib/actions/shift-types/create-work-type";
+import { updateWorkTypeForm } from "@/lib/actions/shift-types/update-work-type";
 import type { WorkType } from "@/types/work-type";
 
 type Props = {

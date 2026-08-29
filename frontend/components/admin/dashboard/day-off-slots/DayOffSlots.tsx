@@ -1,9 +1,9 @@
 import { DayOffSlotCalendarCard } from "@/components/admin/dashboard/day-off-slots/calendar/DayOffSlotCalendarCard";
 import { DayOffSlotRuleSettingsCard } from "@/components/admin/dashboard/day-off-slots/rules/DayOffSlotRuleSettingsCard";
-import { getDayOffSlotRules } from "@/lib/actions/get-day-off-slot-rules";
-import { getDayOffTypes } from "@/lib/actions/get-day-off-types";
-import { getScheduleMonth } from "@/lib/actions/get-schedule-month";
-import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
+import { getDayOffSlotRules } from "@/lib/actions/day-off-slots/get-day-off-slot-rules";
+import { getScheduleMonth } from "@/lib/actions/schedule-months/get-schedule-month";
+import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-months";
+import { getDayOffTypes } from "@/lib/actions/shift-types/get-day-off-types";
 import { selectScheduleMonth } from "@/lib/select-schedule-month";
 
 type Props = {

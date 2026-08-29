@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import {
   ActionState,
   createScheduleMonthForm,
-} from "@/lib/actions/create-schedule-month";
+} from "@/lib/actions/schedule-months/create-schedule-month";
 
 type Props = {
   year: number;

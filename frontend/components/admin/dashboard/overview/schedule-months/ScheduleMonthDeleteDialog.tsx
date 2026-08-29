@@ -14,7 +14,7 @@ import {
 import {
   ActionState,
   deleteScheduleMonthForm,
-} from "@/lib/actions/delete-schedule-month";
+} from "@/lib/actions/schedule-months/delete-schedule-month";
 import type { ScheduleMonths } from "@/types/schedule-months";
 
 type DeleteDialogProps = {

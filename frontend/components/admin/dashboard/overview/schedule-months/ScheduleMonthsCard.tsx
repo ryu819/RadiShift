@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { APP_TIME_ZONE } from "@/constants/time-zone";
-import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
+import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-months";
 import { dayjs } from "@/lib/dayjs";
 
 export function ScheduleMonthsCard() {

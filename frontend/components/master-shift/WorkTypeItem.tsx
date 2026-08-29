@@ -3,8 +3,8 @@ import { Plus, X } from "lucide-react";
 import { useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { createWorkAssignmentForm } from "@/lib/actions/create-work-assignment";
-import { deleteWorkAssignmentForm } from "@/lib/actions/delete-work-assignment";
+import { createWorkAssignmentForm } from "@/lib/actions/shift-assignments/create-work-assignment";
+import { deleteWorkAssignmentForm } from "@/lib/actions/shift-assignments/delete-work-assignment";
 import { cn } from "@/lib/utils";
 import { WorkAssignment } from "@/types/work-assignment";
 import { WorkType } from "@/types/work-type";

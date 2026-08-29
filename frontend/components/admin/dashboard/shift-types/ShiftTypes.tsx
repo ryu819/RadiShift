@@ -1,9 +1,9 @@
 import { DayOffTypeSettingsCard } from "@/components/admin/dashboard/shift-types/day-off-types/DayOffTypeSettingsCard";
 import { ModalityTypeSettingsCard } from "@/components/admin/dashboard/shift-types/modality-types/ModalityTypeSettingsCard";
 import { WorkTypeSettingsCard } from "@/components/admin/dashboard/shift-types/work-types/WorkTypeSettingsCard";
-import { getDayOffTypes } from "@/lib/actions/get-day-off-types";
-import { getModalityTypes } from "@/lib/actions/get-modality-types";
-import { getWorkTypes } from "@/lib/actions/get-work-types";
+import { getDayOffTypes } from "@/lib/actions/shift-types/get-day-off-types";
+import { getModalityTypes } from "@/lib/actions/shift-types/get-modality-types";
+import { getWorkTypes } from "@/lib/actions/shift-types/get-work-types";
 
 export async function ShiftTypes() {
   const [workTypes, dayOffTypes, modalityTypes] = await Promise.all([

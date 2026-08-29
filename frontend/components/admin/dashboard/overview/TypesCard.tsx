@@ -3,9 +3,9 @@ import { Suspense } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getDayOffTypes } from "@/lib/actions/get-day-off-types";
-import { getModalityTypes } from "@/lib/actions/get-modality-types";
-import { getWorkTypes } from "@/lib/actions/get-work-types";
+import { getDayOffTypes } from "@/lib/actions/shift-types/get-day-off-types";
+import { getModalityTypes } from "@/lib/actions/shift-types/get-modality-types";
+import { getWorkTypes } from "@/lib/actions/shift-types/get-work-types";
 
 export function TypesCard() {
   return (

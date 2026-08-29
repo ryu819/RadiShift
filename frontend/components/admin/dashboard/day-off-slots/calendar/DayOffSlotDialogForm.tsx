@@ -18,8 +18,8 @@ import { APP_TIME_ZONE } from "@/constants/time-zone";
 import {
   ActionState,
   createDayOffSlotForm,
-} from "@/lib/actions/create-day-off-slot";
-import { updateDayOffSlotForm } from "@/lib/actions/update-day-off-slot";
+} from "@/lib/actions/day-off-slots/create-day-off-slot";
+import { updateDayOffSlotForm } from "@/lib/actions/day-off-slots/update-day-off-slot";
 import { dayjs } from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 import type { DayOffSlot } from "@/types/day-off-slot";
