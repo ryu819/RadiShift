@@ -16,8 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createFacilityForm } from "@/lib/actions/create-facility";
-import { joinFacilityForm } from "@/lib/actions/join-facility";
+import { createFacilityForm } from "@/lib/actions/facility/create-facility";
+import { joinFacilityForm } from "@/lib/actions/facility/join-facility";
 
 export function FacilityEntryPage() {
   const [createState, createAction, createPending] = useActionState(

@@ -15,7 +15,7 @@ import {
 import {
   ActionState,
   deleteWorkTypeForm,
-} from "@/lib/actions/delete-work-type";
+} from "@/lib/actions/shift-types/delete-work-type";
 import type { WorkType } from "@/types/work-type";
 
 type Props = {

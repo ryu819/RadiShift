@@ -18,7 +18,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { submitLoginForm } from "@/lib/actions/login";
+import { submitLoginForm } from "@/lib/actions/auth/login";
 import { loginSchema } from "@/validations/login";
 
 export function LoginForm() {

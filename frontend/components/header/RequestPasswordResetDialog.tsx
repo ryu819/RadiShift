@@ -17,7 +17,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { requestPasswordReset } from "@/lib/actions/request-password-reset";
+import { requestPasswordReset } from "@/lib/actions/auth/request-password-reset";
 import { requestPasswordResetSchema } from "@/validations/request-password-reset";
 
 type Props = {

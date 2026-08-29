@@ -18,7 +18,7 @@ import { APP_TIME_ZONE } from "@/constants/time-zone";
 import {
   ActionState,
   updateRequestStatusForm,
-} from "@/lib/actions/update-request-status";
+} from "@/lib/actions/requests/update-request-status";
 import { dayjs } from "@/lib/dayjs";
 import { PendingRequest } from "@/types/pending-request";
 import { badgeStyle } from "@/utils/badge-style";

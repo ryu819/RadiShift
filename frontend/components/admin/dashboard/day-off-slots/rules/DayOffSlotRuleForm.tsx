@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import {
   ActionState,
   createDayOffSlotRuleForm,
-} from "@/lib/actions/create-day-off-slot-rule";
-import { updateDayOffSlotRuleForm } from "@/lib/actions/update-day-off-slot-rule";
+} from "@/lib/actions/day-off-slots/create-day-off-slot-rule";
+import { updateDayOffSlotRuleForm } from "@/lib/actions/day-off-slots/update-day-off-slot-rule";
 import { cn } from "@/lib/utils";
 import type { DayOffSlotRule } from "@/types/day-off-slot-rule";
 import type { DayOffType } from "@/types/day-off-type";

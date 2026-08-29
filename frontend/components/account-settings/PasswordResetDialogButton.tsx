@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { requestPasswordReset } from "@/lib/actions/request-password-reset";
+import { requestPasswordReset } from "@/lib/actions/auth/request-password-reset";
 
 export function PasswordResetDialogButton() {
   const [_serverState, formAction, isPending] = useActionState(

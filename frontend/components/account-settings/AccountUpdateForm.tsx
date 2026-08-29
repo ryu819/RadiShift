@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { submitAccountUpdateForm } from "@/lib/actions/account-update";
+import { submitAccountUpdateForm } from "@/lib/actions/account/account-update";
 import { User } from "@/types/user";
 import { accountUpdateSchema } from "@/validations/account-update";
 

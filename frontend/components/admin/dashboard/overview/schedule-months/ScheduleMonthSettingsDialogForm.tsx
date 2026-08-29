@@ -30,7 +30,7 @@ import { ROUTES } from "@/constants/routes";
 import {
   ActionState,
   updateScheduleMonthForm,
-} from "@/lib/actions/update-schedule-month";
+} from "@/lib/actions/schedule-months/update-schedule-month";
 import type { ScheduleMonths } from "@/types/schedule-months";
 
 type Props = {

@@ -2,10 +2,10 @@ import { DeadlineSummaryCard } from "@/components/admin/dashboard/overview/summa
 import { MemberCountSummaryCard } from "@/components/admin/dashboard/overview/summary/MemberCountSummaryCard";
 import { PendingRequestSummaryCard } from "@/components/admin/dashboard/overview/summary/PendingRequestSummaryCard";
 import { PublishedScheduleMonthSummaryCard } from "@/components/admin/dashboard/overview/summary/PublishedScheduleMonthSummaryCard";
-import { getFacility } from "@/lib/actions/get-facility";
-import { getMembers } from "@/lib/actions/get-members";
-import { getPendingRequests } from "@/lib/actions/get-pending-requests";
-import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
+import { getFacility } from "@/lib/actions/facility/get-facility";
+import { getMembers } from "@/lib/actions/members/get-members";
+import { getPendingRequests } from "@/lib/actions/requests/get-pending-requests";
+import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-months";
 
 export async function SummaryCards() {
   const [scheduleMonths, pendingRequests, members, facility] =

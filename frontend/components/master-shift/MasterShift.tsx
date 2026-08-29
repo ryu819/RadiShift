@@ -1,11 +1,11 @@
 import { MasterShiftEmpty } from "@/components/master-shift/MasterShiftEmpty";
 import { MonthNavigation } from "@/components/master-shift/MonthNavigation";
 import { ShiftTable } from "@/components/master-shift/ShiftTable";
-import { getMasterShiftAssignments } from "@/lib/actions/get-master-shift-assignments";
-import { getMembers } from "@/lib/actions/get-members";
-import { getScheduleMonth } from "@/lib/actions/get-schedule-month";
-import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
-import { getWorkTypes } from "@/lib/actions/get-work-types";
+import { getMembers } from "@/lib/actions/members/get-members";
+import { getScheduleMonth } from "@/lib/actions/schedule-months/get-schedule-month";
+import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-months";
+import { getMasterShiftAssignments } from "@/lib/actions/shift-assignments/get-master-shift-assignments";
+import { getWorkTypes } from "@/lib/actions/shift-types/get-work-types";
 import { selectScheduleMonth } from "@/lib/select-schedule-month";
 
 type Props = {

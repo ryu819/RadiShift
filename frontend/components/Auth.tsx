@@ -1,4 +1,4 @@
-import { auth } from "@/lib/actions/auth";
+import { auth } from "@/lib/auth/auth";
 
 export async function Auth() {
   await auth();

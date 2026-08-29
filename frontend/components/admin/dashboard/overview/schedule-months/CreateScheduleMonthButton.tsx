@@ -1,6 +1,6 @@
 import { ScheduleMonthCreateDialogForm } from "@/components/admin/dashboard/overview/schedule-months/ScheduleMonthCreateDialogForm";
 import { APP_TIME_ZONE } from "@/constants/time-zone";
-import { getScheduleMonths } from "@/lib/actions/get-schedule-months";
+import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-months";
 import { dayjs } from "@/lib/dayjs";
 import { ScheduleMonths } from "@/types/schedule-months";
 

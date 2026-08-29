@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ROUTES } from "@/constants/routes";
-import { logout } from "@/lib/actions/logout";
+import { logout } from "@/lib/actions/auth/logout";
 import { User } from "@/types/user";
 
 export function UserDropdownMenu({ user }: { user: User | null }) {

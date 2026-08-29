@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { APP_TIME_ZONE } from "@/constants/time-zone";
-import { createFacilityInvitationForm } from "@/lib/actions/create-facility-invitation";
+import { createFacilityInvitationForm } from "@/lib/actions/facility/create-facility-invitation";
 import { dayjs } from "@/lib/dayjs";
 import { FacilityInvitation } from "@/types/facility-invitation";
 

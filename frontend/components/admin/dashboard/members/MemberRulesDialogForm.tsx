@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ActionState,
   updateMemberRulesForm,
-} from "@/lib/actions/update-member-rules";
+} from "@/lib/actions/members/update-member-rules";
 import { Member } from "@/types/member";
 
 type Props = {

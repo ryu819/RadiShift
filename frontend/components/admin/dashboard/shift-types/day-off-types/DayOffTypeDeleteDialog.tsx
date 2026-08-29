@@ -15,7 +15,7 @@ import {
 import {
   ActionState,
   deleteDayOffTypeForm,
-} from "@/lib/actions/delete-day-off-type";
+} from "@/lib/actions/shift-types/delete-day-off-type";
 import type { DayOffType } from "@/types/day-off-type";
 
 type Props = {

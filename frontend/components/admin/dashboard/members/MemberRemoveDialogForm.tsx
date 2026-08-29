@@ -12,7 +12,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ActionState, removeMemberForm } from "@/lib/actions/remove-member";
+import {
+  ActionState,
+  removeMemberForm,
+} from "@/lib/actions/members/remove-member";
 import { Member } from "@/types/member";
 
 type Props = {

@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { leaveFacility } from "@/lib/actions/leave-facility";
+import { leaveFacility } from "@/lib/actions/facility/leave-facility";
 
 export function LeaveFacilityDialogButton() {
   const [_serverState, formAction, isPending] = useActionState(leaveFacility, {

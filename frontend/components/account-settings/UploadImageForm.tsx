@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { uploadImage } from "@/lib/actions/upload-image";
+import { uploadImage } from "@/lib/actions/account/upload-image";
 import { User } from "@/types/user";
 
 export function UploadImageForm({ user }: { user: User | null }) {
