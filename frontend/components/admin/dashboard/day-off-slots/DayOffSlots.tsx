@@ -4,6 +4,7 @@ import { getDayOffSlotRules } from "@/lib/actions/day-off-slots/get-day-off-slot
 import { getScheduleMonth } from "@/lib/actions/schedule-months/get-schedule-month";
 import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-months";
 import { getDayOffTypes } from "@/lib/actions/shift-types/get-day-off-types";
+import { getCurrentYearMonth } from "@/lib/get-current-year-month";
 import { selectScheduleMonth } from "@/lib/select-schedule-month";
 
 type Props = {
@@ -19,11 +20,13 @@ export async function DayOffSlots({ searchParams }: Props) {
     ? Number(params.scheduleMonthId)
     : null;
 
-  const [dayOffTypes, dayOffSlotRules, scheduleMonths] = await Promise.all([
-    getDayOffTypes(),
-    getDayOffSlotRules(),
-    getScheduleMonths(),
-  ]);
+  const [dayOffTypes, dayOffSlotRules, scheduleMonths, currentYearMonth] =
+    await Promise.all([
+      getDayOffTypes(),
+      getDayOffSlotRules(),
+      getScheduleMonths(),
+      getCurrentYearMonth(),
+    ]);
 
   const slotDayOffTypes =
     dayOffTypes?.filter((dayOffType) => dayOffType.usesSlot) ?? [];
@@ -33,6 +36,7 @@ export async function DayOffSlots({ searchParams }: Props) {
   const selectedScheduleMonth = selectScheduleMonth({
     scheduleMonths: scheduleMonthList,
     requestedScheduleMonthId,
+    currentYearMonth,
   });
 
   const scheduleMonth = selectedScheduleMonth

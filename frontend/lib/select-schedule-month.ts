@@ -1,29 +1,29 @@
-import { APP_TIME_ZONE } from "@/constants/time-zone";
-import { dayjs } from "@/lib/dayjs";
 import type { ScheduleMonths } from "@/types/schedule-months";
+
+type CurrentYearMonth = {
+  year: number;
+  month: number;
+};
 
 type SelectScheduleMonthParams = {
   scheduleMonths: ScheduleMonths[];
   requestedScheduleMonthId: number | null;
+  currentYearMonth: CurrentYearMonth;
 };
 
 export function selectScheduleMonth({
   scheduleMonths,
   requestedScheduleMonthId,
+  currentYearMonth,
 }: SelectScheduleMonthParams) {
-  const tokyoNow = dayjs().tz(APP_TIME_ZONE);
-
-  const currentYear = tokyoNow.year();
-  const currentMonth = Number(tokyoNow.format("M"));
-
   return (
     scheduleMonths.find(
       (scheduleMonth) => scheduleMonth.id === requestedScheduleMonthId,
     ) ??
     scheduleMonths.find(
       (scheduleMonth) =>
-        scheduleMonth.year === currentYear &&
-        scheduleMonth.month === currentMonth,
+        scheduleMonth.year === currentYearMonth.year &&
+        scheduleMonth.month === currentYearMonth.month,
     ) ??
     scheduleMonths[scheduleMonths.length - 1]
   );

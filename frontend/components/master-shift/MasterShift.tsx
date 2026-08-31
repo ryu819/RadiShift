@@ -6,6 +6,7 @@ import { getScheduleMonth } from "@/lib/actions/schedule-months/get-schedule-mon
 import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-months";
 import { getMasterShiftAssignments } from "@/lib/actions/shift-assignments/get-master-shift-assignments";
 import { getWorkTypes } from "@/lib/actions/shift-types/get-work-types";
+import { getCurrentYearMonth } from "@/lib/get-current-year-month";
 import { selectScheduleMonth } from "@/lib/select-schedule-month";
 
 type Props = {
@@ -15,12 +16,14 @@ type Props = {
 };
 
 export async function MasterShift({ searchParams }: Props) {
-  const [params, members, workTypes, scheduleMonths] = await Promise.all([
-    searchParams,
-    getMembers(),
-    getWorkTypes(),
-    getScheduleMonths(),
-  ]);
+  const [params, members, workTypes, scheduleMonths, currentYearMonth] =
+    await Promise.all([
+      searchParams,
+      getMembers(),
+      getWorkTypes(),
+      getScheduleMonths(),
+      getCurrentYearMonth(),
+    ]);
 
   const requestedScheduleMonthId = params.scheduleMonthId
     ? Number(params.scheduleMonthId)
@@ -35,6 +38,7 @@ export async function MasterShift({ searchParams }: Props) {
   const selectedScheduleMonth = selectScheduleMonth({
     scheduleMonths: scheduleMonthList,
     requestedScheduleMonthId,
+    currentYearMonth,
   });
 
   const [scheduleMonth, masterShiftAssignments] = await Promise.all([
