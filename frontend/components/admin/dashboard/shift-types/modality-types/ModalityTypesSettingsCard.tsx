@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import type { ModalityType } from "@/types/modality-type";
 
-export function ModalityTypeSettingsCard({
+export function ModalityTypesSettingsCard({
   modalityTypes,
 }: {
   modalityTypes: ModalityType[];
@@ -29,6 +29,7 @@ export function ModalityTypeSettingsCard({
 
           <CardAction>
             <Button
+              variant="outline"
               onClick={() => {
                 setFormDialogOpen(true);
               }}

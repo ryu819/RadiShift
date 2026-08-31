@@ -26,7 +26,12 @@ export default function MasterShiftPage({ searchParams }: Props) {
             <span>全体シフト</span>
           </div>
 
-          <Button type="button" size="sm" className="h-8 px-2 md:h-10 md:px-4">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 px-2 md:h-10 md:px-4"
+          >
             <Printer className="h-3.5 w-3.5 md:h-4 md:w-4" />
             <span className="">印刷</span>
           </Button>

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import type { DayOffType } from "@/types/day-off-type";
 
-export function DayOffTypeSettingsCard({
+export function DayOffTypesSettingsCard({
   dayOffTypes,
 }: {
   dayOffTypes: DayOffType[];
@@ -29,6 +29,7 @@ export function DayOffTypeSettingsCard({
 
           <CardAction>
             <Button
+              variant="outline"
               onClick={() => {
                 setFormDialogOpen(true);
               }}

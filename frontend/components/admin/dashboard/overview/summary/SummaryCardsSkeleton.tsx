@@ -31,7 +31,7 @@ type SummaryCardSkeletonProps = {
   title: string;
 };
 
-function SummaryCardSkeleton({ icon, title }: SummaryCardSkeletonProps) {
+export function SummaryCardSkeleton({ icon, title }: SummaryCardSkeletonProps) {
   return (
     <Card className="py-0 shadow-none">
       <CardContent className="flex h-full flex-col px-5 py-5">
@@ -49,7 +49,7 @@ function SummaryCardSkeleton({ icon, title }: SummaryCardSkeletonProps) {
   );
 }
 
-function DeadlineSummaryCardSkeleton() {
+export function DeadlineSummaryCardSkeleton() {
   return (
     <Card className="py-0 shadow-none">
       <CardContent className="flex h-full flex-col px-5 py-5">

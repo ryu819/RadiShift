@@ -4,6 +4,7 @@ export const CACHE_TAGS = {
     `schedule-month:${scheduleMonthId}`,
   members: "members",
   facility: "facility",
+  facilityInvitation: "facility-invitation",
   workTypes: "work-types",
   dayOffTypes: "day-off-types",
   modalityTypes: "modality-types",

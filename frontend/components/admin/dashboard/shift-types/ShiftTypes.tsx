@@ -1,6 +1,6 @@
-import { DayOffTypeSettingsCard } from "@/components/admin/dashboard/shift-types/day-off-types/DayOffTypeSettingsCard";
-import { ModalityTypeSettingsCard } from "@/components/admin/dashboard/shift-types/modality-types/ModalityTypeSettingsCard";
-import { WorkTypeSettingsCard } from "@/components/admin/dashboard/shift-types/work-types/WorkTypeSettingsCard";
+import { DayOffTypesSettingsCard } from "@/components/admin/dashboard/shift-types/day-off-types/DayOffTypesSettingsCard";
+import { ModalityTypesSettingsCard } from "@/components/admin/dashboard/shift-types/modality-types/ModalityTypesSettingsCard";
+import { WorkTypesSettingsCard } from "@/components/admin/dashboard/shift-types/work-types/WorkTypesSettingsCard";
 import { getDayOffTypes } from "@/lib/actions/shift-types/get-day-off-types";
 import { getModalityTypes } from "@/lib/actions/shift-types/get-modality-types";
 import { getWorkTypes } from "@/lib/actions/shift-types/get-work-types";
@@ -14,11 +14,11 @@ export async function ShiftTypes() {
 
   return (
     <div className="grid gap-4 items-start lg:grid-cols-3">
-      <WorkTypeSettingsCard workTypes={workTypes ?? []} />
+      <WorkTypesSettingsCard workTypes={workTypes ?? []} />
 
-      <DayOffTypeSettingsCard dayOffTypes={dayOffTypes ?? []} />
+      <DayOffTypesSettingsCard dayOffTypes={dayOffTypes ?? []} />
 
-      <ModalityTypeSettingsCard modalityTypes={modalityTypes ?? []} />
+      <ModalityTypesSettingsCard modalityTypes={modalityTypes ?? []} />
     </div>
   );
 }

@@ -23,9 +23,7 @@ export function AdminDashboardTabs({
           asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          <Link href={`${ROUTES.adminDashboard}`} prefetch={true}>
-            概要
-          </Link>
+          <Link href={ROUTES.adminDashboard}>概要</Link>
         </TabsTrigger>
 
         <TabsTrigger
@@ -33,9 +31,7 @@ export function AdminDashboardTabs({
           asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          <Link href={`${ROUTES.adminMembers}`} prefetch={true}>
-            メンバー
-          </Link>
+          <Link href={ROUTES.adminMembers}>メンバー</Link>
         </TabsTrigger>
 
         <TabsTrigger
@@ -43,9 +39,7 @@ export function AdminDashboardTabs({
           asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          <Link href={`${ROUTES.adminShiftTypes}`} prefetch={true}>
-            シフト設定
-          </Link>
+          <Link href={ROUTES.adminShiftTypes}>シフト設定</Link>
         </TabsTrigger>
 
         <TabsTrigger
@@ -53,9 +47,7 @@ export function AdminDashboardTabs({
           asChild
           className="cursor-pointer text-secondary data-[state=active]:text-primary"
         >
-          <Link href={`${ROUTES.adminDayOffSlots}`} prefetch={true}>
-            休み枠
-          </Link>
+          <Link href={ROUTES.adminDayOffSlots}>休み枠</Link>
         </TabsTrigger>
       </TabsList>
 

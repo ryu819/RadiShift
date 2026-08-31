@@ -1,8 +1,10 @@
 "use server";
 
 import camelcaseKeys from "camelcase-keys";
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -52,6 +54,8 @@ export async function createFacilityInvitationForm(
       await res.json(),
       { deep: true },
     );
+
+    updateTag(CACHE_TAGS.facilityInvitation);
 
     return {
       invitation: {
