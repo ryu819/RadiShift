@@ -72,7 +72,7 @@ export function MembersSkeleton() {
                 </InputGroupAddon>
               </InputGroup>
 
-              <Button disabled className="max-sm:text-xs">
+              <Button variant="outline" disabled className="max-sm:text-xs">
                 メンバーを招待
               </Button>
             </div>

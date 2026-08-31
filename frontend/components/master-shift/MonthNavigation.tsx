@@ -43,7 +43,6 @@ export function MonthNavigation({
         <Button asChild variant="link" size="icon">
           <Link
             href={`${pathname}?scheduleMonthId=${previousScheduleMonth.id}`}
-            prefetch={false}
             scroll={false}
           >
             <ChevronLeft className="size-4" aria-hidden="true" />
@@ -63,7 +62,6 @@ export function MonthNavigation({
         <Button asChild variant="link" size="icon">
           <Link
             href={`${pathname}?scheduleMonthId=${nextScheduleMonth.id}`}
-            prefetch={false}
             scroll={false}
           >
             <ChevronRight className="size-4" aria-hidden="true" />

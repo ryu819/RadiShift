@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   title: "シフト設定",
 };
 
+export const prefetch = "partial";
+
 export default function ShiftTypesPage() {
   return (
     <Suspense fallback={<ShiftTypesSkeleton />}>

@@ -62,7 +62,9 @@ export function InvitationDialogForm({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="max-sm:text-xs">メンバーを招待</Button>
+        <Button variant="outline" className="max-sm:text-xs">
+          メンバーを招待
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-xs sm:max-w-sm">

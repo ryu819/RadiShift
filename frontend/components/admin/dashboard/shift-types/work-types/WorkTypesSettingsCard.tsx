@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/card";
 import type { WorkType } from "@/types/work-type";
 
-export function WorkTypeSettingsCard({ workTypes }: { workTypes: WorkType[] }) {
+export function WorkTypesSettingsCard({
+  workTypes,
+}: {
+  workTypes: WorkType[];
+}) {
   const [formDialogOpen, setFormDialogOpen] = useState(false);
 
   return (
@@ -25,6 +29,7 @@ export function WorkTypeSettingsCard({ workTypes }: { workTypes: WorkType[] }) {
 
           <CardAction>
             <Button
+              variant="outline"
               onClick={() => {
                 setFormDialogOpen(true);
               }}
