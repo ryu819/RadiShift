@@ -115,6 +115,7 @@ export function DayOffSlotCalendarCard({
                 <DayOffSlotCalendar
                   scheduleDays={scheduleMonth.scheduleDays}
                   selectedDayOffType={selectedDayOffType}
+                  selectedScheduleMonthId={selectedScheduleMonthId}
                 />
               </div>
             </>

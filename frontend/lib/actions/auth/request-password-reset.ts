@@ -1,13 +1,11 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
-import { ROUTES } from "@/constants/routes";
 import { getCurrentUser } from "@/lib/actions/account/get-current-user";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 
-type ActionState = {
+export type ActionState = {
+  success: boolean;
   errors?: {
     email?: string[];
   };
@@ -48,23 +46,23 @@ export async function requestPasswordReset(
         type: "failure",
       });
 
-      return { values: { email } };
+      return { success: false, values: { email } };
     }
 
     const data: RequestPasswordResetResponse = await res.json();
 
     if (isClientError(res.status)) {
       return {
+        success: false,
         errors: data.errors,
         values: { email },
       };
     }
 
     await setFlashToast({ type: "pending", message: data.message });
+    return { success: true, values: {} };
   } catch {
     await setFlashToast({ type: "failure" });
-    return { values: { email } };
+    return { success: false, values: { email } };
   }
-
-  redirect(`${ROUTES.settings}`);
 }

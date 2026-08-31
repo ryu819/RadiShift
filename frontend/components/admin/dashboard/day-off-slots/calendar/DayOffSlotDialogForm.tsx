@@ -1,8 +1,7 @@
 "use client";
 
 import { Loader2, Minus, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +31,7 @@ type Props = {
   dayOffSlot?: DayOffSlot;
   isLastColumn: boolean;
   dateClassName: string;
+  selectedScheduleMonthId: number;
 };
 
 export function DayOffSlotDialogForm({
@@ -40,8 +40,8 @@ export function DayOffSlotDialogForm({
   dayOffSlot,
   isLastColumn,
   dateClassName,
+  selectedScheduleMonthId,
 }: Props) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const [maxSlots, setMaxSlots] = useState(dayOffSlot?.maxSlots ?? 0);
@@ -53,8 +53,9 @@ export function DayOffSlotDialogForm({
         : await createDayOffSlotForm(prevState, formData);
 
       if (nextState.success) {
-        setOpen(false);
-        router.refresh();
+        startTransition(() => {
+          setOpen(false);
+        });
       }
 
       return nextState;
@@ -130,6 +131,12 @@ export function DayOffSlotDialogForm({
               <input type="hidden" name="dayOffTypeId" value={dayOffType?.id} />
             </>
           )}
+
+          <input
+            type="hidden"
+            name="scheduleMonthId"
+            value={selectedScheduleMonthId}
+          />
 
           <input type="hidden" name="maxSlots" value={maxSlots} />
 

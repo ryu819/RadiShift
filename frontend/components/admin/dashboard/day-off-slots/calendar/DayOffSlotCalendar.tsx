@@ -11,11 +11,13 @@ import type { ScheduleDay } from "@/types/schedule-day";
 type Props = {
   scheduleDays: ScheduleDay[];
   selectedDayOffType: DayOffType | null;
+  selectedScheduleMonthId: number;
 };
 
 export function DayOffSlotCalendar({
   scheduleDays,
   selectedDayOffType,
+  selectedScheduleMonthId,
 }: Props) {
   const firstWeekday = dayjs.tz(scheduleDays[0].date, APP_TIME_ZONE).day() ?? 0;
 
@@ -84,6 +86,7 @@ export function DayOffSlotCalendar({
               dayOffSlot={dayOffSlot}
               isLastColumn={isLastColumn}
               dateClassName={dateClassName}
+              selectedScheduleMonthId={selectedScheduleMonthId}
             />
           );
         })}

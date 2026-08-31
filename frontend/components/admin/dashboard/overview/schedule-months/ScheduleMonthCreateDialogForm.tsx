@@ -1,8 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,13 +29,14 @@ const DEFAULT_MONTHLY_DAYS_OFF = 9;
 
 export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+
   const [_serverState, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await createScheduleMonthForm(prevState, formData);
       if (nextState.success) {
-        setOpen(false);
-        router.refresh();
+        startTransition(() => {
+          setOpen(false);
+        });
       }
 
       return nextState;

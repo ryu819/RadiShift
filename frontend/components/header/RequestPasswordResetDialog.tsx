@@ -17,7 +17,10 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { requestPasswordReset } from "@/lib/actions/auth/request-password-reset";
+import {
+  ActionState,
+  requestPasswordReset,
+} from "@/lib/actions/auth/request-password-reset";
 import { requestPasswordResetSchema } from "@/validations/request-password-reset";
 
 type Props = {
@@ -26,14 +29,6 @@ type Props = {
 };
 
 export function RequestPasswordResetDialog({ open, onOpenChange }: Props) {
-  const [serverState, formAction, isPending] = useActionState(
-    requestPasswordReset,
-    {
-      errors: {},
-      values: {},
-    },
-  );
-
   const {
     register,
     control,
@@ -51,6 +46,24 @@ export function RequestPasswordResetDialog({ open, onOpenChange }: Props) {
       reset();
     }
   };
+  const [serverState, formAction, isPending] = useActionState(
+    async (prevState: ActionState, formData: FormData) => {
+      const nextState = await requestPasswordReset(prevState, formData);
+
+      if (nextState.success) {
+        startTransition(() => {
+          handleOpenChange(false);
+        });
+      }
+
+      return nextState;
+    },
+    {
+      success: false,
+      errors: {},
+      values: {},
+    },
+  );
 
   const currentEmail = useWatch({ control, name: "email" });
 

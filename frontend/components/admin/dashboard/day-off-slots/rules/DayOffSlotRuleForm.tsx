@@ -1,8 +1,7 @@
 "use client";
 
 import { Check, Loader2, Minus, Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +28,6 @@ export function DayOffSlotRuleForm({
   label,
   className,
 }: Props) {
-  const router = useRouter();
-
   const [maxSlots, setMaxSlots] = useState(dayRule?.maxSlots ?? 0);
 
   const [isSaved, setIsSaved] = useState(false);
@@ -42,7 +39,9 @@ export function DayOffSlotRuleForm({
         : await createDayOffSlotRuleForm(prevState, formData);
 
       if (nextState.success) {
-        setIsSaved(true);
+        startTransition(() => {
+          setIsSaved(true);
+        });
       }
 
       return nextState;
@@ -52,12 +51,6 @@ export function DayOffSlotRuleForm({
       errors: {},
     },
   );
-
-  useEffect(() => {
-    if (!state.success) return;
-
-    router.refresh();
-  }, [state, router]);
 
   return (
     <div className="py-3 pl-5">

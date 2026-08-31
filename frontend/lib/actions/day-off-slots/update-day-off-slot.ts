@@ -1,9 +1,11 @@
 "use server";
 
 import camelcaseKeys from "camelcase-keys";
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -28,6 +30,7 @@ export async function updateDayOffSlotForm(
 ): Promise<ActionState> {
   const dayOffSlotId = Number(formData.get("dayOffSlotId"));
   const maxSlots = Number(formData.get("maxSlots"));
+  const scheduleMonthId = Number(formData.get("scheduleMonthId"));
 
   const jwt = await getJwt();
 
@@ -68,6 +71,8 @@ export async function updateDayOffSlotForm(
         errors: data.errors,
       };
     }
+
+    updateTag(CACHE_TAGS.scheduleMonth(scheduleMonthId));
 
     return { success: true };
   } catch {

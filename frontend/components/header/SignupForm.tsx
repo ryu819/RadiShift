@@ -1,7 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useState } from "react";
 import { Form, useForm, useWatch } from "react-hook-form";
 
@@ -22,15 +21,15 @@ import { ActionState, submitSignupForm } from "@/lib/actions/auth/signup";
 import { signupSchema } from "@/validations/signup";
 
 export function SignUpForm() {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const [serverState, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await submitSignupForm(prevState, formData);
       if (nextState.success) {
-        setOpen(false);
-        router.refresh();
+        startTransition(() => {
+          setOpen(false);
+        });
       }
 
       return nextState;
