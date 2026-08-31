@@ -59,7 +59,7 @@ export function LoginForm() {
     <>
       <Dialog open={loginOpen} onOpenChange={handleLoginOpenChange}>
         <DialogTrigger asChild>
-          <Button>ログイン</Button>
+          <Button variant="outline">ログイン</Button>
         </DialogTrigger>
 
         <DialogContent className="max-w-xs sm:max-w-sm">

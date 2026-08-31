@@ -1,8 +1,10 @@
 "use server";
 
 import camelcaseKeys from "camelcase-keys";
+import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
+import { ROUTES } from "@/constants/routes";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 type PasswordResetResponse = {
@@ -66,13 +68,12 @@ export async function submitPasswordResetForm(
     }
 
     await setFlashToast({ type: "success", message: data.message });
-    return {
-      errors: {},
-    };
   } catch {
     await setFlashToast({ type: "failure" });
     return {
       errors: {},
     };
   }
+
+  redirect(ROUTES.settings);
 }

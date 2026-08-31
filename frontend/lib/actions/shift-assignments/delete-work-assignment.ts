@@ -1,9 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { ROUTES } from "@/constants/routes";
 import { getJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -53,7 +52,7 @@ export async function deleteWorkAssignmentForm(
       };
     }
 
-    revalidatePath(`${ROUTES.masterShift}`);
+    refresh();
 
     return {};
   } catch {

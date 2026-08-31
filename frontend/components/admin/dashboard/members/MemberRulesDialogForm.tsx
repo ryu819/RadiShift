@@ -1,8 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState } from "react";
+import { startTransition, useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,14 +25,14 @@ type Props = {
 };
 
 export function MemberRulesDialogForm({ member, onOpenChange }: Props) {
-  const router = useRouter();
   const [state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await updateMemberRulesForm(prevState, formData);
 
       if (nextState.success) {
-        onOpenChange(false);
-        router.refresh();
+        startTransition(() => {
+          onOpenChange(false);
+        });
       }
 
       return nextState;

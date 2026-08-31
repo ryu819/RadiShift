@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useActionState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,18 +12,33 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { requestPasswordReset } from "@/lib/actions/auth/request-password-reset";
+import {
+  ActionState,
+  requestPasswordReset,
+} from "@/lib/actions/auth/request-password-reset";
 
 export function PasswordResetDialogButton() {
+  const [open, setOpen] = useState(false);
   const [_serverState, formAction, isPending] = useActionState(
-    requestPasswordReset,
+    async (prevState: ActionState, formData: FormData) => {
+      const nextState = await requestPasswordReset(prevState, formData);
+
+      if (nextState.success) {
+        startTransition(() => {
+          setOpen(false);
+        });
+      }
+
+      return nextState;
+    },
     {
+      success: false,
       errors: {},
       values: {},
     },
   );
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button type="button" className="w-35" variant="outline">
           パスワード再設定

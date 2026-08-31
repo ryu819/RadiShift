@@ -1,8 +1,7 @@
 "use client";
 
 import { ChevronRight, Loader2, RotateCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,16 +37,15 @@ export function RequestReviewDialogForm({
 }: {
   request: PendingRequest;
 }) {
-  const router = useRouter();
-
   const [open, setOpen] = useState(false);
 
   const [_serverState, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await updateRequestStatusForm(prevState, formData);
       if (nextState.success) {
-        setOpen(false);
-        router.refresh();
+        startTransition(() => {
+          setOpen(false);
+        });
       }
 
       return nextState;

@@ -1,7 +1,6 @@
 "use client";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,13 +27,13 @@ export function ScheduleMonthDeleteDialog({
   open,
   onOpenChange,
 }: DeleteDialogProps) {
-  const router = useRouter();
   const [_serverState, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await deleteScheduleMonthForm(prevState, formData);
       if (nextState.success) {
-        onOpenChange(false);
-        router.refresh();
+        startTransition(() => {
+          onOpenChange(false);
+        });
       }
 
       return nextState;

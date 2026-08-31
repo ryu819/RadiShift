@@ -88,6 +88,4 @@ export async function submitSignupForm(
       values: { name, email },
     };
   }
-
-  // redirect("/");
 }
