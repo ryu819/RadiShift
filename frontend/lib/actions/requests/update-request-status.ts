@@ -1,8 +1,10 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
@@ -68,6 +70,9 @@ export async function updateRequestStatusForm(
     }
 
     await setFlashToast({ type: "success", message: data.message });
+
+    updateTag(CACHE_TAGS.pendingRequests);
+
     return { success: true };
   } catch {
     await setFlashToast({
