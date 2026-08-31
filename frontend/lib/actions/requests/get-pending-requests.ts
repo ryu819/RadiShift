@@ -1,11 +1,18 @@
 import "server-only";
 
 import camelcaseKeys from "camelcase-keys";
+import { cacheLife, cacheTag } from "next/cache";
 
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/auth/jwt";
 import type { PendingRequest } from "@/types/pending-request";
 
 export async function getPendingRequests() {
+  "use cache: private";
+
+  cacheLife("seconds");
+  cacheTag(CACHE_TAGS.pendingRequests);
+
   const jwt = await getJwt();
 
   if (!jwt) return null;

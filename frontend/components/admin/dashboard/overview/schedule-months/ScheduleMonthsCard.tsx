@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-months";
-import { getCurrentYearMonth } from "@/lib/get-current-year-month";
 
 export function ScheduleMonthsCard() {
   return (
@@ -39,19 +38,9 @@ export function ScheduleMonthsCard() {
 }
 
 async function ScheduleMonthsList() {
-  const [scheduleMonths, currentYearMonth] = await Promise.all([
-    getScheduleMonths(),
-    getCurrentYearMonth(),
-  ]);
+  const scheduleMonths = (await getScheduleMonths()) ?? [];
 
-  const visibleScheduleMonths = scheduleMonths?.filter(
-    (scheduleMonth) =>
-      scheduleMonth.year > currentYearMonth.year ||
-      (scheduleMonth.year === currentYearMonth.year &&
-        scheduleMonth.month >= currentYearMonth.month),
-  );
-
-  if (!visibleScheduleMonths?.length) {
+  if (scheduleMonths.length == 0) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
         作成済みのシフト月はありません
@@ -60,7 +49,7 @@ async function ScheduleMonthsList() {
   }
   return (
     <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 ">
-      {visibleScheduleMonths.map((scheduleMonth) => (
+      {scheduleMonths.map((scheduleMonth) => (
         <ScheduleMonthSettingsDialogForm
           key={scheduleMonth.id}
           scheduleMonth={scheduleMonth}
