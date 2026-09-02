@@ -7,6 +7,7 @@ RUN apt-get update -qq && apt-get -y install \
     build-essential \
     libyaml-dev \
     libmariadb-dev \
+    libvips \
     git
 
 WORKDIR /backend

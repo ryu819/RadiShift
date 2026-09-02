@@ -39,6 +39,21 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         expect(response).to have_http_status(:unauthorized)
       end
     end
+
+    context "ユーザーアイコンが登録されている時" do
+      let(:user) { create(:user, :with_avatar) }
+
+      it "表示用variantのURLを返す" do
+        subject
+
+        res = JSON.parse(response.body)
+
+        expect(res["avatar_image_url"]).to include(
+          "/rails/active_storage/representations/redirect/"
+        )
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 
   describe "PUT /api/v1/current/user" do
