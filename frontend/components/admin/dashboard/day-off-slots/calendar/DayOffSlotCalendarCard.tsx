@@ -1,9 +1,12 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 import { DayOffSlotCalendar } from "@/components/admin/dashboard/day-off-slots/calendar/DayOffSlotCalendar";
 import { MonthNavigation } from "@/components/master-shift/MonthNavigation";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -13,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ROUTES } from "@/constants/routes";
 import type { DayOffType } from "@/types/day-off-type";
 import type { ScheduleMonth } from "@/types/schedule-month";
 import type { ScheduleMonths } from "@/types/schedule-months";
@@ -52,13 +56,39 @@ export function DayOffSlotCalendarCard({
 
         <CardContent className="space-y-5 px-4">
           {dayOffTypes.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              休み枠を使用する休みタイプがありません
-            </p>
+            <div className="flex flex-col items-center mb-2">
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                休み枠を使用する休みタイプがありません
+              </p>
+              <Button
+                asChild
+                variant="secondary"
+                className="group max-w-xs rounded-sm bg-secondary/70 hover:bg-secondary/60 active:bg-secondary/60"
+              >
+                <Link href={ROUTES.adminShiftTypes}>
+                  <span>休みタイプを設定する</span>
+
+                  <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Button>
+            </div>
           ) : !scheduleMonth || selectedScheduleMonthId === null ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              対象月のシフトを作成してください
-            </p>
+            <div className="flex flex-col items-center mb-2">
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                対象月のシフトを作成してください
+              </p>
+              <Button
+                asChild
+                variant="secondary"
+                className="group max-w-xs rounded-sm bg-secondary/70 hover:bg-secondary/60 active:bg-secondary/60"
+              >
+                <Link href={ROUTES.adminDashboard}>
+                  <span>シフト月を作成する</span>
+
+                  <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Button>
+            </div>
           ) : (
             <>
               <div className="space-y-2">

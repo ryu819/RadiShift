@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { startTransition, useActionState, useState } from "react";
 import { Form, useForm, useWatch } from "react-hook-form";
 
@@ -17,6 +18,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ROUTES } from "@/constants/routes";
 import { ActionState, submitSignupForm } from "@/lib/actions/auth/signup";
 import { signupSchema } from "@/validations/signup";
 
@@ -88,7 +90,20 @@ export function SignUpForm() {
           <DialogHeader className="gap-3 mb-2">
             <DialogTitle className="text-xl text-center">新規登録</DialogTitle>
             <DialogDescription className="mb-2">
-              利用規約およびプライバシーポリシーに同意した上で、以下の「登録」ボタンを押してください。
+              <Link
+                href={ROUTES.terms}
+                className="text-primary underline underline-offset-2"
+              >
+                利用規約
+              </Link>
+              および
+              <Link
+                href={ROUTES.privacyPolicy}
+                className="text-primary underline underline-offset-2"
+              >
+                プライバシーポリシー
+              </Link>
+              に同意した上で、以下の「登録」ボタンを押してください。
             </DialogDescription>
           </DialogHeader>
           <FieldGroup className="gap-2">

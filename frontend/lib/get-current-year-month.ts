@@ -13,7 +13,7 @@ type CurrentYearMonth = {
 export async function getCurrentYearMonth(): Promise<CurrentYearMonth> {
   "use cache";
 
-  cacheLife("minutes");
+  cacheLife("seconds");
 
   const today = dayjs().tz(APP_TIME_ZONE);
 
