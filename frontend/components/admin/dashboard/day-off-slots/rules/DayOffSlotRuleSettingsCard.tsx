@@ -29,7 +29,7 @@ export function DayOffSlotRuleSettingsCard({
           <CardTitle className="text-base">基本ルール</CardTitle>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            新しくシフト月を作成するときに曜日ごとの休み枠を設定します。
+            新しくシフト月を作成するときに曜日ごとの休み枠を設定します
           </p>
         </div>
       </CardHeader>

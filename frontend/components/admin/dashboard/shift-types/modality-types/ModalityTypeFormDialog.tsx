@@ -46,6 +46,9 @@ export function ModalityTypeFormDialog({ modalityType, onOpenChange }: Props) {
     },
   );
 
+  const nameError = state.errors?.name?.join("、");
+  const colorCodeError = state.errors?.colorCode?.join("、");
+
   return (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xs sm:max-w-sm">
@@ -72,12 +75,11 @@ export function ModalityTypeFormDialog({ modalityType, onOpenChange }: Props) {
               name="name"
               defaultValue={modalityType?.name}
               placeholder="例：CT"
+              aria-invalid={!!nameError}
               required
             />
 
-            {state.errors?.name && (
-              <p className="text-sm text-red-500">{state.errors.name}</p>
-            )}
+            {nameError && <p className="text-sm text-red-500">{nameError}</p>}
           </div>
 
           <div className="space-y-2">
@@ -87,11 +89,12 @@ export function ModalityTypeFormDialog({ modalityType, onOpenChange }: Props) {
               id="colorCode"
               name="colorCode"
               defaultValue={modalityType?.colorCode}
+              aria-invalid={!!colorCodeError}
               required
             />
 
-            {state.errors?.colorCode && (
-              <p className="text-sm text-red-500">{state.errors.colorCode}</p>
+            {colorCodeError && (
+              <p className="text-sm text-red-500">{colorCodeError}</p>
             )}
           </div>
 

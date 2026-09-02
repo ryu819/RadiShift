@@ -17,14 +17,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ROUTES } from "@/constants/routes";
 import {
   ActionState,
@@ -40,7 +33,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const [_serverState, formAction, isPending] = useActionState(
+  const [state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await updateScheduleMonthForm(prevState, formData);
       if (nextState.success) {
@@ -59,6 +52,10 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
 
     setDeleteOpen(true);
   };
+
+  const monthlyDaysOffError = state.errors?.monthlyDaysOff?.join("、");
+
+  const statusError = state.errors?.status?.join("、");
 
   return (
     <>
@@ -124,32 +121,53 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
                   min={0}
                   step={0.5}
                   defaultValue={scheduleMonth.monthlyDaysOff}
+                  aria-invalid={!!monthlyDaysOffError}
                   required
                 />
+                {monthlyDaysOffError && (
+                  <p className="text-red-500 text-sm">{monthlyDaysOffError}</p>
+                )}
               </Field>
 
               <Field className="gap-2">
                 <Label htmlFor={`status-${scheduleMonth.id}`}>ステータス</Label>
 
-                <Select
+                <RadioGroup
                   name="status"
                   defaultValue={scheduleMonth.status}
                   required
                 >
-                  <SelectTrigger id={`status-${scheduleMonth.id}`}>
-                    <SelectValue />
-                  </SelectTrigger>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem
+                      id={`status-accepting-${scheduleMonth.id}`}
+                      value="accepting_requests"
+                    />
 
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="accepting_requests">
-                        申請受付中
-                      </SelectItem>
+                    <Label
+                      htmlFor={`status-accepting-${scheduleMonth.id}`}
+                      className="font-normal"
+                    >
+                      申請受付中
+                    </Label>
+                  </div>
 
-                      <SelectItem value="published">シフト公開済み</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem
+                      id={`status-published-${scheduleMonth.id}`}
+                      value="published"
+                    />
+
+                    <Label
+                      htmlFor={`status-published-${scheduleMonth.id}`}
+                      className="font-normal"
+                    >
+                      シフト公開
+                    </Label>
+                  </div>
+                </RadioGroup>
+                {statusError && (
+                  <p className="text-red-500 text-sm">{statusError}</p>
+                )}
               </Field>
             </FieldGroup>
 

@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { startTransition, useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -57,15 +58,12 @@ export function WorkTypeDeleteDialog({ workType, onOpenChange }: Props) {
             （過去のシフトにデータは残ります）
           </p>
         </DialogHeader>
-        <div className="flex items-start gap-2">
-          <input
+        <div className="flex items-center gap-2">
+          <Checkbox
             id="deleteAgreement"
-            type="checkbox"
             checked={isAgreed}
-            onChange={(e) => setIsAgreed(e.target.checked)}
-            className="mt-1"
+            onCheckedChange={(checked) => setIsAgreed(checked === true)}
           />
-
           <label htmlFor="deleteAgreement" className="text-sm">
             内容を確認し、「{workType.name}」を削除します
           </label>

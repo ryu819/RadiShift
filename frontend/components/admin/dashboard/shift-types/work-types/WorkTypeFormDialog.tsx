@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { startTransition, useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   ActionState,
   createWorkTypeForm,
@@ -47,6 +47,9 @@ export function WorkTypeFormDialog({ workType, onOpenChange }: Props) {
     },
   );
 
+  const nameError = state.errors?.name?.join("、");
+  const colorCodeError = state.errors?.colorCode?.join("、");
+
   return (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xs sm:max-w-sm">
@@ -69,12 +72,11 @@ export function WorkTypeFormDialog({ workType, onOpenChange }: Props) {
               name="name"
               defaultValue={workType?.name}
               placeholder="例：日勤"
+              aria-invalid={!!nameError}
               required
             />
 
-            {state.errors?.name && (
-              <p className="text-sm text-red-500">{state.errors.name}</p>
-            )}
+            {nameError && <p className="text-sm text-red-500">{nameError}</p>}
           </div>
 
           <div className="space-y-2">
@@ -84,29 +86,28 @@ export function WorkTypeFormDialog({ workType, onOpenChange }: Props) {
               id="colorCode"
               name="colorCode"
               defaultValue={workType?.colorCode}
+              aria-invalid={!!colorCodeError}
               required
             />
 
-            {state.errors?.colorCode && (
-              <p className="text-sm text-red-500">{state.errors.colorCode}</p>
+            {colorCodeError && (
+              <p className="text-sm text-red-500">{colorCodeError}</p>
             )}
           </div>
+          <div className="space-y-2 ml-1">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="autoApprove"
+                name="autoApprove"
+                value="true"
+                defaultChecked={workType?.autoApprove}
+              />
 
-          <div className="flex items-center justify-between rounded-sm border p-3">
-            <div className="space-y-2">
               <Label htmlFor="autoApprove">自動承認</Label>
-
-              <p className="text-xs text-muted-foreground">
-                締め切り前の勤務申請を自動で承認します。
-              </p>
             </div>
-
-            <Switch
-              id="autoApprove"
-              name="autoApprove"
-              value="true"
-              defaultChecked={workType?.autoApprove ?? false}
-            />
+            <p className="text-xs text-muted-foreground">
+              締め切り前の勤務申請を自動で承認します
+            </p>
           </div>
 
           <DialogFooter>

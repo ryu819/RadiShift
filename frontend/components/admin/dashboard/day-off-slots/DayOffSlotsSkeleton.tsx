@@ -24,7 +24,7 @@ function DayOffSlotRuleSkeleton() {
           <CardTitle className="text-base">基本ルール</CardTitle>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            新しくシフト月を作成するときに曜日ごとの休み枠を設定します。
+            新しくシフト月を作成するときに曜日ごとの休み枠を設定します
           </p>
         </div>
       </CardHeader>
@@ -119,7 +119,7 @@ function DayOffSlotCalendarSkeleton() {
           <CardTitle className="text-base">特定日の調整</CardTitle>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            日付を選択して、休み枠を変更します。
+            日付を選択して、休み枠を変更します
           </p>
         </div>
       </CardHeader>

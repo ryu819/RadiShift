@@ -84,6 +84,8 @@ export function LoginForm() {
                   name="email"
                   type="email"
                   placeholder="radishift@example.com"
+                  aria-invalid={!!clientErrors.email?.message}
+                  required
                 />
                 {clientErrors.email?.message && (
                   <p className="text-red-500 text-sm">
@@ -100,6 +102,8 @@ export function LoginForm() {
                   name="password"
                   type="password"
                   placeholder="6文字以上半角英数字"
+                  aria-invalid={!!clientErrors.password?.message}
+                  required
                 />
                 {clientErrors.password?.message && (
                   <p className="text-red-500 text-sm">

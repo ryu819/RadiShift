@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { startTransition, useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -64,15 +65,13 @@ export function ScheduleMonthDeleteDialog({
             シフト月を削除すると、これまでのデータは全て削除され、復元できなくなります。この操作は取り消せません。本当にシフト月を削除してもよろしいですか？
           </p>
         </DialogHeader>
-        <div className="mb-4 flex items-start gap-2">
-          <input
-            id="account-delete-agreement"
-            type="checkbox"
+        <div className="mb-4 flex items-center gap-2">
+          <Checkbox
+            id="deleteAgreement"
             checked={isAgreed}
-            onChange={(e) => setIsAgreed(e.target.checked)}
-            className="mt-1"
+            onCheckedChange={(checked) => setIsAgreed(checked === true)}
           />
-          <label htmlFor="account-delete-agreement" className="text-sm">
+          <label htmlFor="deleteAgreement" className="text-sm">
             内容を確認し、シフト月を削除します
           </label>
         </div>

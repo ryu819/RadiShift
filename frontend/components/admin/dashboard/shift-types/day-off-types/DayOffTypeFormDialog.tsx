@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { startTransition, useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
   ActionState,
   createDayOffTypeForm,
@@ -47,6 +47,10 @@ export function DayOffTypeFormDialog({ dayOffType, onOpenChange }: Props) {
     },
   );
 
+  const nameError = state.errors?.name?.join("、");
+  const dayOffUnitError = state.errors?.dayOffUnit?.join("、");
+  const colorCodeError = state.errors?.colorCode?.join("、");
+
   return (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xs sm:max-w-sm">
@@ -69,12 +73,11 @@ export function DayOffTypeFormDialog({ dayOffType, onOpenChange }: Props) {
               name="name"
               defaultValue={dayOffType?.name}
               placeholder="例：休み"
+              aria-invalid={!!nameError}
               required
             />
 
-            {state.errors?.name && (
-              <p className="text-sm text-red-500">{state.errors.name}</p>
-            )}
+            {nameError && <p className="text-sm text-red-500">{nameError}</p>}
           </div>
 
           <div className="space-y-2">
@@ -84,11 +87,12 @@ export function DayOffTypeFormDialog({ dayOffType, onOpenChange }: Props) {
               id="colorCode"
               name="colorCode"
               defaultValue={dayOffType?.colorCode}
+              aria-invalid={!!colorCodeError}
               required
             />
 
-            {state.errors?.colorCode && (
-              <p className="text-sm text-red-500">{state.errors.colorCode}</p>
+            {colorCodeError && (
+              <p className="text-sm text-red-500">{colorCodeError}</p>
             )}
           </div>
 
@@ -102,35 +106,34 @@ export function DayOffTypeFormDialog({ dayOffType, onOpenChange }: Props) {
               min="0"
               step="0.5"
               defaultValue={dayOffType?.dayOffUnit ?? 1}
+              aria-invalid={!!dayOffUnitError}
               required
             />
 
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground ml-1">
               1日休みは1、半日休みは0.5を入力します。
             </p>
 
-            {state.errors?.dayOffUnit && (
-              <p className="text-sm text-red-500">{state.errors.dayOffUnit}</p>
+            {dayOffUnitError && (
+              <p className="text-sm text-red-500">{dayOffUnitError}</p>
             )}
           </div>
 
-          <div className="flex items-start gap-3 rounded-sm border p-3">
-            <div className="min-w-0 flex-1 space-y-2">
+          <div className="space-y-2 ml-1">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="usesSlot"
+                name="usesSlot"
+                value="true"
+                defaultChecked={dayOffType?.usesSlot}
+              />
+
               <Label htmlFor="usesSlot">休み枠を使用</Label>
-
-              <p className="text-xs text-muted-foreground">
-                締め切り前の申請は、設定された休み枠に空きがある場合に
-                自動で承認します。
-              </p>
             </div>
-
-            <Switch
-              id="usesSlot"
-              name="usesSlot"
-              value="true"
-              defaultChecked={dayOffType?.usesSlot ?? false}
-              className="shrink-0"
-            />
+            <p className="text-xs text-muted-foreground">
+              締め切り前の申請は、設定された休み枠に空きがある場合に
+              自動で承認します
+            </p>
           </div>
 
           <DialogFooter>
