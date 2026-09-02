@@ -113,7 +113,7 @@ export function DayOffSlotDialogForm({
           </DialogTitle>
 
           <DialogDescription className="text-center">
-            {dayOffType?.name}の枠を変更します。
+            {dayOffType?.name}の枠を変更します
           </DialogDescription>
         </DialogHeader>
 

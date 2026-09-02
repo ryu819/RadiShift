@@ -61,16 +61,17 @@ export function SignUpForm() {
 
   const currentEmail = useWatch({ control, name: "email" });
 
-  const nameMsg = clientErrors.name?.message ?? serverState.errors?.name;
+  const nameMsg =
+    clientErrors.name?.message ?? serverState.errors?.name?.join("、");
   const emailMsg =
     currentEmail === serverState.values.email
-      ? serverState.errors?.email
+      ? serverState.errors?.email?.join("、")
       : clientErrors.email?.message;
   const passwordMsg =
-    clientErrors.password?.message ?? serverState.errors?.password;
+    clientErrors.password?.message ?? serverState.errors?.password?.join("、");
   const passwordConfirmationMsg =
     clientErrors.passwordConfirmation?.message ??
-    serverState.errors?.passwordConfirmation;
+    serverState.errors?.passwordConfirmation?.join("、");
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -98,6 +99,8 @@ export function SignUpForm() {
                 {...register("name")}
                 name="name"
                 placeholder="放射 太郎"
+                aria-invalid={!!nameMsg}
+                required
               />
               {nameMsg && <p className="text-red-500 text-sm">{nameMsg}</p>}
             </Field>
@@ -109,6 +112,8 @@ export function SignUpForm() {
                 name="email"
                 type="email"
                 placeholder="radishift@example.com"
+                aria-invalid={!!emailMsg}
+                required
               />
               {emailMsg && <p className="text-red-500 text-sm">{emailMsg}</p>}
             </Field>
@@ -120,6 +125,8 @@ export function SignUpForm() {
                 name="password"
                 type="password"
                 placeholder="6文字以上半角英数字"
+                aria-invalid={!!passwordMsg}
+                required
               />
               {passwordMsg && (
                 <p className="text-red-500 text-sm">{passwordMsg}</p>
@@ -133,6 +140,8 @@ export function SignUpForm() {
                 name="passwordConfirmation"
                 type="password"
                 placeholder="パスワード再入力"
+                aria-invalid={!!passwordConfirmationMsg}
+                required
               />
               {passwordConfirmationMsg && (
                 <p className="text-red-500 text-sm">

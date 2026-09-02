@@ -7,7 +7,6 @@ import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
-import { RailsResponse } from "@/types/rails-response";
 
 export type ActionState = {
   success: boolean;
@@ -43,15 +42,12 @@ export async function deleteScheduleMonthForm(
       return { success: false };
     }
 
-    const data: RailsResponse = await res.json();
-
     if (isClientError(res.status)) {
       await setFlashToast({
         type: "failure",
       });
       return {
         success: false,
-        error: data.error,
       };
     }
 

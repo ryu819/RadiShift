@@ -30,7 +30,7 @@ const DEFAULT_MONTHLY_DAYS_OFF = 9;
 export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
   const [open, setOpen] = useState(false);
 
-  const [_serverState, formAction, isPending] = useActionState(
+  const [state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = await createScheduleMonthForm(prevState, formData);
       if (nextState.success) {
@@ -43,6 +43,13 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
     },
     { success: false, errors: {} },
   );
+
+  const yearAndMonthError = [
+    ...(state.errors?.year ?? []),
+    ...(state.errors?.month ?? []),
+  ].join("、");
+
+  const monthlyDaysOffError = state.errors?.monthlyDaysOff?.join("、");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -71,6 +78,9 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
                 defaultValue={`${year}-${String(month).padStart(2, "0")}`}
                 required
               />
+              {yearAndMonthError && (
+                <p className="text-red-500 text-sm">{yearAndMonthError}</p>
+              )}
             </Field>
 
             <Field className="gap-2">
@@ -83,12 +93,16 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
                 min={0}
                 step={0.5}
                 defaultValue={DEFAULT_MONTHLY_DAYS_OFF}
+                aria-invalid={!!monthlyDaysOffError}
                 required
               />
 
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 ml-1 text-xs text-muted-foreground">
                 0.5日単位で設定できます
               </p>
+              {monthlyDaysOffError && (
+                <p className="text-red-500 text-sm">{monthlyDaysOffError}</p>
+              )}
             </Field>
           </FieldGroup>
 

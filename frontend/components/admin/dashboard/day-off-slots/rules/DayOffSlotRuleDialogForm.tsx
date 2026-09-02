@@ -46,7 +46,7 @@ export function DayOffSlotRuleDialogForm({
           </DialogTitle>
 
           <DialogDescription className="text-center">
-            {dayOffType.name}の枠ルールを設定します。
+            {dayOffType.name}の枠ルールを設定します
           </DialogDescription>
         </DialogHeader>
 

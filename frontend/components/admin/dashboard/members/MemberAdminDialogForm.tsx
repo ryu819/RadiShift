@@ -64,8 +64,8 @@ export function MemberAdminDialogForm({
 
           <DialogDescription>
             {isAdd
-              ? `管理者になると、メンバーやシフトの設定・管理ができるようになります。`
-              : `解除後は、メンバーやシフトの設定・管理ができなくなります。`}
+              ? `管理者になると、メンバーやシフトの設定・管理ができるようになります`
+              : `解除後は、メンバーやシフトの設定・管理ができなくなります`}
           </DialogDescription>
         </DialogHeader>
 

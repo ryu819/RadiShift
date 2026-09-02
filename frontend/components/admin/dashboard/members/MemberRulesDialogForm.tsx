@@ -40,6 +40,8 @@ export function MemberRulesDialogForm({ member, onOpenChange }: Props) {
     { success: false, errors: {} },
   );
 
+  const rulesTextError = state.errors?.rulesText?.join("、");
+
   return (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xs sm:max-w-sm">
@@ -49,7 +51,7 @@ export function MemberRulesDialogForm({ member, onOpenChange }: Props) {
           </DialogTitle>
 
           <DialogDescription>
-            {member.name}さんのシフト作成時に考慮するルールを記載します。
+            {member.name}さんのシフト作成時に考慮するルールを記載します
           </DialogDescription>
         </DialogHeader>
 
@@ -59,9 +61,10 @@ export function MemberRulesDialogForm({ member, onOpenChange }: Props) {
             name="rulesText"
             defaultValue={member.rulesText ?? ""}
             placeholder="例：月曜日は夜勤不可、夜勤は月3回まで"
+            aria-invalid={!!rulesTextError}
           />
-          {state.errors?.rulesText && (
-            <p className="text-sm text-red-500">{state.errors.rulesText}</p>
+          {rulesTextError && (
+            <p className="text-sm text-red-500">{rulesTextError}</p>
           )}
 
           <DialogFooter>

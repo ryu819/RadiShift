@@ -56,6 +56,8 @@ export function AccountUpdateForm({ user }: { user: User | null }) {
             {...register("name")}
             name="name"
             defaultValue={user?.name}
+            aria-invalid={!!nameMsg}
+            required
           />
           {nameMsg && <p className="text-red-500 text-sm">{nameMsg}</p>}
         </Field>
@@ -67,6 +69,8 @@ export function AccountUpdateForm({ user }: { user: User | null }) {
             name="email"
             type="email"
             defaultValue={user?.email}
+            aria-invalid={!!emailMsg}
+            required
           />
           {emailMsg && <p className="text-red-500 text-sm">{emailMsg}</p>}
         </Field>
