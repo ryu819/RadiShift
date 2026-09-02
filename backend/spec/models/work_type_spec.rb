@@ -20,6 +20,14 @@ RSpec.describe WorkType, type: :model do
     end
   end
 
+  context "color_code がない時" do
+    before { work_type.color_code = nil }
+
+    it "無効である" do
+      expect(work_type).to be_invalid
+    end
+  end
+
   context "facility がない時" do
     before { work_type.facility = nil }
 
