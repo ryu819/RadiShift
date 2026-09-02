@@ -80,7 +80,7 @@ export function DayOffSlotDialogForm({
         <button
           type="button"
           className={cn(
-            "min-h-20 cursor-pointer border-r border-b p-1 sm:p-2 text-left transition-colors hover:bg-muted/50 sm:min-h-24",
+            "min-h-20 cursor-pointer border-r border-b p-1 sm:p-2 text-left transition-colors hover:bg-muted/50 active:bg-muted/50  sm:min-h-24",
             isLastColumn && "border-r-0",
           )}
         >
