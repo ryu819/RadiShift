@@ -8,8 +8,21 @@ class DayOffType < ApplicationRecord
   has_many :day_off_assignments, dependent: :destroy
   scope :active, -> { where(is_active: true) }
   validates :name, presence: true
+  validates :color_code, presence: true
   validates :day_off_unit, presence: true,
                            numericality: {
                              greater_than_or_equal_to: 0
                            }
+
+  validate :day_off_unit_must_be_half_step
+
+  private
+
+  def day_off_unit_must_be_half_step
+    return if day_off_unit.blank?
+
+    return if ((day_off_unit * 2) % 1).zero?
+
+    errors.add(:day_off_unit, "は0.5刻みで入力してください")
+  end
 end

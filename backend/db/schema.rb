@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_26_055604) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_093907) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -93,7 +93,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_055604) do
   end
 
   create_table "day_off_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "color_code"
+    t.string "color_code", null: false
     t.datetime "created_at", null: false
     t.decimal "day_off_unit", precision: 2, scale: 1, null: false
     t.bigint "facility_id", null: false
@@ -139,7 +139,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_055604) do
   end
 
   create_table "modality_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "color_code"
+    t.string "color_code", null: false
     t.datetime "created_at", null: false
     t.bigint "facility_id", null: false
     t.boolean "is_active", default: true, null: false
@@ -225,7 +225,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_26_055604) do
 
   create_table "work_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "auto_approve", default: false, null: false
-    t.string "color_code"
+    t.string "color_code", null: false
     t.datetime "created_at", null: false
     t.bigint "facility_id", null: false
     t.boolean "is_active", default: true, null: false

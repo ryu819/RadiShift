@@ -5,4 +5,5 @@ class ModalityType < ApplicationRecord
   has_many :modality_assignments, dependent: :destroy
   scope :active, -> { where(is_active: true) }
   validates :name, presence: true
+  validates :color_code, presence: true
 end

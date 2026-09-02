@@ -6,4 +6,5 @@ class WorkType < ApplicationRecord
   has_many :work_assignments, dependent: :destroy
   scope :active, -> { where(is_active: true) }
   validates :name, presence: true
+  validates :color_code, presence: true
 end

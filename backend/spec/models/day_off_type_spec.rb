@@ -20,6 +20,41 @@ RSpec.describe DayOffType, type: :model do
     end
   end
 
+  context "color_code がない時" do
+    before { day_off_type.color_code = nil }
+
+    it "無効である" do
+      expect(day_off_type).to be_invalid
+    end
+  end
+
+  context "day_off_unit が 0.5 刻みの時" do
+    it "有効である" do
+      valid_values = [0, 0.5, 1, 1.5, 2]
+
+      valid_values.each do |value|
+        day_off_type.day_off_unit = value
+        expect(day_off_type).to be_valid
+      end
+    end
+  end
+
+  context "day_off_unit が 0.5 刻みではない時" do
+    before { day_off_type.day_off_unit = 1.2 }
+
+    it "無効である" do
+      expect(day_off_type).to be_invalid
+    end
+
+    it "エラーメッセージが追加される" do
+      day_off_type.valid?
+
+      expect(day_off_type.errors[:day_off_unit]).to include(
+        "は0.5刻みで入力してください"
+      )
+    end
+  end
+
   context "day_off_unit がない時" do
     before { day_off_type.day_off_unit = nil }
 
