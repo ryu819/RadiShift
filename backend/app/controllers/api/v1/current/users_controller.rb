@@ -76,7 +76,10 @@ module Api
         def avatar_image_url
           return unless current_user.avatar_image.attached?
 
-          rails_blob_url(current_user.avatar_image, host: ENV.fetch("APP_HOST"))
+          rails_representation_url(
+            current_user.avatar_image.variant(:avatar),
+            host: ENV.fetch("APP_HOST")
+          )
         end
       end
     end

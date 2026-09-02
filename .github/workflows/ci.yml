@@ -19,6 +19,7 @@ jobs:
 
     env:
       RAILS_ENV: test
+      APP_HOST: example.com
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
       SECRET_KEY_BASE: dummy
 

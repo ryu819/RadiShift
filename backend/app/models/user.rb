@@ -2,7 +2,9 @@
 
 class User < ApplicationRecord
   belongs_to :facility, optional: true
-  has_one_attached :avatar_image
+  has_one_attached :avatar_image do |attachable|
+    attachable.variant :avatar, resize_to_fill: [256, 256]
+  end
   has_many :day_off_requests, dependent: :destroy
   has_many :work_requests, dependent: :destroy
   has_many :work_assignments, dependent: :restrict_with_error
