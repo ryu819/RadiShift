@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { startTransition, useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -56,16 +57,14 @@ export function MemberRemoveDialogForm({ member, onOpenChange }: Props) {
             この操作は取り消せません。本当に施設を脱退させてもよろしいですか？
           </p>
         </DialogHeader>
-        <div className=" flex items-start gap-2">
-          <input
-            id="account-delete-agreement"
-            type="checkbox"
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="deleteAgreement"
             checked={isAgreed}
-            onChange={(e) => setIsAgreed(e.target.checked)}
-            className="mt-1"
+            onCheckedChange={(checked) => setIsAgreed(checked === true)}
           />
-          <label htmlFor="account-delete-agreement" className="text-sm">
-            内容を確認し、施設を脱退します
+          <label htmlFor="deleteAgreement" className="text-sm">
+            内容を確認し、施設から脱退させます
           </label>
         </div>
 

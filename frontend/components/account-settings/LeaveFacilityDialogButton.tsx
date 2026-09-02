@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -44,15 +45,13 @@ export function LeaveFacilityDialogButton() {
               施設を脱退すると、この施設の情報にアクセスできなくなります。この操作は取り消せません。本当に施設を脱退してもよろしいですか？
             </p>
           </DialogHeader>
-          <div className="mb-4 flex items-start gap-2">
-            <input
-              id="account-delete-agreement"
-              type="checkbox"
+          <div className="mb-4 flex items-center gap-2">
+            <Checkbox
+              id="deleteAgreement"
               checked={isAgreed}
-              onChange={(e) => setIsAgreed(e.target.checked)}
-              className="mt-1"
+              onCheckedChange={(checked) => setIsAgreed(checked === true)}
             />
-            <label htmlFor="account-delete-agreement" className="text-sm">
+            <label htmlFor="deleteAgreement" className="text-sm">
               内容を確認し、施設を脱退します
             </label>
           </div>
