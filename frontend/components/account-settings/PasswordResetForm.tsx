@@ -60,6 +60,8 @@ export function PasswordResetForm({
             name="password"
             type="password"
             placeholder="6文字以上半角英数字"
+            aria-invalid={!!passwordMsg}
+            required
           />
           {passwordMsg && <p className="text-red-500 text-sm">{passwordMsg}</p>}
         </Field>
@@ -71,6 +73,8 @@ export function PasswordResetForm({
             name="passwordConfirmation"
             type="password"
             placeholder="パスワード再入力"
+            aria-invalid={!!passwordConfirmationMsg}
+            required
           />
           {passwordConfirmationMsg && (
             <p className="text-red-500 text-sm">{passwordConfirmationMsg}</p>

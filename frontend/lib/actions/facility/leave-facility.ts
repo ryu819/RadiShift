@@ -45,10 +45,10 @@ export async function leaveFacility(
     await setFlashToast({ type: "success", message: data.message });
 
     revalidatePath("/", "layout");
-
-    return {};
   } catch {
     await setFlashToast({ type: "failure" });
     return {};
   }
+
+  redirect("/");
 }

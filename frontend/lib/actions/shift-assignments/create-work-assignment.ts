@@ -66,6 +66,8 @@ export async function createWorkAssignmentForm(
     });
 
     if (isClientError(res.status)) {
+      await setFlashToast({ type: "failure" });
+
       return {
         errors: data.errors,
       };
