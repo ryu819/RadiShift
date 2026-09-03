@@ -1,5 +1,5 @@
 "use client";
-import { Plus, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { useActionState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export function WorkTypeItem({
   const isSelected = selectedWorkAssignment !== undefined;
 
   return (
-    <div key={workType.id} className="flex items-center justify-between">
+    <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <span
           className="h-2.5 w-2.5 rounded-full"
@@ -66,7 +66,11 @@ export function WorkTypeItem({
             disabled={isDeleting}
             className="h-7 !px-1  justify-start  text-secondary "
           >
-            <X className="h-4 w-4 opacity-75 " />
+            {isDeleting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <X className="size-4 opacity-75" />
+            )}
           </Button>
         </form>
       ) : (
@@ -82,7 +86,11 @@ export function WorkTypeItem({
             disabled={isCreating}
             className="h-7 !px-1  justify-start  text-secondary "
           >
-            <Plus className="h-4 w-4 opacity-75" />
+            {isCreating ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Plus className="size-4 opacity-75" />
+            )}
           </Button>
         </form>
       )}

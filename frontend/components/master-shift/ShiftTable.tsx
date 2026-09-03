@@ -173,7 +173,7 @@ export function ShiftTable({
                         align="center"
                         sideOffset={6}
                         hideWhenDetached
-                        className="w-30 rounded-md border-slate-200 p-3 shadow-lg"
+                        className="w-auto rounded-md border-slate-200 p-3 shadow-lg"
                       >
                         <div className="p-1">
                           <p className="text-sm font-medium text-secondary">
