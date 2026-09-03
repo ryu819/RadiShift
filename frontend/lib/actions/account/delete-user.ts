@@ -51,10 +51,9 @@ export async function deleteUser(
     revalidatePath("/", "layout");
 
     await setFlashToast({ type: "success", message: data.message });
-
-    return {};
   } catch {
     await setFlashToast({ type: "failure" });
     return {};
   }
+  redirect("/");
 }
