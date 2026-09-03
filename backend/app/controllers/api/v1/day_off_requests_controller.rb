@@ -74,35 +74,11 @@ module Api
       end
 
       def update
-        DayOffRequest.transaction do
-          if day_off_request_update_params[:request_status] == "approved"
-            if day_off_assignment_exists?(@day_off_request)
-              return render json: {
-                message: "すでに休みが割り当てられているため承認できません。"
-              }, status: :unprocessable_content
-            end
-
-            error_message = day_off_slot_error_message(@day_off_request)
-
-            if error_message
-              return render json: {
-                message: "#{error_message}承認できません。"
-              }, status: :unprocessable_content
-            end
-          end
-
-          @day_off_request.update!(day_off_request_update_params)
-
-          apply_assignment_for_approved_request!(@day_off_request) if @day_off_request.approved?
+        result = @day_off_request.with_lock do
+          process_day_off_request_update!
         end
 
-        if @day_off_request.approved?
-          render json: { message: "申請を承認し、シフトを変更しました。" }, status: :ok
-        else
-          render json: {
-            message: "申請を否認しました。"
-          }, status: :ok
-        end
+        render json: { message: result[:message] }, status: result[:status]
       end
 
       def destroy
@@ -266,6 +242,52 @@ module Api
         end
 
         create_day_off_assignment!(day_off_request)
+      end
+
+      def process_day_off_request_update!
+        unless @day_off_request.pending?
+          return {
+            message: "この申請はすでに処理されています。",
+            status: :conflict
+          }
+        end
+
+        approval_error = day_off_request_approval_error
+        return approval_error if approval_error
+
+        @day_off_request.update!(day_off_request_update_params)
+
+        apply_assignment_for_approved_request!(@day_off_request) if @day_off_request.approved?
+
+        message = if @day_off_request.approved?
+                    "申請を承認し、シフトを変更しました。"
+                  else
+                    "申請を否認しました。"
+                  end
+
+        {
+          message: message,
+          status: :ok
+        }
+      end
+
+      def day_off_request_approval_error
+        return unless day_off_request_update_params[:request_status] == "approved"
+
+        if day_off_assignment_exists?(@day_off_request)
+          return {
+            message: "すでに休みが割り当てられているため承認できません。",
+            status: :unprocessable_content
+          }
+        end
+
+        error_message = day_off_slot_error_message(@day_off_request)
+        return unless error_message
+
+        {
+          message: "#{error_message}承認できません。",
+          status: :unprocessable_content
+        }
       end
     end
   end

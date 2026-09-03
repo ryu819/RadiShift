@@ -295,6 +295,42 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       end
     end
 
+    context "承認済みの申請を否認しようとした時" do
+      let(:day_off_request) do
+        create(:day_off_request,  facility: user.facility, user: target_user, schedule_day: schedule_day, day_off_type: day_off_type,
+                                  request_status: :approved, is_return: false)
+      end
+
+      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: target_user, day_off_type: day_off_type) }
+
+      let(:params) { { day_off_request: { request_status: "rejected" } } }
+
+      it "申請と休み割当を変更せず、conflict エラーを返す" do
+        expect { subject }.not_to change { DayOffAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("この申請はすでに処理されています。")
+        expect(day_off_request.reload).to be_approved
+        expect(response).to have_http_status(:conflict)
+      end
+    end
+
+    context "否認済みの申請を承認しようとした時" do
+      let(:day_off_request) do
+        create(:day_off_request, facility: user.facility, user: target_user, schedule_day: schedule_day, day_off_type: day_off_type,
+                                 request_status: :rejected, is_return: false)
+      end
+
+      let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 2) }
+
+      it "休み割当を作成せず、conflict エラーを返す" do
+        expect { subject }.not_to change { DayOffAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("この申請はすでに処理されています。")
+        expect(day_off_request.reload).to be_rejected
+        expect(response).to have_http_status(:conflict)
+      end
+    end
+
     context "管理者でない時" do
       let(:user) { create(:user, :with_facility) }
 
