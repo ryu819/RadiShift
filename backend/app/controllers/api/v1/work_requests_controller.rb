@@ -64,25 +64,11 @@ module Api
       end
 
       def update
-        WorkRequest.transaction do
-          if (work_request_update_params[:request_status] == "approved") && work_assignment_exists?(@work_request)
-            return render json: {
-              message: "すでにシフトが割り当てられているため承認できません。"
-            }, status: :unprocessable_content
-          end
-
-          @work_request.update!(work_request_update_params)
-
-          apply_assignment_for_approved_request!(@work_request) if @work_request.approved?
+        result = @work_request.with_lock do
+          process_work_request_update!
         end
 
-        if @work_request.approved?
-          render json: { message: "申請を承認し、シフトを変更しました。" }, status: :ok
-        else
-          render json: {
-            message: "申請を否認しました。"
-          }, status: :ok
-        end
+        render json: { message: result[:message] }, status: result[:status]
       end
 
       def destroy
@@ -213,6 +199,44 @@ module Api
         end
 
         create_work_assignment!(work_request)
+      end
+
+      def process_work_request_update!
+        unless @work_request.pending?
+          return {
+            message: "この申請はすでに処理されています。",
+            status: :conflict
+          }
+        end
+
+        approval_error = work_request_approval_error
+        return approval_error if approval_error
+
+        @work_request.update!(work_request_update_params)
+
+        apply_assignment_for_approved_request!(@work_request) if @work_request.approved?
+
+        message = if @work_request.approved?
+                    "申請を承認し、シフトを変更しました。"
+                  else
+                    "申請を否認しました。"
+                  end
+
+        {
+          message: message,
+          status: :ok
+        }
+      end
+
+      def work_request_approval_error
+        return unless work_request_update_params[:request_status] == "approved"
+
+        return unless work_assignment_exists?(@work_request)
+
+        {
+          message: "すでにシフトが割り当てられているため承認できません。",
+          status: :unprocessable_content
+        }
       end
 
       def work_request_message(work_request)

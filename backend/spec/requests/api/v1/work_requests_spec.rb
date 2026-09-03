@@ -232,6 +232,40 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
       end
     end
 
+    context "承認済みの申請を否認しようとした時" do
+      let(:work_request) do
+        create(:work_request, facility: user.facility, user: target_user, schedule_day: schedule_day, work_type: work_type, request_status: :approved,
+                              is_return: false)
+      end
+
+      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type) }
+
+      let(:params) { { work_request: { request_status: "rejected" } } }
+
+      it "申請と勤務割当を変更せず、conflict エラーを返す" do
+        expect { subject }.not_to change { WorkAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("この申請はすでに処理されています。")
+        expect(work_request.reload).to be_approved
+        expect(response).to have_http_status(:conflict)
+      end
+    end
+
+    context "否認済みの申請を承認しようとした時" do
+      let(:work_request) do
+        create(:work_request, facility: user.facility, user: target_user, schedule_day: schedule_day, work_type: work_type, request_status: :rejected,
+                              is_return: false)
+      end
+
+      it "勤務割当を作成せず、conflict エラーを返す" do
+        expect { subject }.not_to change { WorkAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("この申請はすでに処理されています。")
+        expect(work_request.reload).to be_rejected
+        expect(response).to have_http_status(:conflict)
+      end
+    end
+
     context "管理者でない時" do
       let(:user) { create(:user, :with_facility) }
 
