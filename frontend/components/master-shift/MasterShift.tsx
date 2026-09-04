@@ -43,10 +43,7 @@ export async function MasterShift({ searchParams }: Props) {
 
   const [scheduleMonth, masterShiftAssignments] = await Promise.all([
     getScheduleMonth(selectedScheduleMonth.id),
-    getMasterShiftAssignments(
-      selectedScheduleMonth.year,
-      selectedScheduleMonth.month,
-    ),
+    getMasterShiftAssignments(selectedScheduleMonth.id),
   ]);
 
   return (
