@@ -26,10 +26,11 @@ Rails.application.routes.draw do
         resource :user, only: [:show, :update, :destroy] do
           patch :avatar_image
         end
+        resources :shifts, only: :show
       end
       namespace :admin do
         resources :pending_requests, only: :index
-        resource :master_shift, only: :show
+        resources :master_shifts, only: :show
       end
       resource :facility, only: [:show, :create, :update, :destroy] do
         post :join
