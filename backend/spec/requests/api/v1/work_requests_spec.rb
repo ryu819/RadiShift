@@ -7,16 +7,21 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
   let(:token) { login_and_get_token(user) }
 
   describe "GET /api/v1/work_requests" do
-    subject { get(api_v1_work_requests_path, headers: { "Authorization": token }) }
+    subject { get(api_v1_work_requests_path, params: { schedule_month_id: schedule_month.id }, headers: { "Authorization": token }) }
 
     let(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 6) }
-    let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.new(2026, 6, 10)) }
+    let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
     let(:work_type) { create(:work_type, facility: user.facility) }
     let(:other_user) { create(:user, facility: user.facility) }
 
     context "施設に所属している時" do
       let!(:own_work_request) { create(:work_request, facility: user.facility, user: user, schedule_day: schedule_day, work_type: work_type) }
       let!(:other_user_work_request) { create(:work_request, facility: user.facility, user: other_user, schedule_day: schedule_day, work_type: work_type) }
+      let(:other_schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 7) }
+
+      let(:other_schedule_day) { create(:schedule_day, schedule_month: other_schedule_month) }
+
+      let!(:other_month_work_request) { create(:work_request, facility: user.facility, user: user, schedule_day: other_schedule_day, work_type: work_type) }
 
       it "自分の勤務希望だけを返す" do
         subject
@@ -24,12 +29,14 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         work_request_ids = res.map { |work_request| work_request["id"] }
         expect(work_request_ids).to include(own_work_request.id)
         expect(work_request_ids).not_to include(other_user_work_request.id)
+        expect(work_request_ids).not_to include(other_month_work_request.id)
         expect(response).to have_http_status(:ok)
       end
     end
 
     context "施設に所属していない時" do
       let(:user) { create(:user) }
+      let(:schedule_month) { create(:schedule_month) }
 
       it "not_found エラーが返る" do
         subject
