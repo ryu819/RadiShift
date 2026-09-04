@@ -26,10 +26,11 @@ Rails.application.routes.draw do
         resource :user, only: [:show, :update, :destroy] do
           patch :avatar_image
         end
+        resources :shifts, only: :show
       end
       namespace :admin do
         resources :pending_requests, only: :index
-        resource :master_shift, only: :show
+        resources :master_shifts, only: :show
       end
       resource :facility, only: [:show, :create, :update, :destroy] do
         post :join
@@ -50,8 +51,8 @@ Rails.application.routes.draw do
       resources :modality_types, only: [:index, :create, :update, :destroy]
       resources :day_off_slot_rules, only: [:index, :create, :update, :destroy]
       resources :day_off_slots, only: [:create, :update, :destroy]
-      resources :work_assignments, only: [:index, :create, :update, :destroy]
-      resources :day_off_assignments, only: [:index, :create, :update, :destroy]
+      resources :work_assignments, only: [:create, :update, :destroy]
+      resources :day_off_assignments, only: [:create, :update, :destroy]
       resources :modality_assignments, only: [:index, :create, :update, :destroy]
       resources :day_off_requests, only: [:index, :create, :update, :destroy]
       resources :work_requests, only: [:index, :create, :update, :destroy]

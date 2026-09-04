@@ -14,7 +14,11 @@ module Api
       before_action :validate_return_work_assignment!, only: [:create]
 
       def index
+        schedule_month = current_user.facility.schedule_months.find(
+          params[:schedule_month_id]
+        )
         work_requests = current_user.work_requests
+                          .where(schedule_day: schedule_month.schedule_days)
                           .includes(:schedule_day, :work_type)
                           .order(created_at: :asc)
 

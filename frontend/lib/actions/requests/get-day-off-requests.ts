@@ -5,17 +5,20 @@ import camelcaseKeys from "camelcase-keys";
 import { getJwt } from "@/lib/auth/jwt";
 import type { DayOffRequest } from "@/types/day-off-request";
 
-export async function getDayOffRequests() {
+export async function getDayOffRequests(scheduleMonthId: number) {
   const jwt = await getJwt();
 
   if (!jwt) return null;
 
   try {
-    const res = await fetch(`${process.env.RAILS_API_URL}/day_off_requests`, {
-      headers: {
-        Authorization: jwt,
+    const res = await fetch(
+      `${process.env.RAILS_API_URL}/day_off_requests?schedule_month_id=${scheduleMonthId}`,
+      {
+        headers: {
+          Authorization: jwt,
+        },
       },
-    });
+    );
 
     if (!res.ok) return null;
 

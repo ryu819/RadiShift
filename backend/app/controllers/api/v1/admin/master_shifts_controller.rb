@@ -10,9 +10,8 @@ module Api
         before_action :require_admin!
 
         def show
-          schedule_month = current_user.facility.schedule_months.find_by!(
-            year: params[:year],
-            month: params[:month]
+          schedule_month = current_user.facility.schedule_months.find(
+            params[:id]
           )
 
           schedule_days = schedule_month.schedule_days

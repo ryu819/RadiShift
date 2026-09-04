@@ -6,43 +6,6 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
   let(:user) { create(:user, :with_facility) }
   let(:token) { login_and_get_token(user) }
 
-  describe "GET /api/v1/day_off_assignments" do
-    subject { get(api_v1_day_off_assignments_path, params: { year: year, month: month }, headers: { "Authorization": token }) }
-
-    let(:year) { 2026 }
-    let(:month) { 9 }
-
-    context "施設に所属している時" do
-      let(:schedule_month) { create(:schedule_month, facility: user.facility, year: year, month: month) }
-      let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
-      let!(:day_off_assignment) { create(:day_off_assignment, facility: user.facility, user: user, schedule_day: schedule_day) }
-      let(:other_user) { create(:user, facility: user.facility) }
-      let!(:other_user_day_off_assignment) { create(:day_off_assignment, facility: user.facility, user: other_user, schedule_day: schedule_day) }
-
-      it "ログインユーザー自身の休み割当だけを返す" do
-        subject
-        res = JSON.parse(response.body)
-        day_off_assignment_ids = res.map { |day_off_assignment| day_off_assignment["id"] }
-        expect(day_off_assignment_ids).to include(day_off_assignment.id)
-        expect(day_off_assignment_ids).not_to include(other_user_day_off_assignment.id)
-        expect(res.first["user_id"]).to eq(user.id)
-        expect(res.first["day_off_type"]).to be_present
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context "施設に所属していない時" do
-      let(:user) { create(:user) }
-
-      it "not_found エラーが返る" do
-        subject
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("施設に所属していません。")
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-  end
-
   describe "POST /api/v1/day_off_assignments" do
     subject { post(api_v1_day_off_assignments_path, params: params, headers: { "Authorization": token }) }
 

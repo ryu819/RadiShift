@@ -12,32 +12,6 @@ module Api
       before_action :validate_user_for_facility!, only: [:create]
       before_action :validate_day_off_type_for_facility!, only: [:create, :update]
 
-      def index
-        schedule_month = current_user.facility.schedule_months.find_by!(
-          year: params[:year],
-          month: params[:month]
-        )
-        day_off_assignments = current_user.day_off_assignments
-                                .where(
-                                  schedule_day: schedule_month.schedule_days
-                                )
-                                .includes(:day_off_type)
-                                .order(
-                                  :schedule_day_id,
-                                  :created_at,
-                                  :id
-                                )
-
-        render json: day_off_assignments.as_json(
-          only: [:id, :schedule_day_id, :user_id],
-          include: {
-            day_off_type: {
-              only: [:id, :name, :day_off_unit, :color_code, :uses_slot]
-            }
-          }
-        ), status: :ok
-      end
-
       def create
         day_off_assignment = DayOffAssignment.new(day_off_assignment_params)
 

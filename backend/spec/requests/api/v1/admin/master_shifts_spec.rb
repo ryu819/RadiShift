@@ -6,15 +6,12 @@ RSpec.describe "Api::V1::Admin::MasterShifts", type: :request do
   let(:token) { login_and_get_token(user) }
   describe "GET /api/v1/admin/master_shift" do
     subject do
-      get(api_v1_admin_master_shift_path, params: { year: year, month: month }, headers: { "Authorization": token })
+      get(api_v1_admin_master_shift_path(schedule_month), headers: { "Authorization": token })
     end
 
-    let(:year) { 2026 }
-    let(:month) { 9 }
-
     let(:schedule_month) do
-      create(:schedule_month, facility: user.facility, year: year,
-                              month: month)
+      create(:schedule_month, facility: user.facility, year: 2026,
+                              month: 9)
     end
 
     let(:first_day) { create(:schedule_day, schedule_month: schedule_month) }
@@ -76,6 +73,7 @@ RSpec.describe "Api::V1::Admin::MasterShifts", type: :request do
     context "施設に所属していない時" do
       let(:user) { create(:user) }
       let!(:work_assignment) { create(:work_assignment) }
+      let(:schedule_month) { create(:schedule_month) }
 
       it "not_foundエラーを返す" do
         subject
