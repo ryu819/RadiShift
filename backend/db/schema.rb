@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_02_093907) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_080325) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -56,6 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_093907) do
     t.datetime "created_at", null: false
     t.bigint "day_off_type_id", null: false
     t.bigint "facility_id", null: false
+    t.virtual "is_pending_unique", type: :boolean, as: "(case when (`request_status` = 0) then true else NULL end)"
     t.boolean "is_return", default: false, null: false
     t.integer "request_status", limit: 1, default: 0, null: false
     t.bigint "schedule_day_id", null: false
@@ -66,6 +67,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_093907) do
     t.index ["facility_id"], name: "index_day_off_requests_on_facility_id"
     t.index ["schedule_day_id"], name: "index_day_off_requests_on_schedule_day_id"
     t.index ["user_id", "created_at"], name: "index_day_off_requests_on_user_id_and_created_at"
+    t.index ["user_id", "schedule_day_id", "day_off_type_id", "is_pending_unique"], name: "idx_on_user_id_schedule_day_id_day_off_type_id_is_p_8e3a3481ed", unique: true
     t.index ["user_id"], name: "index_day_off_requests_on_user_id"
   end
 

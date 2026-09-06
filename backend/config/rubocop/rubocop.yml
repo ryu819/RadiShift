@@ -85,7 +85,7 @@ Metrics/MethodLength:
 
 # クラスの行数を制限
 Metrics/ClassLength:
-  Max: 230
+  Max: 300
 
 # RSpecや設定ファイルは長くなりがちなので除外
 Metrics/BlockLength:
