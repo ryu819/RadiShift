@@ -3,77 +3,120 @@ ja:
     attributes:
       user:
         name: 名前
+        email: メールアドレス
+        password: パスワード
+        password_confirmation: パスワード確認
+        current_password: 現在のパスワード
+        facility: 施設
+        facility_id: 施設
+        rules_text: ユーザールール
+        is_admin: 管理者
+        is_deleted: 削除状態
+
       facility:
         name: 施設名
         invite_code: 招待コード
         invite_expires_at: 招待コード有効期限
         request_deadline_day: 申請締切日
         rules_text: 施設ルール
+
       schedule_month:
         facility: 施設
+        facility_id: 施設
         year: 年
         month: 月
         monthly_days_off: 公休数
         status: 公開状態
+
       schedule_day:
         schedule_month: シフト月
+        schedule_month_id: シフト月
         date: 日付
         is_holiday: 祝日設定
+
       work_type:
         facility: 施設
+        facility_id: 施設
         name: 勤務タイプ名
         color_code: カラーコード
         is_active: 有効状態
         auto_approve: 自動承認
+
       day_off_type:
         facility: 施設
+        facility_id: 施設
         name: 休みタイプ名
         day_off_unit: 公休消費数
         color_code: カラーコード
         is_active: 有効状態
-        uses_slot: 休み枠を使用
+        uses_slot: 休み枠設定
+
       modality_type:
         facility: 施設
+        facility_id: 施設
         name: モダリティ名
         color_code: カラーコード
         is_active: 有効状態
+
       day_off_slot_rule:
         facility: 施設
+        facility_id: 施設
         day_off_type: 休みタイプ
         day_off_type_id: 休みタイプ
         weekday: 曜日
         max_slots: 休み枠数
+
       day_off_slot:
         schedule_day: 対象日
+        schedule_day_id: 対象日
         day_off_type: 休みタイプ
         day_off_type_id: 休みタイプ
         max_slots: 休み枠数
+
       day_off_request:
         user: ユーザー
+        user_id: ユーザー
         facility: 施設
+        facility_id: 施設
         schedule_day: 対象日
+        schedule_day_id: 対象日
         day_off_type: 休みタイプ
+        day_off_type_id: 休みタイプ
         request_status: 申請ステータス
         is_return: 返上申請
+
       work_request:
         user: ユーザー
+        user_id: ユーザー
         facility: 施設
+        facility_id: 施設
         schedule_day: 対象日
+        schedule_day_id: 対象日
         work_type: 勤務タイプ
+        work_type_id: 勤務タイプ
         request_status: 申請ステータス
         is_return: 返上申請
+
       work_assignment:
         user: ユーザー
         user_id: ユーザー
         schedule_day: 対象日
+        schedule_day_id: 対象日
         work_type: 勤務タイプ
+        work_type_id: 勤務タイプ
+
       day_off_assignment:
         user: ユーザー
         user_id: ユーザー
         schedule_day: 対象日
+        schedule_day_id: 対象日
         day_off_type: 休みタイプ
+        day_off_type_id: 休みタイプ
+
       modality_assignment:
         user: ユーザー
         user_id: ユーザー
         schedule_day: 対象日
+        schedule_day_id: 対象日
         modality_type: モダリティタイプ
+        modality_type_id: モダリティタイプ

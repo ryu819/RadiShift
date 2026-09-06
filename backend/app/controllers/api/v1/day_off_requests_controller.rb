@@ -11,7 +11,6 @@ module Api
       before_action :set_day_off_request_for_destroy, only: [:destroy]
       before_action :validate_schedule_day_for_facility!, only: [:create]
       before_action :validate_day_off_type_for_facility!, only: [:create]
-      before_action :validate_return_day_off_assignment!, only: [:create]
 
       def index
         schedule_month = current_user.facility.schedule_months.find(
@@ -41,9 +40,7 @@ module Api
       end
 
       def create
-        day_off_request = current_user.day_off_requests.build(day_off_request_params)
-        day_off_request.facility = current_user.facility
-        day_off_request.request_status = :pending
+        day_off_request = build_day_off_request
 
         unless day_off_request.valid?
           return render json: {
@@ -52,24 +49,13 @@ module Api
           }, status: :unprocessable_content
         end
 
-        DayOffRequest.transaction do
-          if day_off_assignment_exists?(day_off_request)
-            return render json: {
-              message: "すでに休みが割り当てられているため申請できません。"
-            }, status: :unprocessable_content
-          end
+        error_message = DayOffRequest.transaction do
+          create_day_off_request!(day_off_request)
+        end
 
-          error_message = day_off_slot_error_message(day_off_request)
-
-          if error_message
-            return render json: {
-              message: "#{error_message}申請できません。"
-            }, status: :unprocessable_content
-          end
-
-          day_off_request.save!
-
-          auto_process_day_off_request!(day_off_request) unless over_request_deadline?(day_off_request)
+        if error_message
+          return render json: { message: error_message },
+                        status: :unprocessable_content
         end
 
         render json: {
@@ -86,9 +72,19 @@ module Api
       end
 
       def destroy
-        @day_off_request.destroy!
+        @day_off_request.with_lock do
+          unless @day_off_request.pending?
+            return render json: {
+              message: "この申請はすでに処理されています。"
+            }, status: :conflict
+          end
 
-        render json: { message: "休み希望を削除しました。" }, status: :ok
+          @day_off_request.destroy!
+
+          render json: {
+            message: "休み希望を削除しました。"
+          }, status: :ok
+        end
       end
 
       private
@@ -132,21 +128,71 @@ module Api
         render json: { message: "休みパターンが存在しません。" }, status: :not_found
       end
 
-      def validate_return_day_off_assignment!
-        return unless day_off_request_params[:is_return].to_s == "true"
+      def build_day_off_request
+        day_off_request = current_user.day_off_requests.build(day_off_request_params)
+        day_off_request.facility = current_user.facility
+        day_off_request.request_status = :pending
 
-        schedule_day_id = day_off_request_params[:schedule_day_id]
-        day_off_type_id = day_off_request_params[:day_off_type_id]
+        day_off_request
+      end
 
-        return if schedule_day_id.blank? || day_off_type_id.blank?
+      def lock_day_off_type!(day_off_request)
+        day_off_request.day_off_type.lock!
+      end
 
-        return if DayOffAssignment.exists?(
-          schedule_day_id: schedule_day_id,
-          user_id: current_user.id,
-          day_off_type_id: day_off_type_id
+      def create_day_off_request!(day_off_request)
+        lock_day_off_type!(day_off_request) unless day_off_request.is_return?
+
+        error_message =
+          day_off_request_creation_error_message(day_off_request)
+
+        return error_message if error_message
+
+        day_off_request.save!
+
+        auto_process_day_off_request!(day_off_request) unless over_request_deadline?(
+          day_off_request
         )
 
-        render json: { message: "返上対象の休み割当が存在しません。" }, status: :unprocessable_content
+        nil
+      end
+
+      def day_off_request_creation_error_message(day_off_request)
+        inactive_error =
+          inactive_day_off_type_error_message(day_off_request)
+
+        return inactive_error if inactive_error
+
+        assignment_error =
+          day_off_assignment_error_message(day_off_request)
+
+        return assignment_error if assignment_error
+
+        slot_error = day_off_slot_error_message(day_off_request)
+        return unless slot_error
+
+        "#{slot_error}申請できません。"
+      end
+
+      def inactive_day_off_type_error_message(day_off_request)
+        return if day_off_request.is_return?
+        return if day_off_request.day_off_type.is_active?
+
+        "この休みパターンは現在利用できません。"
+      end
+
+      def day_off_assignment_error_message(day_off_request)
+        day_off_assignment = find_day_off_assignment(day_off_request)
+
+        if day_off_request.is_return?
+          return "返上対象の休み割当が存在しません。" unless day_off_assignment
+
+          return
+        end
+
+        return unless day_off_assignment
+
+        "すでに休みが割り当てられているため申請できません。"
       end
 
       def day_off_slot_error_message(day_off_request)
@@ -217,12 +263,6 @@ module Api
           )
       end
 
-      def day_off_assignment_exists?(day_off_request)
-        return false if day_off_request.is_return?
-
-        find_day_off_assignment(day_off_request).present?
-      end
-
       def create_day_off_assignment!(day_off_request)
         DayOffAssignment.create!(
           schedule_day: day_off_request.schedule_day,
@@ -256,18 +296,23 @@ module Api
           }
         end
 
-        approval_error = day_off_request_approval_error
-        return approval_error if approval_error
+        if day_off_request_update_params[:request_status] == "approved"
+          lock_day_off_type!(@day_off_request) unless @day_off_request.is_return?
+
+          approval_error = day_off_request_approval_error
+          return approval_error if approval_error
+        end
 
         @day_off_request.update!(day_off_request_update_params)
 
         apply_assignment_for_approved_request!(@day_off_request) if @day_off_request.approved?
 
-        message = if @day_off_request.approved?
-                    "申請を承認し、シフトを変更しました。"
-                  else
-                    "申請を否認しました。"
-                  end
+        message =
+          if @day_off_request.approved?
+            "申請を承認し、シフトを変更しました。"
+          else
+            "申請を否認しました。"
+          end
 
         {
           message: message,
@@ -276,9 +321,25 @@ module Api
       end
 
       def day_off_request_approval_error
-        return unless day_off_request_update_params[:request_status] == "approved"
+        if @day_off_request.is_return?
+          unless find_day_off_assignment(@day_off_request)
+            return {
+              message: "返上対象の休み割当が存在しないため承認できません。",
+              status: :unprocessable_content
+            }
+          end
 
-        if day_off_assignment_exists?(@day_off_request)
+          return
+        end
+
+        unless @day_off_request.day_off_type.is_active?
+          return {
+            message: "この休みパターンは現在利用できないため承認できません。",
+            status: :unprocessable_content
+          }
+        end
+
+        if find_day_off_assignment(@day_off_request)
           return {
             message: "すでに休みが割り当てられているため承認できません。",
             status: :unprocessable_content
