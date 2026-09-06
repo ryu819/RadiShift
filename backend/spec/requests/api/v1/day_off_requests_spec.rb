@@ -185,6 +185,53 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       end
     end
 
+    context "無効化された休みパターンで通常申請する時" do
+      let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: true, is_active: false) }
+      let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 2) }
+
+      it "休み希望を作成せず、unprocessable_content エラーを返す" do
+        expect { subject }.not_to change { DayOffRequest.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("この休みパターンは現在利用できません。")
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "無効化された休みパターンの返上申請をする時" do
+      let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: true, is_active: false) }
+
+      let(:params) { { day_off_request: { schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, is_return: true } } }
+
+      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type) }
+
+      it "返上申請を作成し、休み割当を削除して approved になる" do
+        expect { subject }
+          .to change { DayOffRequest.count }.by(1)
+                .and change { DayOffAssignment.count }.by(-1)
+        res = JSON.parse(response.body)
+        day_off_request = DayOffRequest.last
+        expect(res["message"]).to eq("申請は承認されました。")
+        expect(day_off_request).to be_approved
+        expect(response).to have_http_status(:created)
+      end
+    end
+
+    context "同じ pending の休み希望がすでにある時" do
+      let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: false) }
+
+      let!(:existing_day_off_request) do
+        create(:day_off_request, facility: user.facility, user: user, schedule_day: schedule_day, day_off_type: day_off_type, request_status: :pending)
+      end
+
+      it "重複した休み希望を作成しない" do
+        expect { subject }.not_to change { DayOffRequest.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("休み希望の申請に失敗しました。")
+        expect(res["errors"]["schedule_day_id"]).to eq(["対象日には同じ休み希望がすでに申請されています。"])
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
     context "施設に所属していない時" do
       let(:user) { create(:user) }
       let(:schedule_month) { create(:schedule_month, facility: create(:facility), year: 2026, month: 6) }
@@ -340,6 +387,54 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       end
     end
 
+    context "無効化された休みパターンの通常申請を approved にした時" do
+      let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: true, is_active: false) }
+
+      let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 2) }
+
+      it "承認せず、unprocessable_content エラーを返す" do
+        expect { subject }.not_to change { DayOffAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("この休みパターンは現在利用できないため承認できません。")
+        expect(day_off_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "無効化された休みパターンの返上申請を approved にした時" do
+      let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: true, is_active: false) }
+
+      let(:day_off_request) do
+        create(:day_off_request, facility: user.facility, user: target_user, schedule_day: schedule_day, day_off_type: day_off_type, request_status: :pending,
+                                 is_return: true)
+      end
+
+      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: target_user, day_off_type: day_off_type) }
+
+      it "休み割当を削除して approved にする" do
+        expect { subject }.to change { DayOffAssignment.count }.by(-1)
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("申請を承認し、シフトを変更しました。")
+        expect(day_off_request.reload).to be_approved
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "返上申請の承認時に返上対象の休み割当が存在しない時" do
+      let(:day_off_request) do
+        create(:day_off_request, facility: user.facility, user: target_user, schedule_day: schedule_day, day_off_type: day_off_type, request_status: :pending,
+                                 is_return: true)
+      end
+
+      it "承認せず、unprocessable_content エラーを返す" do
+        expect { subject }.not_to change { DayOffAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("返上対象の休み割当が存在しないため承認できません。")
+        expect(day_off_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
     context "管理者でない時" do
       let(:user) { create(:user, :with_facility) }
 
@@ -397,6 +492,34 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       it "not_found エラーが返る" do
         expect { subject }.not_to change { DayOffRequest.count }
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "承認済みの自分の休み希望を削除しようとした時" do
+      let!(:day_off_request) do
+        create(:day_off_request, facility: user.facility, user: user, schedule_day: schedule_day, day_off_type: day_off_type, request_status: :approved)
+      end
+
+      it "削除せず、conflict エラーを返す" do
+        expect { subject }.not_to change { DayOffRequest.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("この申請はすでに処理されています。")
+        expect(day_off_request.reload).to be_approved
+        expect(response).to have_http_status(:conflict)
+      end
+    end
+
+    context "否認済みの自分の休み希望を削除しようとした時" do
+      let!(:day_off_request) do
+        create(:day_off_request, facility: user.facility, user: user, schedule_day: schedule_day, day_off_type: day_off_type, request_status: :rejected)
+      end
+
+      it "削除せず、conflict エラーを返す" do
+        expect { subject }.not_to change { DayOffRequest.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("この申請はすでに処理されています。")
+        expect(day_off_request.reload).to be_rejected
+        expect(response).to have_http_status(:conflict)
       end
     end
 
