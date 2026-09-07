@@ -11,7 +11,6 @@ module Api
       before_action :set_work_request_for_destroy, only: [:destroy]
       before_action :validate_schedule_day_for_facility!, only: [:create]
       before_action :validate_work_type_for_facility!, only: [:create]
-      before_action :validate_return_work_assignment!, only: [:create]
 
       def index
         schedule_month = current_user.facility.schedule_months.find(
@@ -39,9 +38,7 @@ module Api
       end
 
       def create
-        work_request = current_user.work_requests.build(work_request_params)
-        work_request.facility = current_user.facility
-        work_request.request_status = :pending
+        work_request = build_work_request
 
         unless work_request.valid?
           return render json: {
@@ -50,16 +47,13 @@ module Api
           }, status: :unprocessable_content
         end
 
-        WorkRequest.transaction do
-          if work_assignment_exists?(work_request)
-            return render json: {
-              message: "すでにシフトが割り当てられているため申請できません。"
-            }, status: :unprocessable_content
-          end
+        error_message = WorkRequest.transaction do
+          create_work_request!(work_request)
+        end
 
-          work_request.save!
-
-          auto_process_work_request!(work_request) if work_request.work_type.auto_approve? && !over_request_deadline?(work_request)
+        if error_message
+          return render json: { message: error_message },
+                        status: :unprocessable_content
         end
 
         render json: {
@@ -76,9 +70,19 @@ module Api
       end
 
       def destroy
-        @work_request.destroy!
+        @work_request.with_lock do
+          unless @work_request.pending?
+            return render json: {
+              message: "この申請はすでに処理されています。"
+            }, status: :conflict
+          end
 
-        render json: { message: "勤務希望を削除しました。" }, status: :ok
+          @work_request.destroy!
+
+          render json: {
+            message: "勤務希望を削除しました。"
+          }, status: :ok
+        end
       end
 
       private
@@ -122,21 +126,64 @@ module Api
         render json: { message: "勤務パターンが存在しません。" }, status: :not_found
       end
 
-      def validate_return_work_assignment!
-        return unless work_request_params[:is_return].to_s == "true"
+      def build_work_request
+        work_request = current_user.work_requests.build(work_request_params)
+        work_request.facility = current_user.facility
+        work_request.request_status = :pending
 
-        schedule_day_id = work_request_params[:schedule_day_id]
-        work_type_id = work_request_params[:work_type_id]
+        work_request
+      end
 
-        return if schedule_day_id.blank? || work_type_id.blank?
+      def lock_work_type!(work_request)
+        work_request.work_type.lock!
+      end
 
-        return if WorkAssignment.exists?(
-          schedule_day_id: schedule_day_id,
-          user_id: current_user.id,
-          work_type_id: work_type_id
-        )
+      def create_work_request!(work_request)
+        lock_work_type!(work_request) unless work_request.is_return?
 
-        render json: { message: "返上対象の勤務割当が存在しません。" }, status: :unprocessable_content
+        error_message =
+          work_request_creation_error_message(work_request)
+
+        return error_message if error_message
+
+        work_request.save!
+
+        if work_request.work_type.auto_approve? && !over_request_deadline?(work_request)
+          apply_work_assignment!(work_request)
+          work_request.approved!
+        end
+
+        nil
+      end
+
+      def work_request_creation_error_message(work_request)
+        inactive_error =
+          inactive_work_type_error_message(work_request)
+
+        return inactive_error if inactive_error
+
+        work_assignment_error_message(work_request)
+      end
+
+      def inactive_work_type_error_message(work_request)
+        return if work_request.is_return?
+        return if work_request.work_type.is_active?
+
+        "この勤務パターンは現在利用できません。"
+      end
+
+      def work_assignment_error_message(work_request)
+        work_assignment = find_work_assignment(work_request)
+
+        if work_request.is_return?
+          return "返上対象の勤務割当が存在しません。" unless work_assignment
+
+          return
+        end
+
+        return unless work_assignment
+
+        "すでにシフトが割り当てられているため申請できません。"
       end
 
       def over_request_deadline?(work_request)
@@ -145,31 +192,6 @@ module Api
         )
 
         Date.current > deadline_date
-      end
-
-      def auto_process_work_request!(work_request)
-        if work_request.is_return?
-          return_work!(work_request, update_status: true)
-        else
-          assign_work!(work_request)
-        end
-      end
-
-      def return_work!(work_request, update_status:)
-        work_assignment = find_work_assignment(work_request)
-
-        unless work_assignment
-          work_request.rejected! if update_status
-          return
-        end
-
-        work_assignment.destroy!
-        work_request.approved! if update_status
-      end
-
-      def assign_work!(work_request)
-        create_work_assignment!(work_request)
-        work_request.approved!
       end
 
       def find_work_assignment(work_request)
@@ -182,10 +204,9 @@ module Api
           )
       end
 
-      def work_assignment_exists?(work_request)
-        return false if work_request.is_return?
-
-        find_work_assignment(work_request).present?
+      def return_work_assignment!(work_request)
+        work_assignment = find_work_assignment(work_request)
+        work_assignment.destroy!
       end
 
       def create_work_assignment!(work_request)
@@ -196,13 +217,12 @@ module Api
         )
       end
 
-      def apply_assignment_for_approved_request!(work_request)
+      def apply_work_assignment!(work_request)
         if work_request.is_return?
-          return_work!(work_request, update_status: false)
-          return
+          return_work_assignment!(work_request)
+        else
+          create_work_assignment!(work_request)
         end
-
-        create_work_assignment!(work_request)
       end
 
       def process_work_request_update!
@@ -213,18 +233,23 @@ module Api
           }
         end
 
-        approval_error = work_request_approval_error
-        return approval_error if approval_error
+        if work_request_update_params[:request_status] == "approved"
+          lock_work_type!(@work_request) unless @work_request.is_return?
+
+          approval_error = work_request_approval_error
+          return approval_error if approval_error
+        end
 
         @work_request.update!(work_request_update_params)
 
-        apply_assignment_for_approved_request!(@work_request) if @work_request.approved?
+        apply_work_assignment!(@work_request) if @work_request.approved?
 
-        message = if @work_request.approved?
-                    "申請を承認し、シフトを変更しました。"
-                  else
-                    "申請を否認しました。"
-                  end
+        message =
+          if @work_request.approved?
+            "申請を承認し、シフトを変更しました。"
+          else
+            "申請を否認しました。"
+          end
 
         {
           message: message,
@@ -233,14 +258,32 @@ module Api
       end
 
       def work_request_approval_error
-        return unless work_request_update_params[:request_status] == "approved"
+        if @work_request.is_return?
+          unless find_work_assignment(@work_request)
+            return {
+              message: "返上対象の勤務割当が存在しないため承認できません。",
+              status: :unprocessable_content
+            }
+          end
 
-        return unless work_assignment_exists?(@work_request)
+          return
+        end
 
-        {
-          message: "すでにシフトが割り当てられているため承認できません。",
-          status: :unprocessable_content
-        }
+        unless @work_request.work_type.is_active?
+          return {
+            message: "この勤務パターンは現在利用できないため承認できません。",
+            status: :unprocessable_content
+          }
+        end
+
+        if find_work_assignment(@work_request)
+          return {
+            message: "すでにシフトが割り当てられているため承認できません。",
+            status: :unprocessable_content
+          }
+        end
+
+        nil
       end
 
       def work_request_message(work_request)
