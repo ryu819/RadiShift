@@ -54,4 +54,38 @@ RSpec.describe WorkRequest, type: :model do
       )
     end
   end
+
+  describe "pending の重複" do
+    let(:user) { create(:user, :with_facility) }
+    let(:schedule_month) { create(:schedule_month, facility: user.facility) }
+    let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
+    let(:work_type) { create(:work_type, facility: user.facility) }
+
+    context "同じユーザー・対象日・勤務タイプの pending がすでにある時" do
+      before do
+        create(
+          :work_request,
+          facility: user.facility,
+          user: user,
+          schedule_day: schedule_day,
+          work_type: work_type,
+          request_status: :pending
+        )
+      end
+
+      it "同じ pending は無効である" do
+        duplicate_request = build(
+          :work_request,
+          facility: user.facility,
+          user: user,
+          schedule_day: schedule_day,
+          work_type: work_type,
+          request_status: :pending
+        )
+
+        expect(duplicate_request).to be_invalid
+        expect(duplicate_request.errors[:schedule_day_id]).to be_present
+      end
+    end
+  end
 end
