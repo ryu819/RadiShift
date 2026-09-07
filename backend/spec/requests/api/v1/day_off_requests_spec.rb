@@ -110,6 +110,23 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
       end
     end
 
+    context "uses_slot が false の休みパターンを返上申請する時" do
+      let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: false) }
+      let(:params) { { day_off_request: { schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, is_return: true } } }
+      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type) }
+      it "休み割当を削除せず、返上申請を pending で作成する" do
+        day_off_assignment_count = DayOffAssignment.count
+        expect { subject }.to change { DayOffRequest.count }.by(1)
+        res = JSON.parse(response.body)
+        day_off_request = DayOffRequest.last
+        expect(DayOffAssignment.count).to eq(day_off_assignment_count)
+        expect(res["message"]).to eq("申請されました。")
+        expect(day_off_request).to be_pending
+        expect(day_off_assignment.reload).to be_present
+        expect(response).to have_http_status(:created)
+      end
+    end
+
     context "すでに同じ休み割当がある時" do
       let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type) }
 
