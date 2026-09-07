@@ -150,9 +150,10 @@ module Api
 
         day_off_request.save!
 
-        auto_process_day_off_request!(day_off_request) unless over_request_deadline?(
-          day_off_request
-        )
+        if day_off_request.day_off_type.uses_slot? && !over_request_deadline?(day_off_request)
+          apply_day_off_assignment!(day_off_request)
+          day_off_request.approved!
+        end
 
         nil
       end
@@ -226,33 +227,6 @@ module Api
         Date.current > deadline_date
       end
 
-      def auto_process_day_off_request!(day_off_request)
-        if day_off_request.is_return?
-          return_day_off!(day_off_request, update_status: true)
-        else
-          assign_day_off!(day_off_request)
-        end
-      end
-
-      def return_day_off!(day_off_request, update_status:)
-        day_off_assignment = find_day_off_assignment(day_off_request)
-
-        unless day_off_assignment
-          day_off_request.rejected! if update_status
-          return
-        end
-
-        day_off_assignment.destroy!
-        day_off_request.approved! if update_status
-      end
-
-      def assign_day_off!(day_off_request)
-        return unless day_off_request.day_off_type.uses_slot?
-
-        create_day_off_assignment!(day_off_request)
-        day_off_request.approved!
-      end
-
       def find_day_off_assignment(day_off_request)
         DayOffAssignment
           .lock
@@ -263,6 +237,11 @@ module Api
           )
       end
 
+      def return_day_off_assignment!(day_off_request)
+        day_off_assignment = find_day_off_assignment(day_off_request)
+        day_off_assignment.destroy!
+      end
+
       def create_day_off_assignment!(day_off_request)
         DayOffAssignment.create!(
           schedule_day: day_off_request.schedule_day,
@@ -271,21 +250,20 @@ module Api
         )
       end
 
+      def apply_day_off_assignment!(day_off_request)
+        if day_off_request.is_return?
+          return_day_off_assignment!(day_off_request)
+        else
+          create_day_off_assignment!(day_off_request)
+        end
+      end
+
       def day_off_request_message(day_off_request)
         return "申請は承認されました。" if day_off_request.approved?
         return "申請は否認されました。" if day_off_request.rejected?
         return "申請締切日を過ぎているため、承認待ちとして申請されました。" if over_request_deadline?(day_off_request)
 
         "申請されました。"
-      end
-
-      def apply_assignment_for_approved_request!(day_off_request)
-        if day_off_request.is_return?
-          return_day_off!(day_off_request, update_status: false)
-          return
-        end
-
-        create_day_off_assignment!(day_off_request)
       end
 
       def process_day_off_request_update!
@@ -305,7 +283,7 @@ module Api
 
         @day_off_request.update!(day_off_request_update_params)
 
-        apply_assignment_for_approved_request!(@day_off_request) if @day_off_request.approved?
+        apply_day_off_assignment!(@day_off_request) if @day_off_request.approved?
 
         message =
           if @day_off_request.approved?
