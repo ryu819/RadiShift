@@ -70,20 +70,14 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
             </div>
 
             {scheduleMonth.status === "accepting_requests" && (
-              <Badge
-                variant="secondary"
-                className="bg-emerald-100 text-emerald-700 rounded-sm"
-              >
-                申請受付中
+              <Badge className="bg-amber-100 text-amber-700 rounded-sm">
+                シフト未公開
               </Badge>
             )}
 
             {scheduleMonth.status === "published" && (
-              <Badge
-                variant="secondary"
-                className="bg-blue-100 text-blue-700 rounded-sm"
-              >
-                シフト公開
+              <Badge className="bg-emerald-100 text-emerald-700 rounded-sm">
+                シフト公開済
               </Badge>
             )}
 

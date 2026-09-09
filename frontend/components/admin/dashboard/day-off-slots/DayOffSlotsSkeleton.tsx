@@ -151,12 +151,13 @@ function DayOffSlotCalendarSkeleton() {
           </div>
 
           <div className="grid grid-cols-7 border-b bg-muted/30">
-            {calendarWeekdays.map((weekday) => (
+            {calendarWeekdays.map((weekday, index) => (
               <div
                 key={weekday.label}
                 className={cn(
                   "py-2 text-center text-xs font-medium text-muted-foreground",
                   weekday.className,
+                  index !== 6 && "border-r",
                 )}
               >
                 {weekday.label}
