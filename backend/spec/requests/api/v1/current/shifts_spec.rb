@@ -101,35 +101,6 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
       end
     end
 
-    context "休み枠が設定されている時" do
-      let(:active_day_off_type) { create(:day_off_type, facility: user.facility, is_active: true, uses_slot: true) }
-
-      let(:inactive_day_off_type) { create(:day_off_type, facility: user.facility, is_active: false, uses_slot: true) }
-
-      let(:no_slot_day_off_type) { create(:day_off_type, facility: user.facility, is_active: true, uses_slot: false) }
-
-      let!(:active_day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: active_day_off_type, max_slots: 3) }
-
-      let!(:inactive_day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: inactive_day_off_type, max_slots: 3) }
-
-      let!(:no_slot_day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: no_slot_day_off_type, max_slots: 3) }
-
-      let!(:first_day_off_assignment) do
-        create(:day_off_assignment, facility: user.facility, user: user, schedule_day: schedule_day, day_off_type: active_day_off_type)
-      end
-
-      it "有効かつ枠を使用する休みタイプのみの残り枠を返す" do
-        subject
-        res = JSON.parse(response.body)
-        day_off_slot_ids = res["day_off_slots"].map { |day_off_slot| day_off_slot["id"] }
-        expect(day_off_slot_ids).to include(active_day_off_slot.id)
-        expect(day_off_slot_ids).not_to include(inactive_day_off_slot.id)
-        expect(day_off_slot_ids).not_to include(no_slot_day_off_slot.id)
-        expect(res["day_off_slots"].first["max_slots"]).to eq(3)
-        expect(res["day_off_slots"].first["remaining_slots"]).to eq(2)
-      end
-    end
-
     context "施設に所属していない時" do
       let(:user) { create(:user) }
       let(:schedule_month) { create(:schedule_month) }

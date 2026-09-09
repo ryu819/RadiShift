@@ -19,7 +19,7 @@ module Api
         work_requests = current_user.work_requests
                           .where(schedule_day: schedule_month.schedule_days)
                           .includes(:schedule_day, :work_type)
-                          .order(created_at: :asc)
+                          .order(created_at: :desc)
 
         render json: work_requests.as_json(
           only: [:id, :user_id, :schedule_day_id, :work_type_id, :request_status, :is_return, :created_at],

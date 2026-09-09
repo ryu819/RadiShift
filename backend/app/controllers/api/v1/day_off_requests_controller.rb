@@ -19,7 +19,7 @@ module Api
         day_off_requests = current_user.day_off_requests
                              .where(schedule_day: schedule_month.schedule_days)
                              .includes(:schedule_day, :day_off_type)
-                             .order(created_at: :asc)
+                             .order(created_at: :desc)
 
         render json: day_off_requests.as_json(
           {

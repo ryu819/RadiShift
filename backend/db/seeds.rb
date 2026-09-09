@@ -148,7 +148,7 @@ ActiveRecord::Base.transaction do
     schedule_month = ScheduleMonth.create!(
       facility: facility,
       year: 2026,
-      month: i + 7,
+      month: i + 9,
       monthly_days_off: i + 9
     )
 
@@ -194,6 +194,12 @@ ActiveRecord::Base.transaction do
       work_type: day_work
     )
 
+    WorkAssignment.create!(
+      schedule_day: schedule_days[0],
+      user: admin_user,
+      work_type: overtime_work
+    )
+
     # -------------------------
     # 勤務希望
     # -------------------------
@@ -201,7 +207,7 @@ ActiveRecord::Base.transaction do
     # 承認待ち
     WorkRequest.create!(
       facility: facility,
-      user: users[1],
+      user: users[0],
       schedule_day: schedule_days[1],
       work_type: day_work,
       request_status: :pending,
@@ -211,7 +217,7 @@ ActiveRecord::Base.transaction do
     # 承認済み
     WorkRequest.create!(
       facility: facility,
-      user: users[2],
+      user: users[0],
       schedule_day: schedule_days[2],
       work_type: night_work,
       request_status: :approved,
@@ -221,14 +227,14 @@ ActiveRecord::Base.transaction do
     # 承認済みなので勤務割当も作る
     WorkAssignment.create!(
       schedule_day: schedule_days[2],
-      user: users[2],
+      user: users[0],
       work_type: night_work
     )
 
     # 返上リクエスト
     WorkRequest.create!(
       facility: facility,
-      user: users[2],
+      user: users[0],
       schedule_day: schedule_days[2],
       work_type: night_work,
       request_status: :pending,
@@ -238,7 +244,7 @@ ActiveRecord::Base.transaction do
     # 否認済み
     WorkRequest.create!(
       facility: facility,
-      user: users[3],
+      user: users[0],
       schedule_day: schedule_days[3],
       work_type: overtime_work,
       request_status: :rejected,
@@ -252,8 +258,8 @@ ActiveRecord::Base.transaction do
     # 承認待ち
     DayOffRequest.create!(
       facility: facility,
-      user: users[4],
-      schedule_day: schedule_days[4],
+      user: users[0],
+      schedule_day: schedule_days[5],
       day_off_type: day_off,
       request_status: :pending,
       is_return: false
@@ -262,8 +268,8 @@ ActiveRecord::Base.transaction do
     # 承認済み
     DayOffRequest.create!(
       facility: facility,
-      user: users[5],
-      schedule_day: schedule_days[5],
+      user: users[0],
+      schedule_day: schedule_days[6],
       day_off_type: day_off,
       request_status: :approved,
       is_return: false
@@ -271,16 +277,16 @@ ActiveRecord::Base.transaction do
 
     # 承認済みなので休み割当も作る
     DayOffAssignment.create!(
-      schedule_day: schedule_days[5],
-      user: users[5],
+      schedule_day: schedule_days[6],
+      user: users[0],
       day_off_type: day_off
     )
 
     # 返上リクエスト
     DayOffRequest.create!(
       facility: facility,
-      user: users[5],
-      schedule_day: schedule_days[5],
+      user: users[0],
+      schedule_day: schedule_days[6],
       day_off_type: day_off,
       request_status: :pending,
       is_return: true
@@ -289,8 +295,8 @@ ActiveRecord::Base.transaction do
     # 否認済み
     DayOffRequest.create!(
       facility: facility,
-      user: users[6],
-      schedule_day: schedule_days[6],
+      user: users[0],
+      schedule_day: schedule_days[7],
       day_off_type: day_off,
       request_status: :rejected,
       is_return: false

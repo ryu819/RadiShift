@@ -22,7 +22,16 @@ module Api
         schedule_month = current_user.facility.schedule_months
                            .includes(schedule_days: { day_off_slots: :day_off_type })
                            .find(params[:id])
-        render json: schedule_month.as_json(
+
+        schedule_days = schedule_month.schedule_days
+
+        assigned_counts =
+          DayOffAssignment
+            .where(schedule_day: schedule_days)
+            .group(:schedule_day_id, :day_off_type_id)
+            .count
+
+        schedule_month_json = schedule_month.as_json(
           only: [:id, :year, :month, :monthly_days_off, :status],
           include: {
             schedule_days: {
@@ -35,7 +44,12 @@ module Api
               ],
               include: {
                 day_off_slots: {
-                  only: [:id, :schedule_day_id, :day_off_type_id, :max_slots],
+                  only: [
+                    :id,
+                    :schedule_day_id,
+                    :day_off_type_id,
+                    :max_slots
+                  ],
                   include: {
                     day_off_type: {
                       only: [:id, :name, :color_code]
@@ -45,7 +59,11 @@ module Api
               }
             }
           }
-        ), status: :ok
+        )
+
+        add_remaining_slots(schedule_month_json, assigned_counts)
+
+        render json: schedule_month_json, status: :ok
       end
 
       def create
@@ -93,6 +111,22 @@ module Api
 
       def schedule_month_update_params
         params.require(:schedule_month).permit(:monthly_days_off, :status)
+      end
+
+      def add_remaining_slots(schedule_month_json, assigned_counts)
+        schedule_month_json["schedule_days"].each do |schedule_day|
+          schedule_day["day_off_slots"].each do |day_off_slot|
+            key = [
+              day_off_slot["schedule_day_id"],
+              day_off_slot["day_off_type_id"]
+            ]
+
+            assigned_count = assigned_counts[key] || 0
+
+            day_off_slot["remaining_slots"] =
+              day_off_slot["max_slots"] - assigned_count
+          end
+        end
       end
 
       def create_schedule_days_with_day_off_slots!(schedule_month)
