@@ -51,6 +51,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
       let!(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
       let!(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み") }
       let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 5) }
+      let!(:day_off_assignment) { create(:day_off_assignment, facility: user.facility, user: user, schedule_day: schedule_day, day_off_type: day_off_type) }
 
       it "正常に対象月・日付一覧・休み枠一覧を取得できる" do
         subject
@@ -59,6 +60,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
         expect(res["schedule_days"].first["id"]).to eq(schedule_day.id)
         expect(res["schedule_days"].first["day_off_slots"].first["id"]).to eq(day_off_slot.id)
         expect(res["schedule_days"].first["day_off_slots"].first["max_slots"]).to eq(5)
+        expect(res["schedule_days"].first["day_off_slots"].first["remaining_slots"]).to eq(4)
         expect(res["schedule_days"].first["day_off_slots"].first["day_off_type"]["id"]).to eq(day_off_type.id)
         expect(res["schedule_days"].first["day_off_slots"].first["day_off_type"]["name"]).to eq("休み")
         expect(response).to have_http_status(:ok)

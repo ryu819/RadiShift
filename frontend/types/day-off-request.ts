@@ -7,13 +7,8 @@ export type DayOffRequest = {
   isReturn: boolean;
   createdAt: string;
 
-  user?: {
-    name: string;
-  };
-
   scheduleDay: {
     date: string;
-    day: number;
     weekdayLabel: string;
   };
 

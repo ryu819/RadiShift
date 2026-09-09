@@ -10,7 +10,7 @@ import type { ScheduleMonth } from "@/types/schedule-month";
 export async function getScheduleMonth(scheduleMonthId: number) {
   "use cache: private";
 
-  cacheLife("minutes");
+  cacheLife("seconds");
 
   cacheTag(CACHE_TAGS.scheduleMonth(scheduleMonthId));
 

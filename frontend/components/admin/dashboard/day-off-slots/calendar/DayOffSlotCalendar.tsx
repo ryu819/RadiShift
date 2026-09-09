@@ -19,7 +19,7 @@ export function DayOffSlotCalendar({
   selectedDayOffType,
   selectedScheduleMonthId,
 }: Props) {
-  const firstWeekday = dayjs.tz(scheduleDays[0].date, APP_TIME_ZONE).day() ?? 0;
+  const firstWeekday = dayjs.tz(scheduleDays[0].date, APP_TIME_ZONE).day();
 
   const calendarCells: (ScheduleDay | null)[] = [];
 
@@ -38,12 +38,13 @@ export function DayOffSlotCalendar({
   return (
     <>
       <div className="grid grid-cols-7 border-b bg-muted/30">
-        {calendarWeekdays.map((weekday) => (
+        {calendarWeekdays.map((weekday, index) => (
           <div
             key={weekday.label}
             className={cn(
               "py-2 text-center text-xs font-medium text-muted-foreground",
               weekday.className,
+              index !== 6 && "border-r",
             )}
           >
             {weekday.label}
@@ -54,14 +55,16 @@ export function DayOffSlotCalendar({
       <div className="grid grid-cols-7">
         {calendarCells.map((day, index) => {
           const isLastColumn = index % 7 === 6;
+          const isLastRow = index >= calendarCells.length - 7;
 
           if (!day) {
             return (
               <div
                 key={`empty-${index}`}
                 className={cn(
-                  "min-h-20 border-r border-b bg-muted/10 sm:min-h-24",
-                  isLastColumn && "border-r-0",
+                  "min-h-20 bg-muted/20 sm:min-h-24",
+                  !isLastColumn && "border-r",
+                  !isLastRow && "border-b",
                 )}
               />
             );
@@ -85,6 +88,7 @@ export function DayOffSlotCalendar({
               dayOffType={selectedDayOffType}
               dayOffSlot={dayOffSlot}
               isLastColumn={isLastColumn}
+              isLastRow={isLastRow}
               dateClassName={dateClassName}
               selectedScheduleMonthId={selectedScheduleMonthId}
             />

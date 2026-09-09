@@ -61,7 +61,7 @@ export function ShiftTable({
                 <div
                   className={cn(
                     "text-xs font-bold leading-none md:text-sm",
-                    day.isSunday && "text-rose-500",
+                    day.isSunday && "text-red-500",
                     day.isSaturday && "text-blue-500",
                   )}
                 >
@@ -71,7 +71,7 @@ export function ShiftTable({
                 <div
                   className={cn(
                     "mt-0.5 text-[9px] font-medium md:mt-1 md:text-[10px]",
-                    day.isSunday && "text-rose-500",
+                    day.isSunday && "text-red-500",
                     day.isSaturday && "text-blue-500",
                   )}
                 >
