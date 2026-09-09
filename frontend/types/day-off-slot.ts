@@ -5,5 +5,6 @@ export type DayOffSlot = {
   scheduleDayId: number;
   dayOffTypeId: number;
   maxSlots: number;
+  remainingSlots: number;
   dayOffType: DayOffType;
 };

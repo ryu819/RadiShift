@@ -10,4 +10,6 @@ export const CACHE_TAGS = {
   modalityTypes: "modality-types",
   dayOffSlotRules: "day-off-slot-rules",
   pendingRequests: "pending-requests",
+  dayOffRequests: "day-off-requests",
+  workRequests: "work-requests",
 };

@@ -3,16 +3,22 @@ import "server-only";
 import camelcaseKeys from "camelcase-keys";
 
 import { getJwt } from "@/lib/auth/jwt";
+import { DayOffAssignment } from "@/types/day-off-assignment";
 import { WorkAssignment } from "@/types/work-assignment";
 
-export async function getWorkAssignments(year: number, month: number) {
+type MyShiftResponse = {
+  workAssignments: WorkAssignment[];
+  dayOffAssignments: DayOffAssignment[];
+};
+
+export async function getMyShiftAssignments(scheduleMonthId: number) {
   const jwt = await getJwt();
 
   if (!jwt) return null;
 
   try {
     const res = await fetch(
-      `${process.env.RAILS_API_URL}/work_assignments?year=${year}&month=${month}`,
+      `${process.env.RAILS_API_URL}/current/shifts/${scheduleMonthId}`,
       {
         headers: {
           Authorization: jwt,
@@ -22,7 +28,7 @@ export async function getWorkAssignments(year: number, month: number) {
 
     if (!res.ok) return null;
 
-    const data: WorkAssignment[] = camelcaseKeys(await res.json(), {
+    const data: MyShiftResponse = camelcaseKeys(await res.json(), {
       deep: true,
     });
 
