@@ -62,7 +62,7 @@ export function WorkTypesSettingsCard({
                     </div>
 
                     <p className="mt-1 pl-5 text-xs text-muted-foreground">
-                      {workType.autoApprove ? "自動承認" : "承認制"}
+                      {workType.isRequestable ? "申請可" : "申請不可"}
                     </p>
                   </div>
 

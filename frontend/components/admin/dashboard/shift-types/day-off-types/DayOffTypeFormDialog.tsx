@@ -131,7 +131,7 @@ export function DayOffTypeFormDialog({ dayOffType, onOpenChange }: Props) {
               <Label htmlFor="usesSlot">休み枠を使用</Label>
             </div>
             <p className="text-xs text-muted-foreground">
-              締め切り前の申請は、設定された休み枠に空きがある場合に
+              有効にすると、締め切り前の申請は、設定された休み枠に空きがある場合に
               自動で承認します
             </p>
           </div>
