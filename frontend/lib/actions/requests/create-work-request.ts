@@ -30,7 +30,7 @@ export async function createWorkRequestForm(
   formData: FormData,
 ): Promise<ActionState> {
   const scheduleDayId = Number(formData.get("scheduleDayId"));
-  const workTypeId = Number(formData.get("workTypeId"));
+  const workTypeId = Number(formData.get("shiftTypeId"));
   const isReturn = formData.get("isReturn") === "true";
   const scheduleMonthId = Number(formData.get("scheduleMonthId"));
 

@@ -97,16 +97,16 @@ export function WorkTypeFormDialog({ workType, onOpenChange }: Props) {
           <div className="space-y-2 ml-1">
             <div className="flex items-center gap-2">
               <Checkbox
-                id="autoApprove"
-                name="autoApprove"
+                id="isRequestable"
+                name="isRequestable"
                 value="true"
-                defaultChecked={workType?.autoApprove}
+                defaultChecked={workType?.isRequestable}
               />
 
-              <Label htmlFor="autoApprove">自動承認</Label>
+              <Label htmlFor="isRequestable">申請を許可</Label>
             </div>
             <p className="text-xs text-muted-foreground">
-              締め切り前の勤務申請を自動で承認します
+              有効にすると、この勤務タイプの申請・返上申請を受け付けます
             </p>
           </div>
 

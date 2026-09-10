@@ -57,7 +57,7 @@ module Api
         end
 
         render json: {
-          message: work_request_message(work_request)
+          message: "申請しました。"
         }, status: :created
       end
 
@@ -139,7 +139,7 @@ module Api
       end
 
       def create_work_request!(work_request)
-        lock_work_type!(work_request) unless work_request.is_return?
+        lock_work_type!(work_request)
 
         error_message =
           work_request_creation_error_message(work_request)
@@ -148,28 +148,24 @@ module Api
 
         work_request.save!
 
-        if work_request.work_type.auto_approve? && !over_request_deadline?(work_request)
-          apply_work_assignment!(work_request)
-          work_request.approved!
-        end
-
         nil
       end
 
       def work_request_creation_error_message(work_request)
-        inactive_error =
-          inactive_work_type_error_message(work_request)
+        work_type_error =
+          work_type_request_error_message(work_request)
 
-        return inactive_error if inactive_error
+        return work_type_error if work_type_error
 
         work_assignment_error_message(work_request)
       end
 
-      def inactive_work_type_error_message(work_request)
-        return if work_request.is_return?
-        return if work_request.work_type.is_active?
+      def work_type_request_error_message(work_request)
+        return "この勤務パターンは現在利用できません。" unless work_request.work_type.is_active?
 
-        "この勤務パターンは現在利用できません。"
+        return if work_request.work_type.is_requestable?
+
+        "この勤務パターンは現在申請できません。"
       end
 
       def work_assignment_error_message(work_request)
@@ -184,14 +180,6 @@ module Api
         return unless work_assignment
 
         "すでにシフトが割り当てられているため申請できません。"
-      end
-
-      def over_request_deadline?(work_request)
-        deadline_date = current_user.facility.request_deadline_date_for(
-          work_request.schedule_day.date
-        )
-
-        Date.current > deadline_date
       end
 
       def find_work_assignment(work_request)
@@ -284,14 +272,6 @@ module Api
         end
 
         nil
-      end
-
-      def work_request_message(work_request)
-        return "申請は承認されました。" if work_request.approved?
-        return "申請は否認されました。" if work_request.rejected?
-        return "申請締切日を過ぎているため、管理者承認待ちとして申請しました。" if over_request_deadline?(work_request)
-
-        "申請しました。"
       end
     end
   end

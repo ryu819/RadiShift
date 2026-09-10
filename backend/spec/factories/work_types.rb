@@ -6,6 +6,6 @@ FactoryBot.define do
     name { "日勤" }
     is_active { true }
     color_code { "#FF0000" }
-    auto_approve { false }
+    is_requestable { false }
   end
 end
