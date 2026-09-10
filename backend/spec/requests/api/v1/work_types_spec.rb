@@ -41,7 +41,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
   describe "POST /api/v1/work_types" do
     subject { post(api_v1_work_types_path, params: params, headers: { "Authorization": token }) }
 
-    let(:params) { { work_type: { name: "日勤", color_code: "#FF0000", auto_approve: true } } }
+    let(:params) { { work_type: { name: "日勤", color_code: "#FF0000", is_requestable: true } } }
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
@@ -53,7 +53,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
         expect(res["message"]).to eq("勤務タイプを作成しました。")
         expect(work_type.color_code).to eq("#FF0000")
-        expect(work_type.auto_approve).to be true
+        expect(work_type.is_requestable).to be true
         expect(work_type.facility).to eq(user.facility)
         expect(response).to have_http_status(:created)
       end
@@ -111,9 +111,9 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
   describe "PUT /api/v1/work_types/:id" do
     subject { put(api_v1_work_type_path(work_type), params: params, headers: { "Authorization": token }) }
 
-    let(:params) { { work_type: { name: "夜勤", color_code: "#0000FF", auto_approve: true } } }
+    let(:params) { { work_type: { name: "夜勤", color_code: "#0000FF", is_requestable: true } } }
 
-    let(:work_type) { create(:work_type, facility: user.facility, name: "日勤", color_code: "#FF0000", auto_approve: false) }
+    let(:work_type) { create(:work_type, facility: user.facility, name: "日勤", color_code: "#FF0000", is_requestable: false) }
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
@@ -123,7 +123,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
         expect(res["message"]).to eq("勤務タイプを更新しました。")
         expect(work_type.reload.name).to eq("夜勤")
         expect(work_type.color_code).to eq("#0000FF")
-        expect(work_type.auto_approve).to be true
+        expect(work_type.is_requestable).to be true
         expect(response).to have_http_status(:ok)
       end
 
@@ -140,7 +140,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
       end
 
       context "permitしていない項目を送る時" do
-        let(:params) { { work_type: { name: "夜勤", color_code: "#0000FF", auto_approve: true, is_active: false } } }
+        let(:params) { { work_type: { name: "夜勤", color_code: "#0000FF", is_requestable: true, is_active: false } } }
 
         it "is_active は更新されない" do
           original_is_active = work_type.is_active
@@ -148,7 +148,7 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
           work_type.reload
           expect(work_type.name).to eq("夜勤")
           expect(work_type.color_code).to eq("#0000FF")
-          expect(work_type.auto_approve).to be true
+          expect(work_type.is_requestable).to be true
           expect(work_type.is_active).to eq(original_is_active)
           expect(response).to have_http_status(:ok)
         end
