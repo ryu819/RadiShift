@@ -263,7 +263,7 @@ module Api
         return "申請は否認されました。" if day_off_request.rejected?
         return "申請締切日を過ぎているため、承認待ちとして申請されました。" if over_request_deadline?(day_off_request)
 
-        "申請されました。"
+        "申請しました。"
       end
 
       def process_day_off_request_update!

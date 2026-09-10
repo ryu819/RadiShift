@@ -13,7 +13,7 @@ module Api
         work_types = current_user.facility.work_types.active.order(:id)
 
         render json: work_types.as_json(
-          only: [:id, :name, :color_code, :auto_approve]
+          only: [:id, :name, :color_code, :is_requestable]
         ), status: :ok
       end
 
@@ -54,7 +54,7 @@ module Api
       end
 
       def work_type_params
-        params.require(:work_type).permit(:name, :color_code, :auto_approve)
+        params.require(:work_type).permit(:name, :color_code, :is_requestable)
       end
     end
   end

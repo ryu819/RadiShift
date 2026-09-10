@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_003349) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_09_150840) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -228,11 +228,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_003349) do
   end
 
   create_table "work_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.boolean "auto_approve", default: false, null: false
     t.string "color_code", null: false
     t.datetime "created_at", null: false
     t.bigint "facility_id", null: false
     t.boolean "is_active", default: true, null: false
+    t.boolean "is_requestable", default: false, null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["facility_id", "name"], name: "index_work_types_on_facility_id_and_name"
