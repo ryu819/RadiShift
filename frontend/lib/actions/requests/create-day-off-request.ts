@@ -30,7 +30,7 @@ export async function createDayOffRequestForm(
   formData: FormData,
 ): Promise<ActionState> {
   const scheduleDayId = Number(formData.get("scheduleDayId"));
-  const dayOffTypeId = Number(formData.get("dayOffTypeId"));
+  const dayOffTypeId = Number(formData.get("shiftTypeId"));
   const isReturn = formData.get("isReturn") === "true";
   const scheduleMonthId = Number(formData.get("scheduleMonthId"));
 

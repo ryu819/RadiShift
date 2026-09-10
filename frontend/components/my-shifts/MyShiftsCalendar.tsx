@@ -1,5 +1,5 @@
 import { calendarWeekdays } from "@/components/admin/dashboard/day-off-slots/calendar/day-off-slot-calendar-week-days";
-import { DayOffRequestDialog } from "@/components/my-shifts/DayOffRequestDialog";
+import { ShiftRequestDialog } from "@/components/my-shifts/ShiftRequestDialog";
 import { Card } from "@/components/ui/card";
 import { APP_TIME_ZONE } from "@/constants/time-zone";
 import { dayjs } from "@/lib/dayjs";
@@ -25,6 +25,7 @@ export function MyShiftsCalendar({
   dayOffAssignment,
   workAssignments,
   dayOffTypes,
+  workTypes,
 }: Props) {
   if (scheduleDays.length === 0) {
     return (
@@ -97,13 +98,14 @@ export function MyShiftsCalendar({
           );
 
           return (
-            <DayOffRequestDialog
+            <ShiftRequestDialog
               key={scheduleDay.id}
               scheduleDay={scheduleDay}
               scheduleMonthId={selectedScheduleMonthId}
               dayOffTypes={dayOffTypes}
+              workTypes={workTypes}
               dayOffAssignments={cellDayOffAssignments}
-              WorkAssignments={cellWorkAssignments}
+              workAssignments={cellWorkAssignments}
               isLastColumn={isLastColumn}
               isLastRow={isLastRow}
             />
