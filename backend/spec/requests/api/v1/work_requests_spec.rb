@@ -88,7 +88,8 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         { work_request: {     schedule_day_id: schedule_day.id, work_type_id: work_type.id, is_return: true } }
       end
 
-      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: user, work_type: work_type) }
+      let(:work_request) { create(:work_request, schedule_day_id: schedule_day.id, work_type_id: work_type.id, request_status: :approved) }
+      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: user, work_type: work_type, work_request: work_request) }
 
       it "返上申請をpendingで作成し、勤務割当は削除しない" do
         work_assignment_count = WorkAssignment.count
@@ -274,7 +275,10 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         create(:work_request, facility: user.facility, user: target_user, schedule_day: schedule_day, work_type: work_type, request_status: :pending,
                               is_return: true)
       end
-      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type) }
+
+      let!(:work_assignment) do
+        create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type, work_request: create(:work_request))
+      end
 
       it "勤務希望を更新し、勤務割当を削除する" do
         expect { subject }.to change { WorkAssignment.count }.by(-1)
@@ -351,7 +355,9 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
                               is_return: true)
       end
 
-      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type) }
+      let!(:work_assignment) do
+        create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type, work_request: create(:work_request))
+      end
 
       it "勤務割当を削除して approved にする" do
         expect { subject }.to change { WorkAssignment.count }.by(-1)

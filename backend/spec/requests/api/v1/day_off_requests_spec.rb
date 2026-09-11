@@ -113,7 +113,10 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
     context "uses_slot が false の休みパターンを返上申請する時" do
       let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: false) }
       let(:params) { { day_off_request: { schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, is_return: true } } }
-      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type) }
+      let(:day_off_request) { create(:day_off_request, schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, request_status: :approved) }
+      let!(:day_off_assignment) do
+        create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type, day_off_request: day_off_request)
+      end
       it "休み割当を削除せず、返上申請を pending で作成する" do
         day_off_assignment_count = DayOffAssignment.count
         expect { subject }.to change { DayOffRequest.count }.by(1)
@@ -156,7 +159,10 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
 
     context "返上申請で返上対象の休み割当がある時" do
       let(:params) { { day_off_request: { schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, is_return: true } } }
-      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type) }
+      let(:day_off_request) { create(:day_off_request, schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, request_status: :approved) }
+      let!(:day_off_assignment) do
+        create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type, day_off_request: day_off_request)
+      end
 
       it "返上申請を作成し、休み割当を削除して approved になる" do
         expect { subject }.to change { DayOffRequest.count }.by(1).and change { DayOffAssignment.count }.by(-1)
@@ -219,7 +225,10 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
 
       let(:params) { { day_off_request: { schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, is_return: true } } }
 
-      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type) }
+      let(:day_off_request) { create(:day_off_request, schedule_day_id: schedule_day.id, day_off_type_id: day_off_type.id, request_status: :approved) }
+      let!(:day_off_assignment) do
+        create(:day_off_assignment, schedule_day: schedule_day, user: user, day_off_type: day_off_type, day_off_request: day_off_request)
+      end
 
       it "返上申請を作成し、休み割当を削除して approved になる" do
         expect { subject }
@@ -345,7 +354,9 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
         create(:day_off_request, facility: user.facility, user: target_user, schedule_day: schedule_day, day_off_type: day_off_type, request_status: :pending,
                                  is_return: true)
       end
-      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: target_user, day_off_type: day_off_type) }
+      let!(:day_off_assignment) do
+        create(:day_off_assignment, schedule_day: schedule_day, user: target_user, day_off_type: day_off_type, day_off_request: create(:day_off_request))
+      end
 
       it "休み希望を更新し、休み割当を削除する" do
         expect { subject }.to change { DayOffAssignment.count }.by(-1)
@@ -426,7 +437,9 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
                                  is_return: true)
       end
 
-      let!(:day_off_assignment) { create(:day_off_assignment, schedule_day: schedule_day, user: target_user, day_off_type: day_off_type) }
+      let!(:day_off_assignment) do
+        create(:day_off_assignment, schedule_day: schedule_day, user: target_user, day_off_type: day_off_type, day_off_request: create(:day_off_request))
+      end
 
       it "休み割当を削除して approved にする" do
         expect { subject }.to change { DayOffAssignment.count }.by(-1)
