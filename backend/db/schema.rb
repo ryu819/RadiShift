@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_09_150840) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_11_003059) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -41,10 +41,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_150840) do
 
   create_table "day_off_assignments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.bigint "day_off_request_id"
     t.bigint "day_off_type_id", null: false
     t.bigint "schedule_day_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["day_off_request_id"], name: "index_day_off_assignments_on_day_off_request_id"
     t.index ["day_off_type_id"], name: "index_day_off_assignments_on_day_off_type_id"
     t.index ["schedule_day_id", "day_off_type_id", "user_id"], name: "idx_on_schedule_day_id_day_off_type_id_user_id_3898df124f", unique: true
     t.index ["schedule_day_id"], name: "index_day_off_assignments_on_schedule_day_id"
@@ -200,11 +202,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_150840) do
     t.bigint "schedule_day_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.bigint "work_request_id"
     t.bigint "work_type_id", null: false
     t.index ["schedule_day_id", "work_type_id", "user_id"], name: "idx_on_schedule_day_id_work_type_id_user_id_8ebca09a8b", unique: true
     t.index ["schedule_day_id"], name: "index_work_assignments_on_schedule_day_id"
     t.index ["user_id", "schedule_day_id"], name: "index_work_assignments_on_user_id_and_schedule_day_id"
     t.index ["user_id"], name: "index_work_assignments_on_user_id"
+    t.index ["work_request_id"], name: "index_work_assignments_on_work_request_id"
     t.index ["work_type_id"], name: "index_work_assignments_on_work_type_id"
   end
 
@@ -241,6 +245,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_150840) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "day_off_assignments", "day_off_requests", on_delete: :nullify
   add_foreign_key "day_off_assignments", "day_off_types"
   add_foreign_key "day_off_assignments", "schedule_days"
   add_foreign_key "day_off_assignments", "users"
@@ -262,6 +267,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_150840) do
   add_foreign_key "users", "facilities"
   add_foreign_key "work_assignments", "schedule_days"
   add_foreign_key "work_assignments", "users"
+  add_foreign_key "work_assignments", "work_requests", on_delete: :nullify
   add_foreign_key "work_assignments", "work_types"
   add_foreign_key "work_requests", "facilities"
   add_foreign_key "work_requests", "schedule_days"

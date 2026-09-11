@@ -224,11 +224,7 @@ export function ShiftRequestDialog({
                   {workAssignments.map((workAssignment) => {
                     const workType = workAssignment.workType;
 
-                    const canReturn = workTypes.some(
-                      (requestableWorkType) =>
-                        requestableWorkType.id === workType.id &&
-                        requestableWorkType.isRequestable,
-                    );
+                    const canReturn = workAssignment.workRequestId !== null;
 
                     const isSelected =
                       selectedRequest?.kind === "work" &&
@@ -288,6 +284,8 @@ export function ShiftRequestDialog({
                   {dayOffAssignments.map((dayOffAssignment) => {
                     const dayOffType = dayOffAssignment.dayOffType;
 
+                    const canReturn = dayOffAssignment.dayOffRequestId !== null;
+
                     const isSelected =
                       selectedRequest?.kind === "dayOff" &&
                       selectedRequest.shiftType.id === dayOffType.id &&
@@ -297,9 +295,12 @@ export function ShiftRequestDialog({
                       <button
                         key={dayOffAssignment.id}
                         type="button"
-                        disabled={isPending}
+                        disabled={isPending || !canReturn}
                         className={cn(
                           "flex w-full cursor-pointer items-center justify-between rounded-md border p-3 transition-colors hover:bg-muted/50 active:bg-muted/50",
+                          canReturn
+                            ? "cursor-pointer hover:bg-muted/50 active:bg-muted/50"
+                            : "cursor-not-allowed opacity-60",
                           isSelected && "border-primary bg-muted/50",
                         )}
                         onClick={() =>
@@ -316,12 +317,17 @@ export function ShiftRequestDialog({
                         >
                           {dayOffType.name}
                         </Badge>
+                        {canReturn ? (
+                          <div className="flex items-center gap-1 text-amber-700">
+                            <RotateCcw className="size-3" />
 
-                        <div className="flex items-center gap-1 text-amber-700">
-                          <RotateCcw className="size-3" />
-
-                          <span className="text-xs font-medium">返上</span>
-                        </div>
+                            <span className="text-xs font-medium">返上</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            返上不可
+                          </span>
+                        )}
                       </button>
                     );
                   })}

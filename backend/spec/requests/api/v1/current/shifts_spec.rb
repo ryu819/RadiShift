@@ -51,17 +51,25 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
     end
 
     context "シフトが公開前の時" do
-      let(:work_type) { create(:work_type, facility: user.facility) }
+      let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
       let(:schedule_month_status) { :accepting_requests }
 
-      let!(:work_assignment) do
-        create(:work_assignment, facility: user.facility, user: user, schedule_day: schedule_day, work_type: work_type)
+      let(:work_request) do
+        create(:work_request, user: user, facility: user.facility, schedule_day: schedule_day, work_type: work_type, request_status: :approved)
       end
 
-      it "勤務割当を空配列で返す" do
+      let!(:request_based_assignment) { create(:work_assignment, user: user, schedule_day: schedule_day, work_type: work_type, work_request: work_request) }
+
+      let!(:admin_assignment) do
+        create(:work_assignment, user: user, schedule_day: schedule_day, work_type: create(:work_type, facility: user.facility), work_request: nil)
+      end
+
+      it "申請由来の勤務割当だけを返す" do
         subject
         res = JSON.parse(response.body)
-        expect(res["work_assignments"]).to eq([])
+        work_assignment_ids = res["work_assignments"].map { |assignment| assignment["id"] }
+        expect(work_assignment_ids).to include(request_based_assignment.id)
+        expect(work_assignment_ids).not_to include(admin_assignment.id)
         expect(response).to have_http_status(:ok)
       end
     end

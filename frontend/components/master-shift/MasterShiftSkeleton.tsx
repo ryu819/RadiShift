@@ -39,7 +39,7 @@ export function MasterShiftSkeleton() {
               {SkeletonDays.map((day) => (
                 <th
                   key={day}
-                  className="w-9 min-w-9 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center md:w-12 md:min-w-12 md:p-1"
+                  className="w-10 min-w-10 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center md:w-14 md:min-w-14 md:p-1"
                 >
                   <div className="text-xs font-bold md:text-sm">{day}</div>
 
@@ -70,10 +70,10 @@ export function MasterShiftSkeleton() {
                   <td
                     key={day}
                     className={cn(
-                      "h-10 w-9 min-w-9",
+                      "h-10 w-10 min-w-10",
                       "border-r border-b border-slate-200",
                       "p-0 last:border-r-0",
-                      "md:h-12 md:w-12 md:min-w-12",
+                      "md:h-14 md:w-14 md:min-w-14",
                       rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
                     )}
                   />

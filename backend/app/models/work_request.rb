@@ -6,6 +6,9 @@ class WorkRequest < ApplicationRecord
   belongs_to :schedule_day
   belongs_to :work_type
 
+  has_one :work_assignment,
+          dependent: :nullify
+
   enum :request_status, {
     pending: 0,
     approved: 1,

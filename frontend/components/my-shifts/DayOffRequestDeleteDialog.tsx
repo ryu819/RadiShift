@@ -72,12 +72,12 @@ export function DayOffRequestDeleteDialog({ dayOffRequest }: Props) {
           </p>
         </DialogHeader>
 
-        <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
-          <div className="flex justify-center items-center gap-1">
-            <p className="text-sm font-medium">
-              {dayjs(dayOffRequest.scheduleDay.date).format("M月D日")}（
-              {dayOffRequest.scheduleDay.weekdayLabel}）
-            </p>
+        <div className="rounded-lg border bg-muted/30 p-4 flex justify-between items-center">
+          <div className="text-sm font-medium">
+            {dayjs(dayOffRequest.scheduleDay.date).format("M月D日")}（
+            {dayOffRequest.scheduleDay.weekdayLabel}）
+          </div>
+          <div className="flex items-center gap-2">
             <Badge
               variant="outline"
               style={badgeStyle(dayOffRequest.dayOffType.colorCode)}

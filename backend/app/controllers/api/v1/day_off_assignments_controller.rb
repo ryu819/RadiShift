@@ -6,8 +6,8 @@ module Api
       before_action :authenticate_user!
       before_action :reject_deleted_user!
       before_action :require_facility!
-      before_action :require_admin!, only: [:create, :update, :destroy]
-      before_action :set_day_off_assignment, only: [:update, :destroy]
+      before_action :require_admin!, only: [:create, :update, :destroy, :override]
+      before_action :set_day_off_assignment, only: [:update, :destroy, :override]
       before_action :validate_schedule_day_for_facility!, only: [:create]
       before_action :validate_user_for_facility!, only: [:create]
       before_action :validate_day_off_type_for_facility!, only: [:create, :update]
@@ -26,20 +26,58 @@ module Api
       end
 
       def update
-        if @day_off_assignment.update(day_off_assignment_update_params)
-          render json: { message: "休み割当を更新しました。" }, status: :ok
-        else
-          render json: {
-            message: "休み割当の更新に失敗しました。",
-            errors: @day_off_assignment.errors.to_hash(true)
-          }, status: :unprocessable_content
+        @day_off_assignment.with_lock do
+          if @day_off_assignment.created_from_request?
+            return render json: {
+              message: "申請による休み割当は通常操作では変更できません。"
+            }, status: :conflict
+          end
+
+          if @day_off_assignment.update(day_off_assignment_update_params)
+            render json: { message: "休み割当を更新しました。" }, status: :ok
+          else
+            render json: {
+              message: "休み割当の更新に失敗しました。",
+              errors: @day_off_assignment.errors.to_hash(true)
+            }, status: :unprocessable_content
+          end
         end
       end
 
       def destroy
-        @day_off_assignment.destroy!
+        @day_off_assignment.with_lock do
+          if @day_off_assignment.created_from_request?
+            return render json: {
+              message: "申請による休み割当は通常操作では削除できません。"
+            }, status: :conflict
+          end
 
-        render json: { message: "休み割当を削除しました。" }, status: :ok
+          @day_off_assignment.destroy!
+
+          render json: {
+            message: "休み割当を削除しました。"
+          }, status: :ok
+        end
+      end
+
+      def override
+        @day_off_assignment.with_lock do
+          if !@day_off_assignment.created_from_request?
+            return render json: {
+              message: "この休み割当はすでに管理者管理です。"
+            }, status: :conflict
+          elsif pending_return_day_off_request?
+            return render json: {
+              message: "承認待ちの返上申請があるため変更できません。先に返上申請を処理してください。"
+            }, status: :conflict
+          else
+            @day_off_assignment.update!(day_off_request: nil)
+
+            return render json: {
+              message: "休み割当を管理者管理に切り替えました。"
+            }, status: :ok
+          end
+        end
       end
 
       private
@@ -93,6 +131,15 @@ module Api
         return if current_user.facility.day_off_types.exists?(id: day_off_type_id)
 
         render json: { message: "休みパターンが存在しません。" }, status: :not_found
+      end
+
+      def pending_return_day_off_request?
+        current_user.facility.day_off_requests.pending.exists?(
+          user_id: @day_off_assignment.user_id,
+          schedule_day_id: @day_off_assignment.schedule_day_id,
+          day_off_type_id: @day_off_assignment.day_off_type_id,
+          is_return: true
+        )
       end
     end
   end

@@ -1,12 +1,11 @@
+import { WorkType } from "@/types/work-type";
+
 export type WorkAssignment = {
   id: number;
   scheduleDayId: number;
   userId: number;
-  workType: {
-    id: number;
-    name: string;
-    colorCode: string;
-  };
+  workRequestId: number | null;
+  workType: WorkType;
 };
 
 export type WorkAssignmentsByUserAndDay = Record<
