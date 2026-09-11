@@ -1,5 +1,6 @@
 "use client";
 
+import { LockKeyhole } from "lucide-react";
 import { useState } from "react";
 
 import { WorkTypeItem } from "@/components/master-shift/WorkTypeItem";
@@ -9,6 +10,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
 import { Member } from "@/types/member";
@@ -56,7 +62,7 @@ export function ShiftTable({
             {days.map((day) => (
               <th
                 key={day.date}
-                className="w-9 min-w-9 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center last:border-r-0 md:w-12 md:min-w-12 md:p-1"
+                className="w-10 min-w-910 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center last:border-r-0 md:w-14 md:min-w-14 md:p-1"
               >
                 <div
                   className={cn(
@@ -110,7 +116,7 @@ export function ShiftTable({
                   <td
                     key={cellKey}
                     className={cn(
-                      "h-10 w-9 border-r border-b border-slate-200 p-0 last:border-r-0 md:h-12 md:w-12",
+                      "h-10 w-10 border-r border-b border-slate-200 p-0 last:border-r-0 md:h-14 md:w-14",
                       rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
                     )}
                   >
@@ -126,44 +132,107 @@ export function ShiftTable({
                           className="flex h-full w-full cursor-pointer items-center justify-center  p-0.5 transition hover:bg-blue-50 md:p-1"
                         >
                           <div className="flex  flex-col items-center gap-0.5 md:gap-1 ">
-                            {cellWorkAssignments.map((workAssignment) => (
-                              <Badge
-                                key={workAssignment.id}
-                                variant="outline"
-                                className={
-                                  "h-[14px]   rounded px-1 py-0 text-[10px] font-semibold leading-none  md:rounded-md md:px-1.5 md:py-0.5 "
-                                }
-                                style={badgeStyle(
-                                  workAssignment.workType.colorCode,
-                                )}
-                              >
-                                <span className="md:hidden">
-                                  {workAssignment.workType.name.slice(0, 1)}
-                                </span>
-                                <span className="hidden md:inline">
-                                  {workAssignment.workType.name}
-                                </span>
-                              </Badge>
-                            ))}
-                            {cellDayOffAssignments.map((dayOffAssignment) => (
-                              <Badge
-                                key={dayOffAssignment.id}
-                                variant="outline"
-                                className={
-                                  "h-[14px]   rounded px-1 py-0 text-[10px] font-semibold leading-none  md:rounded-md md:px-1.5 md:py-0.5 "
-                                }
-                                style={badgeStyle(
-                                  dayOffAssignment.dayOffType.colorCode,
-                                )}
-                              >
-                                <span className="md:hidden">
-                                  {dayOffAssignment.dayOffType.name.slice(0, 1)}
-                                </span>
-                                <span className="hidden md:inline">
-                                  {dayOffAssignment.dayOffType.name}
-                                </span>
-                              </Badge>
-                            ))}
+                            {cellWorkAssignments.map((workAssignment) =>
+                              workAssignment.workRequestId !== null ? (
+                                <Tooltip key={workAssignment.id}>
+                                  <TooltipTrigger asChild>
+                                    <Badge
+                                      variant="outline"
+                                      className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                                      style={badgeStyle(
+                                        workAssignment.workType.colorCode,
+                                      )}
+                                    >
+                                      <LockKeyhole className="size-2.5" />
+
+                                      <span className="md:hidden">
+                                        {workAssignment.workType.name.slice(
+                                          0,
+                                          1,
+                                        )}
+                                      </span>
+
+                                      <span className="hidden md:inline">
+                                        {workAssignment.workType.name}
+                                      </span>
+                                    </Badge>
+                                  </TooltipTrigger>
+
+                                  <TooltipContent className="px-2 py-1.5 text-[10px]">
+                                    <p>本人申請の割当</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <Badge
+                                  key={workAssignment.id}
+                                  variant="outline"
+                                  className="h-[14px] rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                                  style={badgeStyle(
+                                    workAssignment.workType.colorCode,
+                                  )}
+                                >
+                                  <span className="md:hidden">
+                                    {workAssignment.workType.name.slice(0, 1)}
+                                  </span>
+
+                                  <span className="hidden md:inline">
+                                    {workAssignment.workType.name}
+                                  </span>
+                                </Badge>
+                              ),
+                            )}
+                            {cellDayOffAssignments.map((dayOffAssignment) =>
+                              dayOffAssignment.dayOffRequestId !== null ? (
+                                <Tooltip key={dayOffAssignment.id}>
+                                  <TooltipTrigger asChild>
+                                    <Badge
+                                      variant="outline"
+                                      className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                                      style={badgeStyle(
+                                        dayOffAssignment.dayOffType.colorCode,
+                                      )}
+                                    >
+                                      <LockKeyhole className="size-2.5" />
+
+                                      <span className="md:hidden">
+                                        {dayOffAssignment.dayOffType.name.slice(
+                                          0,
+                                          1,
+                                        )}
+                                      </span>
+
+                                      <span className="hidden md:inline">
+                                        {dayOffAssignment.dayOffType.name}
+                                      </span>
+                                    </Badge>
+                                  </TooltipTrigger>
+
+                                  <TooltipContent className="px-2 py-1.5 text-[10px]">
+                                    <p>本人申請の割当</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <Badge
+                                  key={dayOffAssignment.id}
+                                  variant="outline"
+                                  className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                                  style={badgeStyle(
+                                    dayOffAssignment.dayOffType.colorCode,
+                                  )}
+                                >
+                                  <span className="md:hidden">
+                                    {dayOffAssignment.dayOffType.name.slice(
+                                      0,
+                                      1,
+                                    )}
+                                  </span>
+
+                                  <span className="hidden md:inline">
+                                    {dayOffAssignment.dayOffType.name}
+                                  </span>
+                                </Badge>
+                              ),
+                            )}
                           </div>
                         </button>
                       </PopoverTrigger>
@@ -200,6 +269,10 @@ export function ShiftTable({
                                 selectedWorkAssignment={selectedWorkAssignment}
                                 scheduleDayId={day.id}
                                 userId={member.id}
+                                memberName={member.name}
+                                year={year}
+                                month={month}
+                                day={day.day}
                               />
                             );
                           })}
