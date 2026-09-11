@@ -62,11 +62,40 @@ module Api
       end
 
       def update
-        result = @work_request.with_lock do
-          process_work_request_update!
-        end
+        @work_request.with_lock do
+          unless @work_request.pending?
+            return render json: {
+              message: "この申請はすでに処理されています。"
+            }, status: :conflict
+          end
 
-        render json: { message: result[:message] }, status: result[:status]
+          if work_request_update_params[:request_status] == "approved"
+            lock_work_type!(@work_request) unless @work_request.is_return?
+
+            error_message = work_request_approval_error_message
+
+            if error_message
+              return render json: {
+                message: error_message
+              }, status: :unprocessable_content
+            end
+          end
+
+          @work_request.update!(work_request_update_params)
+
+          apply_work_assignment!(@work_request) if @work_request.approved?
+
+          message =
+            if @work_request.approved?
+              "申請を承認し、シフトを変更しました。"
+            else
+              "申請を否認しました。"
+            end
+
+          render json: {
+            message: message
+          }, status: :ok
+        end
       end
 
       def destroy
@@ -174,6 +203,8 @@ module Api
         if work_request.is_return?
           return "返上対象の勤務割当が存在しません。" unless work_assignment
 
+          return "管理者が設定した勤務割当は返上できません。" unless work_assignment.created_from_request?
+
           return
         end
 
@@ -201,7 +232,8 @@ module Api
         WorkAssignment.create!(
           schedule_day: work_request.schedule_day,
           user: work_request.user,
-          work_type: work_request.work_type
+          work_type: work_request.work_type,
+          work_request: work_request
         )
       end
 
@@ -213,63 +245,20 @@ module Api
         end
       end
 
-      def process_work_request_update!
-        unless @work_request.pending?
-          return {
-            message: "この申請はすでに処理されています。",
-            status: :conflict
-          }
-        end
-
-        if work_request_update_params[:request_status] == "approved"
-          lock_work_type!(@work_request) unless @work_request.is_return?
-
-          approval_error = work_request_approval_error
-          return approval_error if approval_error
-        end
-
-        @work_request.update!(work_request_update_params)
-
-        apply_work_assignment!(@work_request) if @work_request.approved?
-
-        message =
-          if @work_request.approved?
-            "申請を承認し、シフトを変更しました。"
-          else
-            "申請を否認しました。"
-          end
-
-        {
-          message: message,
-          status: :ok
-        }
-      end
-
-      def work_request_approval_error
+      def work_request_approval_error_message
         if @work_request.is_return?
-          unless find_work_assignment(@work_request)
-            return {
-              message: "返上対象の勤務割当が存在しないため承認できません。",
-              status: :unprocessable_content
-            }
-          end
+          work_assignment = find_work_assignment(@work_request)
+
+          return "返上対象の勤務割当が存在しないため承認できません。" unless work_assignment
+
+          return "管理者が設定した勤務割当は返上できないため承認できません。" unless work_assignment.created_from_request?
 
           return
         end
 
-        unless @work_request.work_type.is_active?
-          return {
-            message: "この勤務パターンは現在利用できないため承認できません。",
-            status: :unprocessable_content
-          }
-        end
+        return "この勤務パターンは現在利用できないため承認できません。" unless @work_request.work_type.is_active?
 
-        if find_work_assignment(@work_request)
-          return {
-            message: "すでにシフトが割り当てられているため承認できません。",
-            status: :unprocessable_content
-          }
-        end
+        return "すでにシフトが割り当てられているため承認できません。" if find_work_assignment(@work_request)
 
         nil
       end

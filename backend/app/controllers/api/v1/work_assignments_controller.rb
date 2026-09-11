@@ -6,8 +6,8 @@ module Api
       before_action :authenticate_user!
       before_action :reject_deleted_user!
       before_action :require_facility!
-      before_action :require_admin!, only: [:create, :update, :destroy]
-      before_action :set_work_assignment, only: [:update, :destroy]
+      before_action :require_admin!, only: [:create, :update, :destroy, :override]
+      before_action :set_work_assignment, only: [:update, :destroy, :override]
       before_action :validate_schedule_day_for_facility!, only: [:create]
       before_action :validate_user_for_facility!, only: [:create]
       before_action :validate_work_type_for_facility!, only: [:create, :update]
@@ -26,20 +26,58 @@ module Api
       end
 
       def update
-        if @work_assignment.update(work_assignment_update_params)
-          render json: { message: "勤務割当を更新しました。" }, status: :ok
-        else
-          render json: {
-            message: "勤務割当の更新に失敗しました。",
-            errors: @work_assignment.errors.to_hash(true)
-          }, status: :unprocessable_content
+        @work_assignment.with_lock do
+          if @work_assignment.created_from_request?
+            return render json: {
+              message: "申請による勤務割当は通常操作では変更できません。"
+            }, status: :conflict
+          end
+
+          if @work_assignment.update(work_assignment_update_params)
+            render json: { message: "勤務割当を更新しました。" }, status: :ok
+          else
+            render json: {
+              message: "勤務割当の更新に失敗しました。",
+              errors: @work_assignment.errors.to_hash(true)
+            }, status: :unprocessable_content
+          end
         end
       end
 
       def destroy
-        @work_assignment.destroy!
+        @work_assignment.with_lock do
+          if @work_assignment.created_from_request?
+            return render json: {
+              message: "申請による勤務割当は通常操作では削除できません。"
+            }, status: :conflict
+          end
 
-        render json: { message: "勤務割当を削除しました。" }, status: :ok
+          @work_assignment.destroy!
+
+          render json: {
+            message: "勤務割当を削除しました。"
+          }, status: :ok
+        end
+      end
+
+      def override
+        @work_assignment.with_lock do
+          if !@work_assignment.created_from_request?
+            return render json: {
+              message: "この勤務割当はすでに管理者管理です。"
+            }, status: :conflict
+          elsif pending_return_work_request?
+            return render json: {
+              message: "承認待ちの返上申請があるため変更できません。先に返上申請を処理してください。"
+            }, status: :conflict
+          else
+            @work_assignment.update!(work_request: nil)
+
+            return render json: {
+              message: "勤務割当を管理者管理に切り替えました。"
+            }, status: :ok
+          end
+        end
       end
 
       private
@@ -93,6 +131,15 @@ module Api
         return if current_user.facility.work_types.exists?(id: work_type_id)
 
         render json: { message: "勤務パターンが存在しません。" }, status: :not_found
+      end
+
+      def pending_return_work_request?
+        current_user.facility.work_requests.pending.exists?(
+          user_id: @work_assignment.user_id,
+          schedule_day_id: @work_assignment.schedule_day_id,
+          work_type_id: @work_assignment.work_type_id,
+          is_return: true
+        )
       end
     end
   end
