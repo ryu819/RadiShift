@@ -6,6 +6,9 @@ class DayOffRequest < ApplicationRecord
   belongs_to :schedule_day
   belongs_to :day_off_type
 
+  has_one :day_off_assignment,
+          dependent: :nullify
+
   enum :request_status, {
     pending: 0,
     approved: 1,
