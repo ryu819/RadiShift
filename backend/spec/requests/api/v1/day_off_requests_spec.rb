@@ -253,7 +253,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
         expect { subject }.not_to change { DayOffRequest.count }
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("休み希望の申請に失敗しました。")
-        expect(res["errors"]["schedule_day_id"]).to eq(["対象日には同じ休み希望がすでに申請されています。"])
+        expect(res["errors"]["schedule_day_id"]).to eq(["対象日には同じ希望がすでに申請されています。"])
         expect(response).to have_http_status(:unprocessable_content)
       end
     end

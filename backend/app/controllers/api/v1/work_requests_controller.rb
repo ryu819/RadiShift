@@ -181,10 +181,12 @@ module Api
       end
 
       def work_request_creation_error_message(work_request)
-        work_type_error =
-          work_type_request_error_message(work_request)
+        unless work_request.is_return?
+          work_type_error =
+            work_type_request_error_message(work_request)
 
-        return work_type_error if work_type_error
+          return work_type_error if work_type_error
+        end
 
         work_assignment_error_message(work_request)
       end

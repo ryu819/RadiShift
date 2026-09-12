@@ -19,7 +19,7 @@ class WorkRequest < ApplicationRecord
             uniqueness: {
               scope: [:user_id, :work_type_id],
               conditions: -> { where(request_status: :pending) },
-              message: "には同じ勤務希望がすでに申請されています。"
+              message: "には同じ希望がすでに申請されています。"
             },
             if: :pending?
 end
