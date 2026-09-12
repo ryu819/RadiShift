@@ -2,8 +2,8 @@ import { CalendarDays, Printer } from "lucide-react";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
-import { MasterShift } from "@/components/master-shift/MasterShift";
-import { MasterShiftSkeleton } from "@/components/master-shift/MasterShiftSkeleton";
+import { MasterShifts } from "@/components/master-shift/MasterShifts";
+import { MasterShiftsSkeleton } from "@/components/master-shift/MasterShiftsSkeleton";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -37,8 +37,8 @@ export default function MasterShiftPage({ searchParams }: Props) {
           </Button>
         </div>
 
-        <Suspense fallback={<MasterShiftSkeleton />}>
-          <MasterShift searchParams={searchParams} />
+        <Suspense fallback={<MasterShiftsSkeleton />}>
+          <MasterShifts searchParams={searchParams} />
         </Suspense>
       </div>
     </div>

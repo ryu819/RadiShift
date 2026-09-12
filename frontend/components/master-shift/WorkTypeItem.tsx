@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { createWorkAssignmentForm } from "@/lib/actions/shift-assignments/create-work-assignment";
 import { deleteWorkAssignmentForm } from "@/lib/actions/shift-assignments/delete-work-assignment";
 import { cn } from "@/lib/utils";
-import { WorkAssignment } from "@/types/work-assignment";
-import { WorkType } from "@/types/work-type";
+import type { WorkAssignment } from "@/types/work-assignment";
+import type { WorkType } from "@/types/work-type";
 
 type WorkTypeItemProps = {
   workType: WorkType;
@@ -48,7 +48,7 @@ export function WorkTypeItem({
     selectedWorkAssignment?.workRequestId !== undefined;
 
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <span
           className="h-2.5 w-2.5 rounded-full"
@@ -89,7 +89,7 @@ export function WorkTypeItem({
               variant="ghost"
               size="icon-sm"
               disabled={isDeleting}
-              className="ext-secondary"
+              className="text-secondary"
             >
               {isDeleting ? (
                 <Loader2 className="size-4 animate-spin" />

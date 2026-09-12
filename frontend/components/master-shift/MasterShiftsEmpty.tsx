@@ -8,7 +8,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 
-export function MasterShiftEmpty() {
+export function MasterShiftsEmpty() {
   return (
     <Empty>
       <EmptyHeader className="gap-2">

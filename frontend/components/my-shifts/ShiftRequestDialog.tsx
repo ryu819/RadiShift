@@ -61,7 +61,7 @@ export function ShiftRequestDialog({
   const [selectedRequest, setSelectedRequest] =
     useState<SelectedRequest | null>(null);
 
-  const [state, formAction, isPending] = useActionState(
+  const [_state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState =
         selectedRequest?.kind === "work"
@@ -246,9 +246,7 @@ export function ShiftRequestDialog({
                         onClick={() =>
                           setSelectedRequest({
                             kind: "work",
-                            shiftType: workTypes.find(
-                              (item) => item.id === workType.id,
-                            )!,
+                            shiftType: workType,
                             isReturn: true,
                           })
                         }
@@ -445,8 +443,6 @@ export function ShiftRequestDialog({
                 申請できる勤務・休みはありません
               </p>
             )}
-
-          {state.errors && <p className="text-sm text-red-500">{}</p>}
 
           <DialogFooter>
             <Button

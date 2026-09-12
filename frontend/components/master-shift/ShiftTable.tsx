@@ -3,6 +3,7 @@
 import { LockKeyhole } from "lucide-react";
 import { useState } from "react";
 
+import { DayOffTypeItem } from "@/components/master-shift/DayOffTypeItem";
 import { WorkTypeItem } from "@/components/master-shift/WorkTypeItem";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,16 +17,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
-import { Member } from "@/types/member";
-import { ScheduleDay } from "@/types/schedule-day";
-import { WorkAssignmentsByUserAndDay } from "@/types/work-assignment";
-import { WorkType } from "@/types/work-type";
+import type { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
+import type { DayOffType } from "@/types/day-off-type";
+import type { Member } from "@/types/member";
+import type { ScheduleDay } from "@/types/schedule-day";
+import type { WorkAssignmentsByUserAndDay } from "@/types/work-assignment";
+import type { WorkType } from "@/types/work-type";
 import { badgeStyle } from "@/utils/badge-style";
 
 type Props = {
   members: Member[];
   workTypes: WorkType[];
+  dayOffTypes: DayOffType[];
   workAssignmentsByUserAndDay: WorkAssignmentsByUserAndDay;
   dayOffAssignmentsByUserAndDay: DayOffAssignmentsByUserAndDay;
   days: ScheduleDay[];
@@ -40,6 +43,7 @@ const getCellKey = (memberId: number, date: string) => {
 export function ShiftTable({
   members,
   workTypes,
+  dayOffTypes,
   workAssignmentsByUserAndDay,
   dayOffAssignmentsByUserAndDay,
   days,
@@ -242,40 +246,84 @@ export function ShiftTable({
                         align="center"
                         sideOffset={6}
                         hideWhenDetached
-                        className="w-auto rounded-md border-slate-200 p-3 shadow-lg"
+                        className="w-45 rounded-md border-slate-200 p-3 shadow-lg"
                       >
                         <div className="p-1">
                           <p className="text-sm font-medium text-secondary">
                             {member.name}
                           </p>
+
                           <p className="mt-1 text-xs text-secondary">
                             {`${year}年 ${month}月`}
                             {day.day}日
                           </p>
                         </div>
 
-                        <div className="space-y-0.5">
-                          {workTypes.map((workType) => {
-                            const selectedWorkAssignment =
-                              cellWorkAssignments.find(
-                                (workAssignment) =>
-                                  workAssignment.workType.id === workType.id,
-                              );
+                        <div className="mt-1 space-y-1">
+                          <p className="px-1 text-xs font-medium text-muted-foreground">
+                            勤務
+                          </p>
 
-                            return (
-                              <WorkTypeItem
-                                key={workType.id}
-                                workType={workType}
-                                selectedWorkAssignment={selectedWorkAssignment}
-                                scheduleDayId={day.id}
-                                userId={member.id}
-                                memberName={member.name}
-                                year={year}
-                                month={month}
-                                day={day.day}
-                              />
-                            );
-                          })}
+                          <div>
+                            {workTypes.map((workType) => {
+                              const selectedWorkAssignment =
+                                cellWorkAssignments.find(
+                                  (workAssignment) =>
+                                    workAssignment.workType.id === workType.id,
+                                );
+
+                              return (
+                                <WorkTypeItem
+                                  key={workType.id}
+                                  workType={workType}
+                                  selectedWorkAssignment={
+                                    selectedWorkAssignment
+                                  }
+                                  scheduleDayId={day.id}
+                                  userId={member.id}
+                                  memberName={member.name}
+                                  year={year}
+                                  month={month}
+                                  day={day.day}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="my-1 border-t" />
+
+                        <div className="space-y-1">
+                          <p className="px-1 text-xs font-medium text-muted-foreground">
+                            休み
+                          </p>
+
+                          <div>
+                            {dayOffTypes.map((dayOffType) => {
+                              const selectedDayOffAssignment =
+                                cellDayOffAssignments.find(
+                                  (dayOffAssignment) =>
+                                    dayOffAssignment.dayOffType.id ===
+                                    dayOffType.id,
+                                );
+
+                              return (
+                                <DayOffTypeItem
+                                  key={dayOffType.id}
+                                  dayOffType={dayOffType}
+                                  selectedDayOffAssignment={
+                                    selectedDayOffAssignment
+                                  }
+                                  scheduleDayId={day.id}
+                                  userId={member.id}
+                                  memberName={member.name}
+                                  year={year}
+                                  month={month}
+                                  day={day.day}
+                                />
+                              );
+                            })}
+                          </div>
                         </div>
                       </PopoverContent>
                     </Popover>
