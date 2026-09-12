@@ -3,8 +3,8 @@ import "server-only";
 import camelcaseKeys from "camelcase-keys";
 
 import { getJwt } from "@/lib/auth/jwt";
-import { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
-import { WorkAssignmentsByUserAndDay } from "@/types/work-assignment";
+import type { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
+import type { WorkAssignmentsByUserAndDay } from "@/types/work-assignment";
 
 type MasterShiftResponse = {
   workAssignmentsByUserAndDay: WorkAssignmentsByUserAndDay;
