@@ -1,5 +1,6 @@
 "use server";
 
+import camelcaseKeys from "camelcase-keys";
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
@@ -62,10 +63,16 @@ export async function createDayOffRequestForm(
       return { success: false };
     }
 
-    const data: CreateDayOffRequestResponse = await res.json();
+    const data: CreateDayOffRequestResponse = camelcaseKeys(await res.json(), {
+      deep: true,
+    });
 
     if (isClientError(res.status)) {
-      await setFlashToast({ type: "failure", message: data.message });
+      await setFlashToast({
+        type: "failure",
+        message: data.errors?.scheduleDayId?.join("、") ?? data.message,
+      });
+
       return {
         success: false,
         errors: data.errors,

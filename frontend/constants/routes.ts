@@ -1,5 +1,5 @@
 export const ROUTES = {
-  masterShift: "/master-shift",
+  masterShift: "/master-shifts",
   myShift: "/shifts",
   settings: "/settings",
   adminDashboard: "/admin-dashboard",

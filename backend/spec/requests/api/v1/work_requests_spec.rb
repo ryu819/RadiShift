@@ -111,11 +111,22 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         { work_request: { schedule_day_id: schedule_day.id, work_type_id: work_type.id, is_return: true } }
       end
 
-      it "返上申請を作成しない" do
-        expect { subject }.not_to change { WorkRequest.count }
+      let(:work_request) do
+        create(:work_request, facility: user.facility, user: user, schedule_day: schedule_day, work_type: work_type, request_status: :approved,
+                              is_return: false)
+      end
+
+      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: user, work_type: work_type, work_request: work_request) }
+
+      it "返上申請をpendingで作成し、勤務割当は削除しない" do
+        work_assignment_count = WorkAssignment.count
+        expect { subject }.to change { WorkRequest.count }.by(1)
+        created_work_request = WorkRequest.last
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("この勤務パターンは現在申請できません。")
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(WorkAssignment.count).to eq(work_assignment_count)
+        expect(created_work_request).to be_pending
+        expect(res["message"]).to eq("申請しました。")
+        expect(response).to have_http_status(:created)
       end
     end
 
@@ -186,18 +197,18 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
     context "無効化された勤務パターンの返上申請をする時" do
       let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true, is_active: false) }
       let(:params) { { work_request: { schedule_day_id: schedule_day.id, work_type_id: work_type.id, is_return: true } } }
-      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: user, work_type: work_type) }
+      let(:work_request) { create(:work_request, schedule_day_id: schedule_day.id, work_type_id: work_type.id, request_status: :approved) }
+      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: user, work_type: work_type, work_request: work_request) }
 
-      it "返上申請を作成せず、勤務割当も削除しない" do
+      it "返上申請をpendingで作成し、勤務割当は削除しない" do
         work_assignment_count = WorkAssignment.count
-
-        expect { subject }.not_to change { WorkRequest.count }
-
+        expect { subject }.to change { WorkRequest.count }.by(1)
+        work_request = WorkRequest.last
         res = JSON.parse(response.body)
-
         expect(WorkAssignment.count).to eq(work_assignment_count)
-        expect(res["message"]).to eq("この勤務パターンは現在利用できません。")
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(work_request).to be_pending
+        expect(res["message"]).to eq("申請しました。")
+        expect(response).to have_http_status(:created)
       end
     end
 
@@ -212,7 +223,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         expect { subject }.not_to change { WorkRequest.count }
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("勤務希望の申請に失敗しました。")
-        expect(res["errors"]["schedule_day_id"]).to eq(["対象日には同じ勤務希望がすでに申請されています。"])
+        expect(res["errors"]["schedule_day_id"]).to eq(["対象日には同じ希望がすでに申請されています。"])
         expect(response).to have_http_status(:unprocessable_content)
       end
     end

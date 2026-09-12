@@ -43,7 +43,8 @@ ActiveRecord::Base.transaction do
   night_work = WorkType.create!(
     facility: facility,
     name: "夜勤",
-    color_code: "#6366f1"
+    color_code: "#6366f1",
+    is_requestable: true
   )
 
   overtime_work = WorkType.create!(

@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { getJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
-import { RailsResponse } from "@/types/rails-response";
+import type { RailsResponse } from "@/types/rails-response";
 
 type ActionState = {
   error?: string;
