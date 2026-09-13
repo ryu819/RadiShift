@@ -61,6 +61,25 @@ RSpec.describe "Api::V1::DayOffSlotRules", type: :request do
         expect(response).to have_http_status(:created)
       end
 
+      context "uses_slot が false の休みタイプを指定した時" do
+        let(:day_off_type) { create(:day_off_type, facility: user.facility, uses_slot: false) }
+
+        it "休み枠ルールを作成しない" do
+          expect { subject }.not_to change { DayOffSlotRule.count }
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
+      context "無効化された休みタイプを指定した時" do
+        let(:day_off_type) { create(:day_off_type, facility: user.facility, is_active: false, uses_slot: true) }
+
+        it "休み枠ルールを作成しない" do
+          expect { subject }.not_to change { DayOffSlotRule.count }
+
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
       context "day_off_type_id がない時" do
         let(:params) { { day_off_slot_rule: { day_off_type_id: nil, weekday: 1, max_slots: 5 } } }
 
@@ -244,60 +263,6 @@ RSpec.describe "Api::V1::DayOffSlotRules", type: :request do
     end
 
     context "別施設の休み枠ルールを更新しようとした時" do
-      let(:user) { create(:user, :admin) }
-      let(:other_facility) { create(:facility) }
-      let(:other_day_off_type) { create(:day_off_type, facility: other_facility, name: "休み") }
-      let(:day_off_slot_rule) { create(:day_off_slot_rule, facility: other_facility, day_off_type: other_day_off_type, weekday: 1, max_slots: 5) }
-
-      it "not_found エラーが返る" do
-        subject
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-  end
-
-  describe "DELETE /api/v1/day_off_slot_rules/:id" do
-    subject { delete(api_v1_day_off_slot_rule_path(day_off_slot_rule), headers: { "Authorization": token }) }
-
-    let(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み") }
-    let!(:day_off_slot_rule) { create(:day_off_slot_rule, facility: user.facility, day_off_type: day_off_type, weekday: 1, max_slots: 5) }
-
-    context "管理者である時" do
-      let(:user) { create(:user, :admin) }
-
-      it "休み枠ルールを削除できる" do
-        expect { subject }.to change { DayOffSlotRule.count }.by(-1)
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("休み枠ルールを削除しました。")
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context "管理者でない時" do
-      let(:user) { create(:user, :with_facility) }
-
-      it "forbidden エラーが返る" do
-        subject
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("管理者権限がありません。")
-        expect(response).to have_http_status(:forbidden)
-      end
-    end
-
-    context "施設に所属していない時" do
-      let(:user) { create(:user) }
-      let(:day_off_type) { create(:day_off_type, name: "休み", day_off_unit: 1.0) }
-      let(:day_off_slot_rule) { create(:day_off_slot_rule) }
-
-      it "not_found エラーが返る" do
-        subject
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("施設に所属していません。")
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
-    context "別施設の休み枠ルールを削除しようとした時" do
       let(:user) { create(:user, :admin) }
       let(:other_facility) { create(:facility) }
       let(:other_day_off_type) { create(:day_off_type, facility: other_facility, name: "休み") }

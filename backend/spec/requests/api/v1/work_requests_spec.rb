@@ -9,7 +9,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
   describe "GET /api/v1/work_requests" do
     subject { get(api_v1_work_requests_path, params: { schedule_month_id: schedule_month.id }, headers: { "Authorization": token }) }
 
-    let(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 6) }
+    let(:schedule_month) { create(:schedule_month, facility: user.facility) }
     let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
     let(:work_type) { create(:work_type, facility: user.facility) }
     let(:other_user) { create(:user, facility: user.facility) }
@@ -85,7 +85,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
       let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
 
       let(:params) do
-        { work_request: {     schedule_day_id: schedule_day.id, work_type_id: work_type.id, is_return: true } }
+        { work_request: { schedule_day_id: schedule_day.id, work_type_id: work_type.id, is_return: true } }
       end
 
       let(:work_request) { create(:work_request, schedule_day_id: schedule_day.id, work_type_id: work_type.id, request_status: :approved) }
@@ -127,6 +127,72 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         expect(created_work_request).to be_pending
         expect(res["message"]).to eq("申請しました。")
         expect(response).to have_http_status(:created)
+      end
+    end
+
+    context "今日の勤務を通常申請する時" do
+      let(:schedule_day_date) { Date.current }
+      let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
+
+      it "勤務希望を作成しない" do
+        expect { subject }.not_to change { WorkRequest.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("今日以前の日付には申請できません。")
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "過去日の勤務を通常申請する時" do
+      let(:schedule_day_date) { Date.current.yesterday }
+      let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
+
+      it "勤務希望を作成しない" do
+        expect { subject }.not_to change { WorkRequest.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("今日以前の日付には申請できません。")
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "今日の勤務を返上申請する時" do
+      let(:schedule_day_date) { Date.current }
+      let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
+      let(:params) { { work_request: { schedule_day_id: schedule_day.id, work_type_id: work_type.id, is_return: true } } }
+      let(:approved_work_request) do
+        create(:work_request, facility: user.facility, user: user, schedule_day: schedule_day, work_type: work_type, request_status: :approved,
+                              is_return: false)
+      end
+      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: user, work_type: work_type, work_request: approved_work_request) }
+
+      it "返上申請を作成せず、勤務割当も削除しない" do
+        work_assignment_count = WorkAssignment.count
+        expect { subject }.not_to change { WorkRequest.count }
+        res = JSON.parse(response.body)
+        expect(WorkAssignment.count).to eq(work_assignment_count)
+        expect(res["message"]).to eq("今日以前の日付には申請できません。")
+        expect(work_assignment.reload).to be_present
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "過去日の勤務を返上申請する時" do
+      let(:schedule_day_date) { Date.current.yesterday }
+      let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
+      let(:params) { { work_request: { schedule_day_id: schedule_day.id, work_type_id: work_type.id, is_return: true } } }
+      let(:approved_work_request) do
+        create(:work_request, facility: user.facility, user: user, schedule_day: schedule_day, work_type: work_type, request_status: :approved,
+                              is_return: false)
+      end
+      let!(:work_assignment) { create(:work_assignment, schedule_day: schedule_day, user: user, work_type: work_type, work_request: approved_work_request) }
+
+      it "返上申請を作成せず、勤務割当も削除しない" do
+        work_assignment_count = WorkAssignment.count
+        expect { subject }.not_to change { WorkRequest.count }
+        res = JSON.parse(response.body)
+        expect(WorkAssignment.count).to eq(work_assignment_count)
+        expect(res["message"]).to eq("今日以前の日付には申請できません。")
+        expect(work_assignment.reload).to be_present
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -230,7 +296,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
 
     context "施設に所属していない時" do
       let(:user) { create(:user) }
-      let(:schedule_month) { create(:schedule_month, facility: create(:facility), year: 2026, month: 6) }
+      let(:schedule_month) { create(:schedule_month, facility: create(:facility)) }
       let(:work_type) { create(:work_type, is_requestable: true) }
       let(:schedule_day_date) { Date.current }
 
@@ -248,8 +314,9 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
 
     let(:user) { create(:user, :admin) }
     let(:target_user) { create(:user, facility: user.facility) }
-    let(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 6) }
-    let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.new(2026, 6, 20)) }
+    let(:schedule_day_date) { Date.current.next_month(2) }
+    let(:schedule_month) { create(:schedule_month, facility: user.facility, year: schedule_day_date.year, month: schedule_day_date.month) }
+    let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: schedule_day_date) }
     let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
     let(:work_request) do
       create(:work_request, facility: user.facility, user: target_user, schedule_day: schedule_day, work_type: work_type, request_status: :pending,
@@ -265,6 +332,87 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         expect(work_request.reload).to be_approved
         expect(WorkAssignment.last.user).to eq(target_user)
         expect(WorkAssignment.last.work_type).to eq(work_type)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "今日の通常申請を approved にした時" do
+      let(:schedule_day_date) { Date.current }
+
+      it "承認せず、勤務割当を作成しない" do
+        expect { subject }.not_to change { WorkAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("今日以前の日付の申請は承認できません。")
+        expect(work_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "過去日の通常申請を approved にした時" do
+      let(:schedule_day_date) { Date.current.yesterday }
+
+      it "承認せず、勤務割当を作成しない" do
+        expect { subject }.not_to change { WorkAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("今日以前の日付の申請は承認できません。")
+        expect(work_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "今日の返上申請を approved にした時" do
+      let(:schedule_day_date) { Date.current }
+      let(:work_request) do
+        create(:work_request, facility: user.facility, user: target_user, schedule_day: schedule_day, work_type: work_type, request_status: :pending,
+                              is_return: true)
+      end
+      let!(:work_assignment) do
+        create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type, work_request: create(:work_request))
+      end
+
+      it "承認せず、勤務割当も削除しない" do
+        work_assignment_count = WorkAssignment.count
+        subject
+        res = JSON.parse(response.body)
+        expect(WorkAssignment.count).to eq(work_assignment_count)
+        expect(res["message"]).to eq("今日以前の日付の申請は承認できません。")
+        expect(work_request.reload).to be_pending
+        expect(work_assignment.reload).to be_present
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "過去日の返上申請を approved にした時" do
+      let(:schedule_day_date) { Date.current.yesterday }
+      let(:work_request) do
+        create(:work_request, facility: user.facility, user: target_user, schedule_day: schedule_day, work_type: work_type, request_status: :pending,
+                              is_return: true)
+      end
+      let!(:work_assignment) do
+        create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type, work_request: create(:work_request))
+      end
+
+      it "承認せず、勤務割当も削除しない" do
+        work_assignment_count = WorkAssignment.count
+        subject
+        res = JSON.parse(response.body)
+        expect(WorkAssignment.count).to eq(work_assignment_count)
+        expect(res["message"]).to eq("今日以前の日付の申請は承認できません。")
+        expect(work_request.reload).to be_pending
+        expect(work_assignment.reload).to be_present
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "今日の申請を rejected にした時" do
+      let(:schedule_day_date) { Date.current }
+      let(:params) { { work_request: { request_status: "rejected" } } }
+
+      it "勤務希望を rejected にできる" do
+        expect { subject }.not_to change { WorkAssignment.count }
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("申請を否認しました。")
+        expect(work_request.reload).to be_rejected
         expect(response).to have_http_status(:ok)
       end
     end
@@ -430,7 +578,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
   describe "DELETE /api/v1/work_requests/:id" do
     subject { delete(api_v1_work_request_path(work_request), headers: { "Authorization": token }) }
 
-    let(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 6) }
+    let(:schedule_month) { create(:schedule_month, facility: user.facility) }
     let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.current + 10.days) }
     let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
     let!(:work_request) { create(:work_request, facility: user.facility, user: user, schedule_day: schedule_day, work_type: work_type) }
