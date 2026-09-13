@@ -66,7 +66,7 @@ export function ShiftTable({
             {days.map((day) => (
               <th
                 key={day.date}
-                className="w-10 min-w-910 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center last:border-r-0 md:w-14 md:min-w-14 md:p-1"
+                className="w-10 min-w-10 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center last:border-r-0 md:w-14 md:min-w-14 md:p-1"
               >
                 <div
                   className={cn(

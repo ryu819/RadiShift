@@ -28,9 +28,6 @@ export async function DayOffSlots({ searchParams }: Props) {
       getCurrentYearMonth(),
     ]);
 
-  const slotDayOffTypes =
-    dayOffTypes?.filter((dayOffType) => dayOffType.usesSlot) ?? [];
-
   const scheduleMonthList = scheduleMonths ?? [];
 
   const selectedScheduleMonth = selectScheduleMonth({
@@ -43,15 +40,29 @@ export async function DayOffSlots({ searchParams }: Props) {
     ? await getScheduleMonth(selectedScheduleMonth.id)
     : null;
 
+  const slotRuleDayOffTypes =
+    dayOffTypes?.filter((dayOffType) => dayOffType.usesSlot) ?? [];
+
+  const calendarSlotDayOffTypes =
+    dayOffTypes?.filter(
+      (dayOffType) =>
+        dayOffType.usesSlot ||
+        scheduleMonth?.scheduleDays.some((scheduleDay) =>
+          scheduleDay.dayOffSlots.some(
+            (dayOffSlot) => dayOffSlot.dayOffTypeId === dayOffType.id,
+          ),
+        ),
+    ) ?? [];
+
   return (
     <div className="space-y-5">
       <DayOffSlotRuleSettingsCard
-        dayOffTypes={slotDayOffTypes}
+        dayOffTypes={slotRuleDayOffTypes}
         dayOffSlotRules={dayOffSlotRules ?? []}
       />
 
       <DayOffSlotCalendarCard
-        dayOffTypes={slotDayOffTypes}
+        dayOffTypes={calendarSlotDayOffTypes}
         scheduleMonths={scheduleMonthList}
         scheduleMonth={scheduleMonth}
         selectedScheduleMonthId={selectedScheduleMonth?.id ?? null}

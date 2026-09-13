@@ -51,7 +51,7 @@ export function RequestsHistory({ dayOffRequests, workRequests }: Props) {
         <CardContent>
           {dayOffRequests.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              この月の休み申請履歴はありません。
+              この月の休み申請はありません。
             </p>
           ) : (
             <div className="divide-y">
@@ -116,7 +116,7 @@ export function RequestsHistory({ dayOffRequests, workRequests }: Props) {
         <CardContent>
           {workRequests.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              この月の勤務申請履歴はありません。
+              この月の勤務申請はありません。
             </p>
           ) : (
             <div className="divide-y">

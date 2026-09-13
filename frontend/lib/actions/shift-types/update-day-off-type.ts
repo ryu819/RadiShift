@@ -82,6 +82,7 @@ export async function updateDayOffTypeForm(
     }
 
     updateTag(CACHE_TAGS.dayOffTypes);
+    updateTag(CACHE_TAGS.dayOffSlotRules);
 
     return { success: true };
   } catch {

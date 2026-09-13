@@ -113,7 +113,7 @@ export function ShiftRequestDialog({
         ? "text-blue-500"
         : "";
 
-  const isPastDay = !dayjs
+  const isTodayOrPast = !dayjs
     .tz(scheduleDay.date, APP_TIME_ZONE)
     .isAfter(dayjs().tz(APP_TIME_ZONE), "day");
 
@@ -122,16 +122,17 @@ export function ShiftRequestDialog({
       <DialogTrigger asChild>
         <button
           type="button"
-          disabled={isPastDay}
+          disabled={isTodayOrPast}
           className={cn(
-            " min-h-20    p-1 sm:p-2 text-left sm:min-h-24",
-            !isPastDay &&
-              "cursor-pointer transition-colors hover:bg-muted/50 active:bg-muted/50",
+            " h-full min-h-20 p-1 sm:p-2 text-left sm:min-h-24",
+            isTodayOrPast
+              ? "cursor-not-allowed opacity-60"
+              : "cursor-pointer transition-colors hover:bg-muted/50 active:bg-muted/50",
             !isLastColumn && "border-r",
             !isLastRow && "border-b",
           )}
         >
-          <div className="flex h-full flex-col sm:gap-2">
+          <div className="flex h-full flex-col">
             <div className="flex items-center justify-between gap-1">
               <span className={cn("text-sm font-medium", dateClassName)}>
                 {scheduleDay.day}
@@ -142,7 +143,7 @@ export function ShiftRequestDialog({
               )}
             </div>
 
-            <div className="space-y-1 my-auto">
+            <div className="my-2 min-h-5 flex flex-col items-center gap-1.5">
               {workAssignments.map((workAssignment) => (
                 <Badge
                   key={workAssignment.id}
@@ -166,18 +167,29 @@ export function ShiftRequestDialog({
               ))}
             </div>
 
-            {scheduleDay.dayOffSlots.length > 0 && (
+            {dayOffTypes.some((dayOffType) =>
+              scheduleDay.dayOffSlots.some(
+                (slot) => slot.dayOffTypeId === dayOffType.id,
+              ),
+            ) && (
               <div className="mt-auto space-y-0.5 border-t pt-1 max-sm:hidden">
-                {scheduleDay.dayOffSlots.map((dayOffSlot) => (
-                  <div
-                    key={dayOffSlot.id}
-                    className="flex items-center justify-between gap-1 text-[11px] "
-                  >
-                    <span>{dayOffSlot.dayOffType.name}</span>
+                {dayOffTypes.map((dayOffType) => {
+                  const dayOffSlot = scheduleDay.dayOffSlots.find(
+                    (slot) => slot.dayOffTypeId === dayOffType.id,
+                  );
 
-                    <span>残り{dayOffSlot.remainingSlots}</span>
-                  </div>
-                ))}
+                  return (
+                    dayOffSlot && (
+                      <div
+                        key={dayOffType.id}
+                        className="flex items-center justify-between gap-1 text-[11px]"
+                      >
+                        <span>{dayOffSlot.dayOffType.name}</span>
+                        <span>残り{dayOffSlot.remainingSlots}</span>
+                      </div>
+                    )
+                  );
+                })}
               </div>
             )}
           </div>
@@ -391,6 +403,11 @@ export function ShiftRequestDialog({
                       (slot) => slot.dayOffTypeId === dayOffType.id,
                     );
 
+                    const canRequest =
+                      dayOffSlot !== undefined
+                        ? dayOffSlot.remainingSlots !== 0
+                        : !dayOffType.usesSlot;
+
                     const isSelected =
                       selectedRequest?.kind === "dayOff" &&
                       selectedRequest.shiftType.id === dayOffType.id &&
@@ -400,9 +417,12 @@ export function ShiftRequestDialog({
                       <button
                         key={dayOffType.id}
                         type="button"
-                        disabled={isPending}
+                        disabled={isPending || !canRequest}
                         className={cn(
-                          "flex w-full cursor-pointer items-center justify-between rounded-md border p-3 transition-colors hover:bg-muted/50 active:bg-muted/50",
+                          "flex w-full items-center justify-between rounded-md border p-3 transition-colors",
+                          canRequest
+                            ? "cursor-pointer hover:bg-muted/50 active:bg-muted/50"
+                            : "cursor-not-allowed opacity-60",
                           isSelected && "border-primary bg-muted/50",
                         )}
                         onClick={() =>
@@ -420,11 +440,17 @@ export function ShiftRequestDialog({
                           {dayOffType.name}
                         </Badge>
 
-                        {dayOffType.usesSlot && (
+                        {dayOffSlot ? (
                           <span className="text-xs text-muted-foreground">
-                            {dayOffSlot
-                              ? `残り${dayOffSlot.remainingSlots}`
-                              : "枠未設定"}
+                            残り{dayOffSlot.remainingSlots}
+                          </span>
+                        ) : dayOffType.usesSlot ? (
+                          <span className="text-xs text-muted-foreground">
+                            枠未設定
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            承認制
                           </span>
                         )}
                       </button>

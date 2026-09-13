@@ -72,6 +72,10 @@ export function RequestReviewDialogForm({
       ? "勤務希望"
       : "休み希望";
 
+  const isTodayOrPast = !dayjs
+    .tz(request.requestedDate, APP_TIME_ZONE)
+    .isAfter(dayjs().tz(APP_TIME_ZONE), "day");
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -177,12 +181,18 @@ export function RequestReviewDialogForm({
 
           <input type="hidden" name="requestKind" value={request.requestKind} />
 
+          {isTodayOrPast && (
+            <p className="text-center text-sm text-muted-foreground">
+              今日以前の申請は承認できません
+            </p>
+          )}
+
           <DialogFooter className="mt-4 grid grid-cols-2 gap-2">
             <Button
               type="submit"
               name="requestStatus"
               value="approved"
-              disabled={isPending}
+              disabled={isPending || isTodayOrPast}
               onClick={() => setClickedStatus("approved")}
             >
               {isPending && clickedStatus === "approved" ? (
