@@ -46,6 +46,7 @@ RSpec.describe ScheduleDay, type: :model do
   end
 
   describe "#day" do
+    let(:schedule_day) { build(:schedule_day, date: Date.new(2026, 1, 1)) }
     it "日にちを返す" do
       expect(schedule_day.day).to eq(1)
     end

@@ -76,13 +76,25 @@ export function DayOffSlotDialogForm({
     }
   };
 
+  const isTodayOrPast = !dayjs
+    .tz(scheduleDay.date, APP_TIME_ZONE)
+    .isAfter(dayjs().tz(APP_TIME_ZONE), "day");
+
+  const canEdit =
+    !isTodayOrPast &&
+    (dayOffSlot !== undefined || dayOffType?.usesSlot === true);
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <button
           type="button"
+          disabled={!canEdit}
           className={cn(
-            "min-h-20 cursor-pointer p-1 sm:p-2 text-left transition-colors hover:bg-muted/50 active:bg-muted/50 sm:min-h-24",
+            "min-h-20  p-1 sm:p-2 text-left  sm:min-h-24",
+            canEdit
+              ? "cursor-pointer transition-colors hover:bg-muted/50 active:bg-muted/50"
+              : "cursor-not-allowed opacity-60",
             !isLastColumn && "border-r",
             !isLastRow && "border-b",
           )}

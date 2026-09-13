@@ -39,7 +39,9 @@ export function DayOffSlotCalendarCard({
   );
 
   const selectedDayOffType =
-    dayOffTypes.find((dayOffType) => dayOffType.id === selectedTypeId) ?? null;
+    dayOffTypes.find((dayOffType) => dayOffType.id === selectedTypeId) ??
+    dayOffTypes[0] ??
+    null;
 
   return (
     <>

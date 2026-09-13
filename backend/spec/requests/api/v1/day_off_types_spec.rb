@@ -192,6 +192,21 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
           expect(response).to have_http_status(:ok)
         end
       end
+
+      context "uses_slot を true から false に変更する時" do
+        let!(:day_off_slot_rule) { create(:day_off_slot_rule, facility: user.facility, day_off_type: day_off_type) }
+
+        let(:schedule_day) { create(:schedule_day, schedule_month: create(:schedule_month, facility: user.facility)) }
+
+        let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type) }
+
+        it "休み枠ルールだけを削除し、既存の休み枠は保持する" do
+          subject
+          expect(day_off_type.reload.uses_slot).to be false
+          expect(DayOffSlotRule.where(day_off_type: day_off_type)).to be_empty
+          expect(DayOffSlot.exists?(day_off_slot.id)).to be true
+        end
+      end
     end
 
     context "管理者でない時" do
@@ -241,6 +256,21 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         expect(res["message"]).to eq("休みタイプを削除しました。")
         expect(day_off_type.reload.is_active).to be false
         expect(response).to have_http_status(:ok)
+      end
+
+      context "休みタイプを論理削除する時" do
+        let!(:day_off_slot_rule) { create(:day_off_slot_rule, facility: user.facility, day_off_type: day_off_type) }
+
+        let(:schedule_day) { create(:schedule_day, schedule_month: create(:schedule_month, facility: user.facility)) }
+
+        let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type) }
+
+        it "休み枠ルールだけを削除し、既存の休み枠は保持する" do
+          subject
+          expect(day_off_type.reload.is_active).to be false
+          expect(DayOffSlotRule.where(day_off_type: day_off_type)).to be_empty
+          expect(DayOffSlot.exists?(day_off_slot.id)).to be true
+        end
       end
     end
 

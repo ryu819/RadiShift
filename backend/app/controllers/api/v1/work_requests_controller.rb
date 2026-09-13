@@ -168,6 +168,10 @@ module Api
       end
 
       def create_work_request!(work_request)
+        date_error =
+          work_request_date_error_message(work_request)
+        return date_error if date_error
+
         lock_work_type!(work_request)
 
         error_message =
@@ -178,6 +182,12 @@ module Api
         work_request.save!
 
         nil
+      end
+
+      def work_request_date_error_message(work_request)
+        return if work_request.schedule_day.date > Date.current
+
+        "今日以前の日付には申請できません。"
       end
 
       def work_request_creation_error_message(work_request)
@@ -248,6 +258,8 @@ module Api
       end
 
       def work_request_approval_error_message
+        return "今日以前の日付の申請は承認できません。" if @work_request.schedule_day.date <= Date.current
+
         if @work_request.is_return?
           work_assignment = find_work_assignment(@work_request)
 

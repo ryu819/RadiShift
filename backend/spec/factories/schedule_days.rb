@@ -3,11 +3,11 @@
 FactoryBot.define do
   factory :schedule_day do
     schedule_month
-    date { Date.new(schedule_month.year, schedule_month.month, 1) }
+    date { Date.current.tomorrow }
     is_holiday { false }
 
     trait :holiday do
-      date { Date.new(schedule_month.year, schedule_month.month, 2) }
+      date { Date.new(schedule_month.year, schedule_month.month, Date.current.tomorrow + 1) }
       is_holiday { true }
     end
   end

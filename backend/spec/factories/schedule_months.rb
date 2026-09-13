@@ -2,9 +2,12 @@
 
 FactoryBot.define do
   factory :schedule_month do
+    transient do
+      date { Date.current.tomorrow }
+    end
     facility
-    year { 2026 }
-    month { 9 }
+    year { date.year }
+    month { date.month }
     monthly_days_off { 8.0 }
     status { :accepting_requests }
   end

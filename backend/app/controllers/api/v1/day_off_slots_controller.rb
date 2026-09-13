@@ -6,10 +6,15 @@ module Api
       before_action :authenticate_user!
       before_action :reject_deleted_user!
       before_action :require_facility!
-      before_action :require_admin!, only: [:create, :update, :destroy]
-      before_action :set_day_off_slot, only: [:update, :destroy]
+      before_action :require_admin!, only: [:create, :update]
+      before_action :set_day_off_slot, only: [:update]
       before_action :validate_day_off_type_for_facility!, only: [:create]
+      before_action :validate_day_off_type_for_new_slot!, only: [:create]
       before_action :validate_schedule_day_for_facility!, only: [:create]
+      before_action :validate_schedule_day_is_future!, only: [:create]
+
+      before_action :validate_existing_day_off_slot_editable!,
+                    only: [:update]
 
       def create
         day_off_slot = DayOffSlot.new(day_off_slot_params)
@@ -33,12 +38,6 @@ module Api
             errors: @day_off_slot.errors.to_hash(true)
           }, status: :unprocessable_content
         end
-      end
-
-      def destroy
-        @day_off_slot.destroy!
-
-        render json: { message: "休み枠を削除しました。" }, status: :ok
       end
 
       private
@@ -66,23 +65,65 @@ module Api
         day_off_type_id = day_off_slot_params[:day_off_type_id]
 
         return if day_off_type_id.blank?
-        return if current_user.facility.day_off_types.exists?(id: day_off_type_id)
+
+        @day_off_type = current_user.facility.day_off_types.find_by(id: day_off_type_id)
+
+        return if @day_off_type
 
         render json: { message: "休みパターンが存在しません。" }, status: :not_found
+      end
+
+      def validate_day_off_type_for_new_slot!
+        return unless @day_off_type
+        return if @day_off_type.is_active? && @day_off_type.uses_slot?
+
+        render json: {
+          message: "この休みパターンでは休み枠を作成できません。"
+        }, status: :unprocessable_content
       end
 
       def validate_schedule_day_for_facility!
         schedule_day_id = day_off_slot_params[:schedule_day_id]
 
         return if schedule_day_id.blank?
-        return if ScheduleDay.joins(:schedule_month).exists?(
-          id: schedule_day_id,
-          schedule_months: {
-            facility_id: current_user.facility_id
-          }
-        )
+
+        @schedule_day = ScheduleDay
+                          .joins(:schedule_month)
+                          .find_by(
+                            id: schedule_day_id,
+                            schedule_months: {
+                              facility_id: current_user.facility_id
+                            }
+                          )
+
+        return if @schedule_day
 
         render json: { message: "対象日が存在しません。" }, status: :not_found
+      end
+
+      def validate_schedule_day_is_future!
+        return unless @schedule_day
+        return if @schedule_day.date > Date.current
+
+        render json: {
+          message: "今日以前の日付の休み枠は設定できません。"
+        }, status: :unprocessable_content
+      end
+
+      def validate_existing_day_off_slot_editable!
+        unless @day_off_slot.day_off_type.is_active?
+          render json: {
+            message: "この休みパターンは現在利用できません。"
+          }, status: :unprocessable_content
+
+          return
+        end
+
+        return if @day_off_slot.schedule_day.date > Date.current
+
+        render json: {
+          message: "今日以前の日付の休み枠は変更できません。"
+        }, status: :unprocessable_content
       end
     end
   end
