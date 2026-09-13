@@ -130,7 +130,14 @@ module Api
       end
 
       def create_schedule_days_with_day_off_slots!(schedule_month)
-        day_off_slot_rules_by_weekday = current_user.facility.day_off_slot_rules.group_by(&:weekday)
+        day_off_slot_rules_by_weekday = current_user.facility.day_off_slot_rules
+                                          .joins(:day_off_type)
+                                          .where(
+                                            day_off_types: {
+                                              is_active: true,
+                                              uses_slot: true
+                                            }
+                                          ).group_by(&:weekday)
 
         start_date = Date.new(schedule_month.year, schedule_month.month, 1)
         end_date = start_date.end_of_month

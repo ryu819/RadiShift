@@ -170,6 +170,11 @@ module Api
       end
 
       def create_day_off_request!(day_off_request)
+        date_error =
+          day_off_request_date_error_message(day_off_request)
+
+        return date_error if date_error
+
         lock_day_off_type!(day_off_request) unless day_off_request.is_return?
 
         error_message =
@@ -179,12 +184,18 @@ module Api
 
         day_off_request.save!
 
-        if day_off_request.day_off_type.uses_slot? && !over_request_deadline?(day_off_request)
+        if day_off_slot_exists?(day_off_request) && !over_request_deadline?(day_off_request)
           apply_day_off_assignment!(day_off_request)
           day_off_request.approved!
         end
 
         nil
+      end
+
+      def day_off_request_date_error_message(day_off_request)
+        return if day_off_request.schedule_day.date > Date.current
+
+        "今日以前の日付には申請できません。"
       end
 
       def day_off_request_creation_error_message(day_off_request)
@@ -229,25 +240,40 @@ module Api
 
       def day_off_slot_error_message(day_off_request)
         return nil if day_off_request.is_return?
-        return nil unless day_off_request.day_off_type.uses_slot?
 
-        day_off_slot = DayOffSlot
-                         .lock
-                         .find_by(
-                           schedule_day_id: day_off_request.schedule_day_id,
-                           day_off_type_id: day_off_request.day_off_type_id
-                         )
+        day_off_slot = find_day_off_slot(day_off_request)
 
-        return "休み枠が設定されていないため、" unless day_off_slot
+        unless day_off_slot
+          return "休み枠が設定されていないため、" if day_off_request.day_off_type.uses_slot?
 
-        assigned_count = DayOffAssignment.where(
-          schedule_day_id: day_off_request.schedule_day_id,
-          day_off_type_id: day_off_request.day_off_type_id
-        ).count
+          return nil
+        end
+
+        assigned_count =
+          DayOffAssignment.where(
+            schedule_day_id: day_off_request.schedule_day_id,
+            day_off_type_id: day_off_request.day_off_type_id
+          ).count
 
         return "休み枠に空きがないため、" if assigned_count >= day_off_slot.max_slots
 
         nil
+      end
+
+      def find_day_off_slot(day_off_request)
+        DayOffSlot
+          .lock
+          .find_by(
+            schedule_day_id: day_off_request.schedule_day_id,
+            day_off_type_id: day_off_request.day_off_type_id
+          )
+      end
+
+      def day_off_slot_exists?(day_off_request)
+        DayOffSlot.exists?(
+          schedule_day_id: day_off_request.schedule_day_id,
+          day_off_type_id: day_off_request.day_off_type_id
+        )
       end
 
       def over_request_deadline?(day_off_request)
@@ -299,6 +325,8 @@ module Api
       end
 
       def day_off_request_approval_error_message
+        return "今日以前の日付の申請は承認できません。" if @day_off_request.schedule_day.date <= Date.current
+
         if @day_off_request.is_return?
           day_off_assignment = find_day_off_assignment(@day_off_request)
 
