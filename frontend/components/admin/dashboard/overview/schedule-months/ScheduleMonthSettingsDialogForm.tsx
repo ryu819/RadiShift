@@ -55,7 +55,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
 
   const monthlyDaysOffError = state.errors?.monthlyDaysOff?.join("、");
 
-  const statusError = state.errors?.status?.join("、");
+  const statusError = state.errors?.isPublished?.join("、");
 
   return (
     <>
@@ -69,15 +69,13 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
               {scheduleMonth.year}年 {scheduleMonth.month}月
             </div>
 
-            {scheduleMonth.status === "accepting_requests" && (
-              <Badge className="bg-amber-100 text-amber-700 rounded-sm">
-                シフト未公開
-              </Badge>
-            )}
-
-            {scheduleMonth.status === "published" && (
+            {scheduleMonth.isPublished ? (
               <Badge className="bg-emerald-100 text-emerald-700 rounded-sm">
                 シフト公開済
+              </Badge>
+            ) : (
+              <Badge className="bg-amber-100 text-amber-700 rounded-sm">
+                シフト未公開
               </Badge>
             )}
 
@@ -124,35 +122,35 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
               </Field>
 
               <Field className="gap-2">
-                <Label htmlFor={`status-${scheduleMonth.id}`}>ステータス</Label>
+                <Label htmlFor={`status-${scheduleMonth.id}`}>公開状態</Label>
 
                 <RadioGroup
-                  name="status"
-                  defaultValue={scheduleMonth.status}
+                  name="isPublished"
+                  defaultValue={String(scheduleMonth.isPublished)}
                   required
                 >
                   <div className="flex items-center gap-2">
                     <RadioGroupItem
-                      id={`status-accepting-${scheduleMonth.id}`}
-                      value="accepting_requests"
+                      id={`is-published-false-${scheduleMonth.id}`}
+                      value="false"
                     />
 
                     <Label
-                      htmlFor={`status-accepting-${scheduleMonth.id}`}
+                      htmlFor={`is-published-false-${scheduleMonth.id}`}
                       className="font-normal"
                     >
-                      申請受付中
+                      シフト未公開
                     </Label>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <RadioGroupItem
-                      id={`status-published-${scheduleMonth.id}`}
-                      value="published"
+                      id={`is-published-true-${scheduleMonth.id}`}
+                      value="true"
                     />
 
                     <Label
-                      htmlFor={`status-published-${scheduleMonth.id}`}
+                      htmlFor={`is-published-true-${scheduleMonth.id}`}
                       className="font-normal"
                     >
                       シフト公開

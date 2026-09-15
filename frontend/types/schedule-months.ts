@@ -3,5 +3,5 @@ export type ScheduleMonths = {
   year: number;
   month: number;
   monthlyDaysOff: number;
-  status: "accepting_requests" | "published";
+  isPublished: boolean;
 };
