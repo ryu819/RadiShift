@@ -47,7 +47,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
     subject { get(api_v1_schedule_month_path(schedule_month), headers: { "Authorization": token }) }
 
     context "施設に所属している時" do
-      let!(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 1) }
+      let!(:schedule_month) { create(:schedule_month, facility: user.facility) }
       let!(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
       let!(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み") }
       let!(:day_off_slot) { create(:day_off_slot, schedule_day: schedule_day, day_off_type: day_off_type, max_slots: 5) }
@@ -69,7 +69,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
 
     context "施設に所属していない時" do
       let(:user) { create(:user) }
-      let!(:schedule_month) { create(:schedule_month, year: 2026, month: 1) }
+      let!(:schedule_month) { create(:schedule_month) }
 
       it "not_found エラーが返る" do
         subject
@@ -80,7 +80,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
     end
 
     context "別施設の対象月を指定した時" do
-      let!(:schedule_month) { create(:schedule_month, year: 2026, month: 1) }
+      let!(:schedule_month) { create(:schedule_month) }
 
       it "not_found エラーが返る" do
         subject
@@ -191,7 +191,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
 
-      let!(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 1, monthly_days_off: 8.0) }
+      let!(:schedule_month) { create(:schedule_month, facility: user.facility, monthly_days_off: 8.0) }
 
       it "正常に対象月のシフトを更新できる" do
         subject
@@ -201,12 +201,12 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      context "statusをシフト公開済みに変更する時" do
-        let(:params) { { schedule_month: { status: "published" } } }
+      context "シフトを公開する時" do
+        let(:params) { { schedule_month: { is_published: true } } }
 
         it "シフト公開済みに更新される" do
           subject
-          expect(schedule_month.reload).to be_published
+          expect(schedule_month.reload.is_published?).to be(true)
           expect(response).to have_http_status(:ok)
         end
       end
@@ -264,7 +264,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
 
     context "別施設の対象月を指定した時" do
       let(:user) { create(:user, :admin) }
-      let!(:schedule_month) { create(:schedule_month, year: 2026, month: 1, monthly_days_off: 8.0) }
+      let!(:schedule_month) { create(:schedule_month, monthly_days_off: 8.0) }
 
       it "not_found エラーが返る" do
         subject
@@ -278,7 +278,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
 
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
-      let!(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 1) }
+      let!(:schedule_month) { create(:schedule_month, facility: user.facility) }
 
       let!(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
 
@@ -295,7 +295,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
     end
 
     context "管理者でない時" do
-      let!(:schedule_month) { create(:schedule_month, facility: user.facility, year: 2026, month: 1) }
+      let!(:schedule_month) { create(:schedule_month, facility: user.facility) }
 
       it "forbidden エラーが返る" do
         subject
@@ -307,7 +307,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
 
     context "施設に所属していない時" do
       let(:user) { create(:user) }
-      let!(:schedule_month) { create(:schedule_month, year: 2026, month: 1) }
+      let!(:schedule_month) { create(:schedule_month) }
 
       it "not_found エラーが返る" do
         subject
@@ -319,7 +319,7 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
 
     context "別施設の対象月を指定した時" do
       let(:user) { create(:user, :admin) }
-      let!(:schedule_month) { create(:schedule_month, year: 2026, month: 1) }
+      let!(:schedule_month) { create(:schedule_month) }
 
       it "not_found エラーが返る" do
         expect { subject }.not_to change { ScheduleMonth.count }
