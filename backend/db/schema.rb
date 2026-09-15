@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_11_003059) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_15_102812) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -166,9 +166,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_11_003059) do
   create_table "schedule_months", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "facility_id", null: false
+    t.boolean "is_published", default: false, null: false
     t.integer "month", limit: 1, null: false
     t.decimal "monthly_days_off", precision: 3, scale: 1, null: false
-    t.integer "status", limit: 1, default: 0, null: false
     t.datetime "updated_at", null: false
     t.integer "year", null: false
     t.index ["facility_id", "year", "month"], name: "index_schedule_months_on_facility_id_and_year_and_month", unique: true

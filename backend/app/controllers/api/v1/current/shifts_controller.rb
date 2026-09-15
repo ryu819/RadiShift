@@ -27,7 +27,7 @@ module Api
               .includes(:day_off_type)
               .order(:schedule_day_id, :created_at, :id)
 
-          unless schedule_month.published?
+          unless schedule_month.is_published?
             work_assignments =
               work_assignments.where.not(work_request_id: nil)
 
