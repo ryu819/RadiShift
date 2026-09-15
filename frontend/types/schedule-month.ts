@@ -5,6 +5,6 @@ export type ScheduleMonth = {
   year: number;
   month: number;
   monthlyDaysOff: number;
-  status: "accepting_requests" | "published";
+  isPublished: boolean;
   scheduleDays: ScheduleDay[];
 };

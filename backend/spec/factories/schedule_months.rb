@@ -9,6 +9,6 @@ FactoryBot.define do
     year { date.year }
     month { date.month }
     monthly_days_off { 8.0 }
-    status { :accepting_requests }
+    is_published { false }
   end
 end

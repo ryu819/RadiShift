@@ -10,17 +10,17 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
     subject { get(api_v1_current_shift_path(schedule_month), headers: { "Authorization": token }) }
 
     let(:schedule_month) do
-      create(:schedule_month, facility: user.facility, year: 2026, month: 9, status: schedule_month_status)
+      create(:schedule_month, facility: user.facility, is_published: schedule_month_is_published)
     end
 
     let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
 
-    let(:schedule_month_status) { :published }
+    let(:schedule_month_is_published) { true }
     context "シフトが公開済みの時" do
       let(:work_type) { create(:work_type, facility: user.facility) }
       let(:other_user) { create(:user, facility: user.facility) }
       let(:other_schedule_month) do
-        create(:schedule_month, facility: user.facility, year: 2026, month: 10, status: :published)
+        create(:schedule_month, date: Date.current.next_month, facility: user.facility, is_published: true)
       end
 
       let(:other_schedule_day) { create(:schedule_day, schedule_month: other_schedule_month) }
@@ -52,7 +52,7 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
 
     context "シフトが公開前の時" do
       let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
-      let(:schedule_month_status) { :accepting_requests }
+      let(:schedule_month_is_published) { false }
 
       let(:work_request) do
         create(:work_request, user: user, facility: user.facility, schedule_day: schedule_day, work_type: work_type, request_status: :approved)
@@ -78,7 +78,7 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
       let(:day_off_type) { create(:day_off_type, facility: user.facility) }
       let(:other_user) { create(:user, facility: user.facility) }
       let(:other_schedule_month) do
-        create(:schedule_month, facility: user.facility, year: 2026, month: 10, status: :published)
+        create(:schedule_month, date: Date.current.next_month, facility: user.facility, is_published: true)
       end
 
       let(:other_schedule_day) { create(:schedule_day, schedule_month: other_schedule_month) }
@@ -95,7 +95,7 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
         create(:day_off_assignment, facility: user.facility, user: user, schedule_day: other_schedule_day, day_off_type: day_off_type)
       end
 
-      it "公開状態に関係なく選択月にある自分の休み割当だけを返す" do
+      it "選択月にある自分の休み割当だけを返す" do
         subject
         res = JSON.parse(response.body)
         day_off_assignment_ids = res["day_off_assignments"].map { |day_off_assignment| day_off_assignment["id"] }

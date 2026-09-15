@@ -14,7 +14,7 @@ export type ActionState = {
   success: boolean;
   errors?: {
     monthlyDaysOff?: string[];
-    status?: string[];
+    isPublished?: string[];
   };
 };
 
@@ -22,7 +22,7 @@ type UpdateScheduleMonthResponse = {
   message: string;
   errors?: {
     monthlyDaysOff?: string[];
-    status?: string[];
+    isPublished?: string[];
   };
 };
 
@@ -32,7 +32,7 @@ export async function updateScheduleMonthForm(
 ): Promise<ActionState> {
   const scheduleMonthId = Number(formData.get("scheduleMonthId"));
   const monthlyDaysOff = Number(formData.get("monthlyDaysOff"));
-  const status = formData.get("status") as string;
+  const isPublished = formData.get("isPublished") === "true";
 
   const jwt = await getJwt();
   if (!jwt) redirect("/");
@@ -50,7 +50,7 @@ export async function updateScheduleMonthForm(
           snakecaseKeys({
             scheduleMonth: {
               monthlyDaysOff,
-              status,
+              isPublished,
             },
           }),
         ),

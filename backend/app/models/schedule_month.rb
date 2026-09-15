@@ -19,11 +19,6 @@ class ScheduleMonth < ApplicationRecord
 
   validate :monthly_days_off_must_be_half_step
 
-  enum :status, {
-    accepting_requests: 0,
-    published: 1
-  }, validate: true
-
   private
 
   def monthly_days_off_must_be_half_step

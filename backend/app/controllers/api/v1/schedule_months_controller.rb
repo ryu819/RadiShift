@@ -14,7 +14,7 @@ module Api
                             .order(year: :asc, month: :asc)
 
         render json: schedule_months.as_json(
-          only: [:id, :year, :month, :monthly_days_off, :status]
+          only: [:id, :year, :month, :monthly_days_off, :is_published]
         ), status: :ok
       end
 
@@ -32,7 +32,7 @@ module Api
             .count
 
         schedule_month_json = schedule_month.as_json(
-          only: [:id, :year, :month, :monthly_days_off, :status],
+          only: [:id, :year, :month, :monthly_days_off, :is_published],
           include: {
             schedule_days: {
               only: [:id, :date, :is_holiday],
@@ -110,7 +110,7 @@ module Api
       end
 
       def schedule_month_update_params
-        params.require(:schedule_month).permit(:monthly_days_off, :status)
+        params.require(:schedule_month).permit(:monthly_days_off, :is_published)
       end
 
       def add_remaining_slots(schedule_month_json, assigned_counts)

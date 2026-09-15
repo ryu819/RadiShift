@@ -63,15 +63,13 @@ export async function MyShift({ searchParams }: Props) {
           month={selectedScheduleMonth.month}
         />
 
-        {scheduleMonth?.status === "accepting_requests" && (
-          <Badge className="bg-amber-100 text-amber-700 rounded-sm">
-            シフト未公開
-          </Badge>
-        )}
-
-        {scheduleMonth?.status === "published" && (
+        {scheduleMonth?.isPublished ? (
           <Badge className="bg-emerald-100 text-emerald-700 rounded-sm">
             シフト公開済
+          </Badge>
+        ) : (
+          <Badge className="bg-amber-100 text-amber-700 rounded-sm">
+            シフト未公開
           </Badge>
         )}
       </div>
