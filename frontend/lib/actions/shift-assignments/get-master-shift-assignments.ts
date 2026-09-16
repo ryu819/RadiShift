@@ -18,7 +18,7 @@ export async function getMasterShiftAssignments(scheduleMonthId: number) {
 
   try {
     const res = await fetch(
-      `${process.env.RAILS_API_URL}/admin/master_shifts/${scheduleMonthId}`,
+      `${process.env.RAILS_API_URL}/master_shifts/${scheduleMonthId}`,
       {
         headers: {
           Authorization: jwt,
