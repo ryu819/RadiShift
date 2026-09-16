@@ -123,7 +123,7 @@ export function ShiftTable({
                 const assignmentBadges = (
                   <div className="flex flex-col items-center gap-0.5 md:gap-1">
                     {cellWorkAssignments.map((workAssignment) =>
-                      workAssignment.workRequestId !== null ? (
+                      isEditable && workAssignment.workRequestId != null ? (
                         <Tooltip key={workAssignment.id}>
                           <TooltipTrigger asChild>
                             <Badge
@@ -168,7 +168,7 @@ export function ShiftTable({
                     )}
 
                     {cellDayOffAssignments.map((dayOffAssignment) =>
-                      dayOffAssignment.dayOffRequestId !== null ? (
+                      isEditable && dayOffAssignment.dayOffRequestId != null ? (
                         <Tooltip key={dayOffAssignment.id}>
                           <TooltipTrigger asChild>
                             <Badge

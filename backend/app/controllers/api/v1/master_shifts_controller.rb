@@ -58,6 +58,8 @@ module Api
       end
 
       def group_work_assignments_by_user_and_day(work_assignments)
+        assignment_fields = [:id, :schedule_day_id, :user_id]
+        assignment_fields << :work_request_id if current_user.is_admin?
         work_assignments
           .group_by(&:user_id)
           .transform_values do |user_work_assignments|
@@ -65,7 +67,7 @@ module Api
               .group_by(&:schedule_day_id)
               .transform_values do |day_work_assignments|
                 day_work_assignments.as_json(
-                  only: [:id, :schedule_day_id, :user_id, :work_request_id],
+                  only: assignment_fields,
                   include: {
                     work_type: {
                       only: [:id, :name, :color_code, :is_requestable]
@@ -77,6 +79,9 @@ module Api
       end
 
       def group_day_off_assignments_by_user_and_day(day_off_assignments)
+        assignment_fields = [:id, :schedule_day_id, :user_id]
+        assignment_fields << :day_off_request_id if current_user.is_admin?
+
         day_off_assignments
           .group_by(&:user_id)
           .transform_values do |user_day_off_assignments|
@@ -84,7 +89,7 @@ module Api
               .group_by(&:schedule_day_id)
               .transform_values do |day_assignments|
                 day_assignments.as_json(
-                  only: [:id, :schedule_day_id, :user_id, :day_off_request_id],
+                  only: assignment_fields,
                   include: {
                     day_off_type: {
                       only: [

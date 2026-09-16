@@ -4,7 +4,7 @@ export type DayOffAssignment = {
   id: number;
   scheduleDayId: number;
   userId: number;
-  dayOffRequestId: number | null;
+  dayOffRequestId?: number | null;
   dayOffType: DayOffType;
 };
 
