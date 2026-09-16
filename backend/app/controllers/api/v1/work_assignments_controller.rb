@@ -128,7 +128,7 @@ module Api
         work_type_id = work_assignment_params[:work_type_id]
 
         return if work_type_id.blank?
-        return if current_user.facility.work_types.exists?(id: work_type_id)
+        return if current_user.facility.work_types.active.exists?(id: work_type_id)
 
         render json: { message: "勤務パターンが存在しません。" }, status: :not_found
       end

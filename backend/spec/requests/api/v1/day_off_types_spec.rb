@@ -258,6 +258,19 @@ RSpec.describe "Api::V1::DayOffTypes", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      it "休みタイプを論理削除しても既存の休み割当を保持する" do
+        day_off_assignment = create(
+          :day_off_assignment,
+          facility: user.facility,
+          day_off_type: day_off_type
+        )
+
+        expect { subject }.not_to change { DayOffAssignment.count }
+
+        expect(day_off_type.reload.is_active).to be false
+        expect(DayOffAssignment.exists?(day_off_assignment.id)).to be true
+      end
+
       context "休みタイプを論理削除する時" do
         let!(:day_off_slot_rule) { create(:day_off_slot_rule, facility: user.facility, day_off_type: day_off_type) }
 

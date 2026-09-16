@@ -104,6 +104,17 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
           expect(response).to have_http_status(:not_found)
         end
       end
+
+      context "無効化済みの work_type_id を送る時" do
+        let(:work_type) { create(:work_type, facility: user.facility, name: "日勤", is_active: false) }
+
+        it "not_found エラーが返る" do
+          expect { subject }.not_to change { WorkAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("勤務パターンが存在しません。")
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
 
     context "管理者でない時" do
@@ -163,6 +174,19 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
       context "別施設の work_type_id を送る時" do
         let(:other_work_type) { create(:work_type, facility: create(:facility), name: "夜勤") }
         let(:params) { { work_assignment: { work_type_id: other_work_type.id } } }
+
+        it "not_found エラーが返る" do
+          original_work_type = work_assignment.work_type
+          subject
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("勤務パターンが存在しません。")
+          expect(work_assignment.reload.work_type).to eq(original_work_type)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "無効化済みの work_type_id を送る時" do
+        let(:work_type) { create(:work_type, facility: user.facility, name: "夜勤", is_active: false) }
 
         it "not_found エラーが返る" do
           original_work_type = work_assignment.work_type
@@ -239,6 +263,40 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("勤務割当を削除しました。")
         expect(response).to have_http_status(:ok)
+      end
+
+      context "勤務タイプが無効化済みの時" do
+        before { work_assignment.work_type.update!(is_active: false) }
+
+        it "勤務割当を削除できる" do
+          expect { subject }.to change { WorkAssignment.count }.by(-1)
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("勤務割当を削除しました。")
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "申請由来の勤務割当の勤務タイプが無効化済みの時" do
+        before do
+          work_request = create(
+            :work_request,
+            facility: user.facility,
+            user: work_assignment.user,
+            schedule_day: work_assignment.schedule_day,
+            work_type: work_assignment.work_type,
+            request_status: :approved
+          )
+
+          work_assignment.update!(work_request: work_request)
+          work_assignment.work_type.update!(is_active: false)
+        end
+
+        it "通常操作では削除できない" do
+          expect { subject }.not_to change { WorkAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("申請による勤務割当は通常操作では削除できません。")
+          expect(response).to have_http_status(:conflict)
+        end
       end
     end
 

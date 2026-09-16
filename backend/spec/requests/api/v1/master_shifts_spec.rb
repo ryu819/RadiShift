@@ -93,6 +93,20 @@ RSpec.describe "Api::V1::MasterShifts", type: :request do
         expect(assignment["day_off_request_id"]).to eq(day_off_request.id)
         expect(response).to have_http_status(:ok)
       end
+
+      it "無効化済みタイプの既存割当も返す" do
+        work_type.update!(is_active: false)
+        day_off_type.update!(is_active: false)
+        subject
+        res = JSON.parse(response.body)
+        work_assignment_json = res["work_assignments_by_user_and_day"][member.id.to_s][schedule_day.id.to_s].first
+        day_off_assignment_json = res["day_off_assignments_by_user_and_day"][member.id.to_s][schedule_day.id.to_s].first
+        expect(work_assignment_json["id"]).to eq(work_assignment.id)
+        expect(work_assignment_json["work_type"]["id"]).to eq(work_type.id)
+        expect(day_off_assignment_json["id"]).to eq(day_off_assignment.id)
+        expect(day_off_assignment_json["day_off_type"]["id"]).to eq(day_off_type.id)
+        expect(response).to have_http_status(:ok)
+      end
     end
 
     context "管理者が公開済み月を指定した時" do
