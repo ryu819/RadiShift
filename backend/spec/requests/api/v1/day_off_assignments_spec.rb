@@ -102,6 +102,17 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
           expect(response).to have_http_status(:not_found)
         end
       end
+
+      context "無効化済みの day_off_type_id を送る時" do
+        let(:day_off_type) { create(:day_off_type, facility: user.facility, name: "休み", is_active: false) }
+
+        it "not_found エラーが返る" do
+          expect { subject }.not_to change { DayOffAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("休みパターンが存在しません。")
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
 
     context "管理者でない時" do
@@ -161,6 +172,19 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
       context "別施設の day_off_type_id を送る時" do
         let(:other_day_off_type) { create(:day_off_type, facility: create(:facility), name: "休み") }
         let(:params) { { day_off_assignment: { day_off_type_id: other_day_off_type.id } } }
+
+        it "not_found エラーが返る" do
+          original_day_off_type = day_off_assignment.day_off_type
+          subject
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("休みパターンが存在しません。")
+          expect(day_off_assignment.reload.day_off_type).to eq(original_day_off_type)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "無効化済みの day_off_type_id を送る時" do
+        let(:day_off_type) { create(:day_off_type, facility: user.facility, name: "午後休み", is_active: false) }
 
         it "not_found エラーが返る" do
           original_day_off_type = day_off_assignment.day_off_type
@@ -237,6 +261,42 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("休み割当を削除しました。")
         expect(response).to have_http_status(:ok)
+      end
+
+      context "休みタイプが無効化済みの時" do
+        before do
+          day_off_assignment.day_off_type.update!(is_active: false)
+        end
+
+        it "休み割当を削除できる" do
+          expect { subject }.to change { DayOffAssignment.count }.by(-1)
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("休み割当を削除しました。")
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "申請由来の休み割当の休みタイプが無効化済みの時" do
+        before do
+          day_off_request = create(
+            :day_off_request,
+            facility: user.facility,
+            user: day_off_assignment.user,
+            schedule_day: day_off_assignment.schedule_day,
+            day_off_type: day_off_assignment.day_off_type,
+            request_status: :approved
+          )
+
+          day_off_assignment.update!(day_off_request: day_off_request)
+          day_off_assignment.day_off_type.update!(is_active: false)
+        end
+
+        it "通常操作では削除できない" do
+          expect { subject }.not_to change { DayOffAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("申請による休み割当は通常操作では削除できません。")
+          expect(response).to have_http_status(:conflict)
+        end
       end
     end
 

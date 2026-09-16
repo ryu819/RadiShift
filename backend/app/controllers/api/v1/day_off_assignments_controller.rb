@@ -128,7 +128,7 @@ module Api
         day_off_type_id = day_off_assignment_params[:day_off_type_id]
 
         return if day_off_type_id.blank?
-        return if current_user.facility.day_off_types.exists?(id: day_off_type_id)
+        return if current_user.facility.day_off_types.active.exists?(id: day_off_type_id)
 
         render json: { message: "休みパターンが存在しません。" }, status: :not_found
       end

@@ -54,6 +54,10 @@ export function ShiftTable({
 }: Props) {
   const [openCellKey, setOpenCellKey] = useState<string | null>(null);
 
+  const activeWorkTypeIds = workTypes.map((workType) => workType.id);
+
+  const activeDayOffTypeIds = dayOffTypes.map((dayOffType) => dayOffType.id);
+
   return (
     <div
       className=" flex-1 overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm"
@@ -119,6 +123,18 @@ export function ShiftTable({
                   dayOffAssignmentsByUserAndDay?.[String(member.id)]?.[
                     String(day.id)
                   ] ?? [];
+
+                const inactiveWorkAssignments = cellWorkAssignments.filter(
+                  (workAssignment) =>
+                    !activeWorkTypeIds.includes(workAssignment.workType.id),
+                );
+
+                const inactiveDayOffAssignments = cellDayOffAssignments.filter(
+                  (dayOffAssignment) =>
+                    !activeDayOffTypeIds.includes(
+                      dayOffAssignment.dayOffType.id,
+                    ),
+                );
 
                 const assignmentBadges = (
                   <div className="flex flex-col items-center gap-0.5 md:gap-1">
@@ -288,6 +304,20 @@ export function ShiftTable({
                                   />
                                 );
                               })}
+
+                              {inactiveWorkAssignments.map((workAssignment) => (
+                                <WorkTypeItem
+                                  key={workAssignment.id}
+                                  workType={workAssignment.workType}
+                                  selectedWorkAssignment={workAssignment}
+                                  scheduleDayId={day.id}
+                                  userId={member.id}
+                                  memberName={member.name}
+                                  year={year}
+                                  month={month}
+                                  day={day.day}
+                                />
+                              ))}
                             </div>
                           </div>
 
@@ -323,6 +353,22 @@ export function ShiftTable({
                                   />
                                 );
                               })}
+
+                              {inactiveDayOffAssignments.map(
+                                (dayOffAssignment) => (
+                                  <DayOffTypeItem
+                                    key={dayOffAssignment.id}
+                                    dayOffType={dayOffAssignment.dayOffType}
+                                    selectedDayOffAssignment={dayOffAssignment}
+                                    scheduleDayId={day.id}
+                                    userId={member.id}
+                                    memberName={member.name}
+                                    year={year}
+                                    month={month}
+                                    day={day.day}
+                                  />
+                                ),
+                              )}
                             </div>
                           </div>
                         </PopoverContent>

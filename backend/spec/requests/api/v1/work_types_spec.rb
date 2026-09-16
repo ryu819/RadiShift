@@ -203,6 +203,19 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
         expect(work_type.reload.is_active).to be false
         expect(response).to have_http_status(:ok)
       end
+
+      it "勤務タイプを論理削除しても既存の勤務割当を保持する" do
+        work_assignment = create(
+          :work_assignment,
+          facility: user.facility,
+          work_type: work_type
+        )
+
+        expect { subject }.not_to change { WorkAssignment.count }
+
+        expect(work_type.reload.is_active).to be false
+        expect(WorkAssignment.exists?(work_assignment.id)).to be true
+      end
     end
 
     context "管理者でない時" do
