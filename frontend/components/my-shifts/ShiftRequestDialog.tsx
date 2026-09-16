@@ -307,7 +307,7 @@ export function ShiftRequestDialog({
                         type="button"
                         disabled={isPending || !canReturn}
                         className={cn(
-                          "flex w-full cursor-pointer items-center justify-between rounded-md border p-3 transition-colors hover:bg-muted/50 active:bg-muted/50",
+                          "flex w-full cursor-pointer items-center justify-between rounded-md border p-3 transition-colors",
                           canReturn
                             ? "cursor-pointer hover:bg-muted/50 active:bg-muted/50"
                             : "cursor-not-allowed opacity-60",

@@ -30,7 +30,6 @@ Rails.application.routes.draw do
       end
       namespace :admin do
         resources :pending_requests, only: :index
-        resources :master_shifts, only: :show
       end
       resource :facility, only: [:show, :create, :update, :destroy] do
         post :join
@@ -45,6 +44,7 @@ Rails.application.routes.draw do
         end
       end
       resources :schedule_months, only: [:index, :show, :create, :update, :destroy]
+      resources :master_shifts, only: [:index, :show]
       resources :schedule_days, only: [:update]
       resources :work_types, only: [:index, :create, :update, :destroy]
       resources :day_off_types, only: [:index, :create, :update, :destroy]
