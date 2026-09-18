@@ -3,9 +3,6 @@
 module Api
   module V1
     class WorkAssignmentsController < ApplicationController
-      before_action :authenticate_user!
-      before_action :reject_deleted_user!
-      before_action :require_facility!
       before_action :require_admin!, only: [:create, :update, :destroy, :override]
       before_action :set_work_assignment, only: [:update, :destroy, :override]
       before_action :validate_schedule_day_for_facility!, only: [:create]

@@ -3,8 +3,6 @@
 module Api
   module V1
     class MembersController < ApplicationController
-      before_action :authenticate_user!
-      before_action :require_facility!
       before_action :require_admin!, only: [:update, :destroy, :add_admin, :remove_admin]
       before_action :set_member, only: [:update, :destroy, :add_admin, :remove_admin]
 
@@ -34,10 +32,14 @@ module Api
       def destroy
         return render json: { message: "管理者は脱退させられません。先に管理者権限を解除してください。" }, status: :forbidden if @member.is_admin?
 
-        @member.update!(
-          facility_id: nil,
-          rules_text: nil
-        )
+        @member.with_lock do
+          @member.cleanup_shift_data_for_facility_departure!
+
+          @member.update!(
+            facility_id: nil,
+            rules_text: nil
+          )
+        end
 
         render json: { message: "ユーザーを脱退させました。" }, status: :ok
       end

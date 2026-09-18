@@ -3,9 +3,6 @@
 module Api
   module V1
     class DayOffTypesController < ApplicationController
-      before_action :authenticate_user!
-      before_action :reject_deleted_user!
-      before_action :require_facility!
       before_action :require_admin!, only: [:create, :update, :destroy]
       before_action :set_day_off_type, only: [:update, :destroy]
 

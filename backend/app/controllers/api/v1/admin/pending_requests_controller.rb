@@ -4,9 +4,6 @@ module Api
   module V1
     module Admin
       class PendingRequestsController < ApplicationController
-        before_action :authenticate_user!
-        before_action :reject_deleted_user!
-        before_action :require_facility!
         before_action :require_admin!
 
         def index
