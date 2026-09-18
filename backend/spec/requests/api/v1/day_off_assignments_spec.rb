@@ -263,6 +263,19 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      context "脱退済みユーザーの休み割当の時" do
+        before do
+          day_off_assignment.user.update!(facility: nil)
+        end
+
+        it "休み割当を削除できる" do
+          expect { subject }.to change { DayOffAssignment.count }.by(-1)
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("休み割当を削除しました。")
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
       context "休みタイプが無効化済みの時" do
         before do
           day_off_assignment.day_off_type.update!(is_active: false)

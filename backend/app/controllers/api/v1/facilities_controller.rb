@@ -3,11 +3,9 @@
 module Api
   module V1
     class FacilitiesController < ApplicationController
-      before_action :authenticate_user!
-      before_action :reject_deleted_user!
-      before_action :require_facility!, only: [:show, :update, :destroy, :leave]
-      before_action :require_admin!, only: [:update, :destroy]
+      skip_before_action :require_facility!, only: [:create, :join]
       before_action :require_no_facility!, only: [:create, :join]
+      before_action :require_admin!, only: [:update, :destroy]
 
       def show
         render json: current_facility.as_json(
@@ -68,7 +66,10 @@ module Api
       def leave
         return render json: { message: "管理者は脱退できません。（管理者権限の移譲が必要です。）" }, status: :forbidden if current_user.is_admin?
 
-        current_user.update!(facility: nil)
+        current_user.with_lock do
+          current_user.cleanup_shift_data_for_facility_departure!
+          current_user.update!(facility: nil)
+        end
 
         render json: { message: "施設を脱退しました。" }, status: :ok
       end

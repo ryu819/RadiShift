@@ -265,6 +265,19 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      context "脱退済みユーザーの勤務割当の時" do
+        before do
+          work_assignment.user.update!(facility: nil)
+        end
+
+        it "勤務割当を削除できる" do
+          expect { subject }.to change { WorkAssignment.count }.by(-1)
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("勤務割当を削除しました。")
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
       context "勤務タイプが無効化済みの時" do
         before { work_assignment.work_type.update!(is_active: false) }
 

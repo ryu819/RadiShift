@@ -4,8 +4,7 @@ module Api
   module V1
     module Current
       class UsersController < ApplicationController
-        before_action :authenticate_user!
-        before_action :reject_deleted_user!
+        skip_before_action :require_facility!
 
         def show
           render json: current_user.as_json(
@@ -32,7 +31,9 @@ module Api
 
           random_password = SecureRandom.urlsafe_base64(32)
 
-          User.transaction do
+          current_user.with_lock do
+            current_user.cleanup_shift_data_for_facility_departure! if current_user.facility
+
             current_user.avatar_image.purge if current_user.avatar_image.attached?
 
             current_user.skip_reconfirmation!
@@ -47,6 +48,7 @@ module Api
               confirmation_token: nil,
               confirmation_sent_at: nil,
               unconfirmed_email: nil,
+              rules_text: nil,
               is_deleted: true
             )
           end
