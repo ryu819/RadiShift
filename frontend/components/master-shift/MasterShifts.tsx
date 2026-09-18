@@ -2,7 +2,6 @@ import { MasterShiftsEmpty } from "@/components/master-shift/MasterShiftsEmpty";
 import { MonthNavigation } from "@/components/master-shift/MonthNavigation";
 import { ShiftTable } from "@/components/master-shift/ShiftTable";
 import { getCurrentUser } from "@/lib/actions/account/get-current-user";
-import { getMembers } from "@/lib/actions/members/get-members";
 import { getMasterShiftScheduleMonths } from "@/lib/actions/schedule-months/get-master-shift-schedule-months";
 import { getScheduleMonth } from "@/lib/actions/schedule-months/get-schedule-month";
 import { getMasterShiftAssignments } from "@/lib/actions/shift-assignments/get-master-shift-assignments";
@@ -18,18 +17,16 @@ type Props = {
 };
 
 export async function MasterShifts({ searchParams }: Props) {
+  const params = await searchParams;
+
   const [
-    params,
     currentUser,
-    members,
     workTypes,
     dayOffTypes,
     scheduleMonths,
     currentYearMonth,
   ] = await Promise.all([
-    searchParams,
     getCurrentUser(),
-    getMembers(),
     getWorkTypes(),
     getDayOffTypes(),
     getMasterShiftScheduleMonths(),
@@ -67,7 +64,7 @@ export async function MasterShifts({ searchParams }: Props) {
       />
 
       <ShiftTable
-        members={members ?? []}
+        members={masterShiftAssignments?.members ?? []}
         workTypes={workTypes ?? []}
         dayOffTypes={dayOffTypes ?? []}
         workAssignmentsByUserAndDay={

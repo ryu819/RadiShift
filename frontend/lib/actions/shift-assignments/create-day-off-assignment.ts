@@ -71,7 +71,7 @@ export async function createDayOffAssignmentForm(
     );
 
     if (isClientError(res.status)) {
-      await setFlashToast({ type: "failure" });
+      await setFlashToast({ type: "failure", message: data.message });
 
       return { errors: data.errors };
     }

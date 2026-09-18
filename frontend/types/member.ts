@@ -2,6 +2,6 @@ export type Member = {
   id: number;
   name: string;
   isAdmin: boolean;
-  rulesText: string | null;
-  avatarImageUrl: string | null;
+  rulesText?: string | null;
+  avatarImageUrl?: string | null;
 };

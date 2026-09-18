@@ -2,6 +2,9 @@
 
 class ApplicationController < ActionController::API
   include ActionController::MimeResponds # APIモード
+  before_action :authenticate_user!, unless: :devise_controller?
+  before_action :reject_deleted_user!, unless: :devise_controller?
+  before_action :require_facility!, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   private

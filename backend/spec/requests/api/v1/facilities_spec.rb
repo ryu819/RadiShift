@@ -254,12 +254,16 @@ RSpec.describe "Api::V1::Facilities", type: :request do
 
     context "施設に所属している時" do
       context "一般ユーザーの時" do
-        it "正常に施設から脱退できる" do
+        let(:future_schedule_month) { create(:schedule_month, facility: user.facility, date: Date.current.next_month.beginning_of_month) }
+        let(:future_schedule_day) { create(:schedule_day, schedule_month: future_schedule_month, date: Date.current.next_month.beginning_of_month) }
+        let!(:future_work_assignment) { create(:work_assignment, user: user, schedule_day: future_schedule_day) }
+
+        it "シフトデータを削除して施設から脱退できる" do
           subject
           res = JSON.parse(response.body)
-
           expect(res["message"]).to eq("施設を脱退しました。")
           expect(user.reload.facility).to be_nil
+          expect(WorkAssignment.exists?(future_work_assignment.id)).to be false
           expect(response).to have_http_status(:ok)
         end
       end

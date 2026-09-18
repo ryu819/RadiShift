@@ -4,10 +4,6 @@ module Api
   module V1
     module Current
       class ShiftsController < ApplicationController
-        before_action :authenticate_user!
-        before_action :reject_deleted_user!
-        before_action :require_facility!
-
         def show
           schedule_month = current_user.facility.schedule_months.find(
             params[:id]

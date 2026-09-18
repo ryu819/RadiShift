@@ -3,10 +3,6 @@
 module Api
   module V1
     class MasterShiftsController < ApplicationController
-      before_action :authenticate_user!
-      before_action :reject_deleted_user!
-      before_action :require_facility!
-
       def index
         schedule_months = accessible_schedule_months
                             .order(year: :asc, month: :asc)
@@ -40,7 +36,16 @@ module Api
                                   :id
                                 )
 
+        members = members_for(
+          schedule_month,
+          work_assignments,
+          day_off_assignments
+        )
+
         render json: {
+          members: members.as_json(
+            only: [:id, :name, :is_admin]
+          ),
           work_assignments_by_user_and_day:
             group_work_assignments_by_user_and_day(work_assignments),
           day_off_assignments_by_user_and_day:
@@ -55,6 +60,39 @@ module Api
         return schedule_months if current_user.is_admin?
 
         schedule_months.where(is_published: true)
+      end
+
+      def members_for(schedule_month, work_assignments, day_off_assignments)
+        current_members = current_user.facility.users
+                            .where(is_deleted: false)
+                            .order(:id)
+
+        return current_members if future_schedule_month?(schedule_month)
+
+        current_member_ids = current_members.map(&:id)
+        work_assignment_user_ids = work_assignments.map(&:user_id)
+        day_off_assignment_user_ids = day_off_assignments.map(&:user_id)
+
+        member_ids =
+          current_member_ids +
+          work_assignment_user_ids +
+          day_off_assignment_user_ids
+
+        User
+          .where(id: member_ids.uniq)
+          .order(:id)
+      end
+
+      def future_schedule_month?(schedule_month)
+        schedule_month_date = Date.new(
+          schedule_month.year,
+          schedule_month.month,
+          1
+        )
+
+        current_month_date = Date.current.beginning_of_month
+
+        schedule_month_date > current_month_date
       end
 
       def group_work_assignments_by_user_and_day(work_assignments)

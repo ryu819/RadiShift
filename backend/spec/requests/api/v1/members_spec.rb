@@ -108,14 +108,18 @@ RSpec.describe "Api::V1::Members", type: :request do
     context "管理者である時" do
       context "対象ユーザーが管理者でない時" do
         let!(:member) { create(:user, facility: user.facility, is_admin: false, rules_text: "個別ルール") }
+        let(:future_schedule_month) { create(:schedule_month, facility: user.facility, date: Date.current.next_month.beginning_of_month) }
+        let(:future_schedule_day) { create(:schedule_day, schedule_month: future_schedule_month, date: Date.current.next_month.beginning_of_month) }
+        let!(:future_work_assignment) { create(:work_assignment, user: member, schedule_day: future_schedule_day) }
 
-        it "ユーザーを物理削除せず、施設から脱退させる" do
+        it "ユーザーを物理削除せず、シフトデータを削除して施設から脱退させる" do
           expect { subject }.not_to change { User.count }
           res = JSON.parse(response.body)
           member.reload
           expect(res["message"]).to eq("ユーザーを脱退させました。")
           expect(member.facility).to be_nil
           expect(member.rules_text).to be_nil
+          expect(WorkAssignment.exists?(future_work_assignment.id)).to be false
           expect(response).to have_http_status(:ok)
         end
       end

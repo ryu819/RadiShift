@@ -51,6 +51,7 @@ export async function removeMemberForm(
     }
 
     updateTag(CACHE_TAGS.members);
+    updateTag(CACHE_TAGS.pendingRequests);
 
     return {
       success: true,

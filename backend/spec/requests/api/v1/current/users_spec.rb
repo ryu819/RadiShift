@@ -115,19 +115,46 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
   describe "DELETE /api/v1/current/user" do
     subject { delete(api_v1_current_user_path, headers: { "Authorization": token }) }
 
-    context "自分のアカウントを削除する時" do
-      it "ユーザーを物理削除せず、削除済み状態に更新できる" do
+    context "施設に所属している自分のアカウントを削除する時" do
+      let(:user) { create(:user, :with_facility, :with_avatar, rules_text: "個別ルール") }
+      let(:facility) { user.facility }
+      let(:future_date) { Date.current.next_month.beginning_of_month }
+      let(:future_schedule_month) { create(:schedule_month, facility: user.facility, date: future_date) }
+      let(:future_schedule_day) { create(:schedule_day, schedule_month: future_schedule_month, date: future_date) }
+      let!(:future_work_assignment) { create(:work_assignment, user: user, schedule_day: future_schedule_day) }
+
+      it "ユーザーを物理削除せず削除済み状態にする" do
         original_name = user.name
         original_encrypted_password = user.encrypted_password
 
         expect { subject }.not_to change { User.count }
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("アカウントを削除しました。")
-        expect(user.reload.name).to eq(original_name)
-        expect(user.reload.email).to eq("deleted_user_#{user.id}@example.invalid")
-        expect(user.reload.encrypted_password).not_to eq(original_encrypted_password)
-        expect(user.reload.is_deleted).to be true
+        user.reload
+        expect(user.name).to eq(original_name)
+        expect(user.email).to eq("deleted_user_#{user.id}@example.invalid")
+        expect(user.encrypted_password).not_to eq(original_encrypted_password)
+        expect(user.is_deleted).to be true
+      end
+
+      it "施設情報とavatarを削除する" do
+        subject
+        user.reload
+        expect(user.facility).to be_nil
+        expect(user.rules_text).to be_nil
+        expect(user.avatar_image).not_to be_attached
         expect(response).to have_http_status(:ok)
+      end
+
+      it "未来のAssignmentを削除してからアカウントを削除する" do
+        subject
+        expect(WorkAssignment.exists?(future_work_assignment.id)).to be false
+      end
+
+      it "削除前に発行されたJWTでは認証できない" do
+        subject
+        get(api_v1_current_user_path, headers: { "Authorization": token })
+        res = JSON.parse(response.body)
+        expect(res["error"]).to be_present
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
