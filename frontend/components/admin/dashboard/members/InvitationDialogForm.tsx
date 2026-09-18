@@ -79,7 +79,7 @@ export function InvitationDialogForm({
             <div className="space-y-2">
               <p className="text-sm font-medium">招待コード</p>
 
-              <div className="relative flex items-center justify-center rounded-lg border bg-muted/30 p-2">
+              <div className="relative flex items-center justify-center rounded-md border bg-muted/40 p-2">
                 <span className="text-lg font-semibold ">{inviteCode}</span>
 
                 <Button

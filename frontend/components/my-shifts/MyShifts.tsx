@@ -20,9 +20,10 @@ type Props = {
 };
 
 export async function MyShift({ searchParams }: Props) {
-  const [params, scheduleMonths, dayOffTypes, workTypes, currentYearMonth] =
+  const params = await searchParams;
+
+  const [scheduleMonths, dayOffTypes, workTypes, currentYearMonth] =
     await Promise.all([
-      searchParams,
       getScheduleMonths(),
       getDayOffTypes(),
       getWorkTypes(),

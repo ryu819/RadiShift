@@ -155,7 +155,7 @@ export function DayOffSlotDialogForm({
 
           <input type="hidden" name="maxSlots" value={maxSlots} />
 
-          <div className="rounded-sm bg-muted/50 p-3">
+          <div className="rounded-md border bg-muted/40 p-3">
             <div className="flex items-center justify-around">
               <span className="text-sm text-muted-foreground">現在の枠</span>
 

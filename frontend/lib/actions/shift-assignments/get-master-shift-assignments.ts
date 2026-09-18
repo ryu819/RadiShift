@@ -4,9 +4,11 @@ import camelcaseKeys from "camelcase-keys";
 
 import { getJwt } from "@/lib/auth/jwt";
 import type { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
+import type { Member } from "@/types/member";
 import type { WorkAssignmentsByUserAndDay } from "@/types/work-assignment";
 
 type MasterShiftResponse = {
+  members: Member[];
   workAssignmentsByUserAndDay: WorkAssignmentsByUserAndDay;
   dayOffAssignmentsByUserAndDay: DayOffAssignmentsByUserAndDay;
 };
