@@ -30,9 +30,9 @@ export async function createDayOffAssignmentForm(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const scheduleDayId = formData.get("scheduleDayId");
-  const userId = formData.get("userId");
-  const dayOffTypeId = formData.get("dayOffTypeId");
+  const scheduleDayId = Number(formData.get("scheduleDayId"));
+  const userId = Number(formData.get("userId"));
+  const dayOffTypeId = Number(formData.get("dayOffTypeId"));
 
   const jwt = await getJwt();
 

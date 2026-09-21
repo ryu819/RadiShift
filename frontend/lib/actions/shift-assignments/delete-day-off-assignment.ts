@@ -46,10 +46,11 @@ export async function deleteDayOffAssignmentForm(
     if (isClientError(res.status)) {
       await setFlashToast({
         type: "failure",
+        message: data.message,
       });
 
       return {
-        error: data.message,
+        error: data.error,
       };
     }
 

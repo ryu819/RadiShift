@@ -4,11 +4,13 @@ import camelcaseKeys from "camelcase-keys";
 
 import { getJwt } from "@/lib/auth/jwt";
 import type { DayOffAssignment } from "@/types/day-off-assignment";
+import type { ModalityAssignment } from "@/types/modality-assignment";
 import type { WorkAssignment } from "@/types/work-assignment";
 
 type MyShiftResponse = {
   workAssignments: WorkAssignment[];
   dayOffAssignments: DayOffAssignment[];
+  modalityAssignments: ModalityAssignment[];
 };
 
 export async function getMyShiftAssignments(scheduleMonthId: number) {
