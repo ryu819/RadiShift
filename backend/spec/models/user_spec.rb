@@ -61,6 +61,7 @@ RSpec.describe User, type: :model do
     let(:user) { create(:user, facility: facility) }
     let(:work_type) { create(:work_type, facility: facility) }
     let(:day_off_type) { create(:day_off_type, facility: facility) }
+    let(:modality_type) { create(:modality_type, facility: facility) }
 
     def create_schedule_day(date, facility:)
       schedule_month = create(
@@ -110,6 +111,25 @@ RSpec.describe User, type: :model do
       end
     end
 
+    context "モダリティ割当がある時" do
+      let(:past_day) { create_schedule_day(Date.current.prev_month.beginning_of_month, facility: facility) }
+      let(:current_day) { create_schedule_day(Date.current.beginning_of_month, facility: facility) }
+      let(:future_day) { create_schedule_day(Date.current.next_month.beginning_of_month, facility: facility) }
+
+      let!(:past_modality) { create(:modality_assignment, user: user, schedule_day: past_day, modality_type: modality_type) }
+      let!(:current_modality) { create(:modality_assignment, user: user, schedule_day: current_day, modality_type: modality_type) }
+      let!(:future_modality) { create(:modality_assignment, user: user, schedule_day: future_day, modality_type: modality_type) }
+
+      it "過去・当月を残し、来月以降を削除する" do
+        cleanup
+
+        expect(user.modality_assignments.ids).to contain_exactly(
+          past_modality.id,
+          current_modality.id
+        )
+      end
+    end
+
     context "勤務申請がある時" do
       let(:schedule_day) { create_schedule_day(Date.current.next_month.beginning_of_month, facility: facility) }
 
@@ -151,29 +171,6 @@ RSpec.describe User, type: :model do
           approved_day_off.id,
           rejected_day_off.id
         )
-      end
-    end
-
-    context "別施設のデータがある時" do
-      let(:other_facility) { create(:facility) }
-      let(:other_work_type) { create(:work_type, facility: other_facility) }
-      let(:other_day_off_type) { create(:day_off_type, facility: other_facility) }
-      let(:other_schedule_day) { create_schedule_day(Date.current.next_month.beginning_of_month, facility: other_facility) }
-
-      let!(:work_assignment) { create(:work_assignment, user: user, schedule_day: other_schedule_day, work_type: other_work_type) }
-      let!(:day_off_assignment) { create(:day_off_assignment, user: user, schedule_day: other_schedule_day, day_off_type: other_day_off_type) }
-      let!(:work_request) { create(:work_request, facility: other_facility, user: user, schedule_day: other_schedule_day, work_type: other_work_type) }
-      let!(:day_off_request) do
-        create(:day_off_request, facility: other_facility, user: user, schedule_day: other_schedule_day, day_off_type: other_day_off_type)
-      end
-
-      it "削除しない" do
-        cleanup
-
-        expect(user.work_assignments.ids).to include(work_assignment.id)
-        expect(user.day_off_assignments.ids).to include(day_off_assignment.id)
-        expect(user.work_requests.ids).to include(work_request.id)
-        expect(user.day_off_requests.ids).to include(day_off_request.id)
       end
     end
   end

@@ -14,7 +14,7 @@ export function MobileFooterNav() {
         <MobileFooterNavItem
           href={`${ROUTES.myShift}`}
           icon="calendar"
-          label="シフト"
+          label="マイシフト"
         />
         <MobileFooterNavItem
           href={`${ROUTES.settings}`}

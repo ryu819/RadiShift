@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import type { ShiftDisplayVisibility } from "@/constants/shift-display";
 import { APP_TIME_ZONE } from "@/constants/time-zone";
 import {
   type ActionState,
@@ -24,18 +25,22 @@ import { dayjs } from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 import type { DayOffAssignment } from "@/types/day-off-assignment";
 import type { DayOffType } from "@/types/day-off-type";
+import type { ModalityAssignment } from "@/types/modality-assignment";
 import type { ScheduleDay } from "@/types/schedule-day";
+import type { ScheduleMonth } from "@/types/schedule-month";
 import { WorkAssignment } from "@/types/work-assignment";
 import { WorkType } from "@/types/work-type";
 import { badgeStyle } from "@/utils/badge-style";
 
 type Props = {
   scheduleDay: ScheduleDay;
-  scheduleMonthId: number;
+  scheduleMonth: ScheduleMonth;
   dayOffTypes: DayOffType[];
   workTypes: WorkType[];
   dayOffAssignments: DayOffAssignment[];
   workAssignments: WorkAssignment[];
+  modalityAssignments: ModalityAssignment[];
+  shiftDisplayVisibility: ShiftDisplayVisibility;
   isLastColumn: boolean;
   isLastRow: boolean;
 };
@@ -48,11 +53,13 @@ type SelectedRequest = {
 
 export function ShiftRequestDialog({
   scheduleDay,
-  scheduleMonthId,
+  scheduleMonth,
   dayOffTypes,
   workTypes,
   dayOffAssignments,
   workAssignments,
+  modalityAssignments,
+  shiftDisplayVisibility,
   isLastColumn,
   isLastRow,
 }: Props) {
@@ -143,28 +150,50 @@ export function ShiftRequestDialog({
               )}
             </div>
 
-            <div className="my-2 min-h-5 flex flex-col items-center gap-1.5">
-              {workAssignments.map((workAssignment) => (
-                <Badge
-                  key={workAssignment.id}
-                  variant="outline"
-                  className="m-0 w-full  rounded-md font-semibold"
-                  style={badgeStyle(workAssignment.workType.colorCode)}
-                >
-                  {workAssignment.workType.name}
-                </Badge>
-              ))}
+            <div className="my-2 min-h-18 flex flex-col justify-center items-center gap-1.5">
+              {shiftDisplayVisibility.work &&
+                workAssignments.map((workAssignment) => (
+                  <Badge
+                    key={workAssignment.id}
+                    variant="outline"
+                    className="m-0 w-full  rounded-md font-semibold max-sm:text-[9px] max-sm:px-1"
+                    style={badgeStyle(workAssignment.workType.colorCode)}
+                  >
+                    <span className="overflow-hidden">
+                      {workAssignment.workType.name}
+                    </span>
+                  </Badge>
+                ))}
 
-              {dayOffAssignments.map((dayOffAssignment) => (
-                <Badge
-                  key={dayOffAssignment.id}
-                  variant="outline"
-                  className="m-0 w-full  rounded-md font-semibold"
-                  style={badgeStyle(dayOffAssignment.dayOffType.colorCode)}
-                >
-                  {dayOffAssignment.dayOffType.name}
-                </Badge>
-              ))}
+              {shiftDisplayVisibility.dayOff &&
+                dayOffAssignments.map((dayOffAssignment) => (
+                  <Badge
+                    key={dayOffAssignment.id}
+                    variant="outline"
+                    className="m-0 w-full  rounded-md font-semibold max-sm:text-[9px] max-sm:px-1"
+                    style={badgeStyle(dayOffAssignment.dayOffType.colorCode)}
+                  >
+                    <span className="overflow-hidden">
+                      {dayOffAssignment.dayOffType.name}
+                    </span>
+                  </Badge>
+                ))}
+
+              {shiftDisplayVisibility.modality &&
+                modalityAssignments.map((modalityAssignment) => (
+                  <Badge
+                    key={modalityAssignment.id}
+                    variant="outline"
+                    className="m-0 w-full rounded-md font-semibold max-sm:text-[9px] max-sm:px-1"
+                    style={badgeStyle(
+                      modalityAssignment.modalityType.colorCode,
+                    )}
+                  >
+                    <span className="overflow-hidden">
+                      {modalityAssignment.modalityType.name}
+                    </span>
+                  </Badge>
+                ))}
             </div>
 
             {dayOffTypes.some((dayOffType) =>
@@ -207,7 +236,11 @@ export function ShiftRequestDialog({
 
         <form action={formAction} className="space-y-5">
           <input type="hidden" name="scheduleDayId" value={scheduleDay.id} />
-          <input type="hidden" name="scheduleMonthId" value={scheduleMonthId} />
+          <input
+            type="hidden"
+            name="scheduleMonthId"
+            value={scheduleMonth.id}
+          />
 
           {selectedRequest && (
             <>

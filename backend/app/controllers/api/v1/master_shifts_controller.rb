@@ -36,10 +36,21 @@ module Api
                                   :id
                                 )
 
+        modality_assignments = ModalityAssignment
+                                 .where(schedule_day: schedule_days)
+                                 .includes(:modality_type)
+                                 .order(
+                                   :user_id,
+                                   :schedule_day_id,
+                                   :created_at,
+                                   :id
+                                 )
+
         members = members_for(
           schedule_month,
           work_assignments,
-          day_off_assignments
+          day_off_assignments,
+          modality_assignments
         )
 
         render json: {
@@ -49,7 +60,9 @@ module Api
           work_assignments_by_user_and_day:
             group_work_assignments_by_user_and_day(work_assignments),
           day_off_assignments_by_user_and_day:
-            group_day_off_assignments_by_user_and_day(day_off_assignments)
+            group_day_off_assignments_by_user_and_day(day_off_assignments),
+          modality_assignments_by_user_and_day:
+    group_modality_assignments_by_user_and_day(modality_assignments)
         }, status: :ok
       end
 
@@ -62,7 +75,7 @@ module Api
         schedule_months.where(is_published: true)
       end
 
-      def members_for(schedule_month, work_assignments, day_off_assignments)
+      def members_for(schedule_month, work_assignments, day_off_assignments, modality_assignments)
         current_members = current_user.facility.users
                             .where(is_deleted: false)
                             .order(:id)
@@ -72,11 +85,13 @@ module Api
         current_member_ids = current_members.map(&:id)
         work_assignment_user_ids = work_assignments.map(&:user_id)
         day_off_assignment_user_ids = day_off_assignments.map(&:user_id)
+        modality_assignment_user_ids = modality_assignments.map(&:user_id)
 
         member_ids =
           current_member_ids +
           work_assignment_user_ids +
-          day_off_assignment_user_ids
+          day_off_assignment_user_ids +
+          modality_assignment_user_ids
 
         User
           .where(id: member_ids.uniq)
@@ -137,6 +152,25 @@ module Api
                         :color_code,
                         :uses_slot
                       ]
+                    }
+                  }
+                )
+              end
+          end
+      end
+
+      def group_modality_assignments_by_user_and_day(modality_assignments)
+        modality_assignments
+          .group_by(&:user_id)
+          .transform_values do |user_modality_assignments|
+            user_modality_assignments
+              .group_by(&:schedule_day_id)
+              .transform_values do |day_assignments|
+                day_assignments.as_json(
+                  only: [:id, :schedule_day_id, :user_id],
+                  include: {
+                    modality_type: {
+                      only: [:id, :name, :color_code]
                     }
                   }
                 )

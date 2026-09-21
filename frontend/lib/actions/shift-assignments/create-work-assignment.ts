@@ -30,9 +30,9 @@ export async function createWorkAssignmentForm(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const scheduleDayId = formData.get("scheduleDayId");
-  const userId = formData.get("userId");
-  const workTypeId = formData.get("workTypeId");
+  const scheduleDayId = Number(formData.get("scheduleDayId"));
+  const userId = Number(formData.get("userId"));
+  const workTypeId = Number(formData.get("workTypeId"));
 
   const jwt = await getJwt();
   if (!jwt) redirect("/");

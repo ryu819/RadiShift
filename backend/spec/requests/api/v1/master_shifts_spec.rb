@@ -178,6 +178,39 @@ RSpec.describe "Api::V1::MasterShifts", type: :request do
       end
     end
 
+    context "管理者がモダリティ割当のある月を指定した時" do
+      let(:user) { create(:user, :admin) }
+      let(:schedule_month) { create(:schedule_month, facility: user.facility, is_published: false) }
+      let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }
+      let(:member) { create(:user, facility: user.facility) }
+      let(:modality_type) { create(:modality_type, facility: user.facility) }
+      let!(:modality_assignment) { create(:modality_assignment, user: member, schedule_day: schedule_day, modality_type: modality_type) }
+
+      it "モダリティ割当を返す" do
+        subject
+        res = JSON.parse(response.body)
+        assignment = res["modality_assignments_by_user_and_day"][member.id.to_s][schedule_day.id.to_s].first
+        expect(assignment["id"]).to eq(modality_assignment.id)
+        expect(assignment["modality_type"]["id"]).to eq(modality_type.id)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "当月にモダリティ割当だけ残る脱退メンバーがいる時" do
+      let(:user) { create(:user, :admin) }
+      let(:schedule_month) { create(:schedule_month, facility: user.facility, date: Date.current.beginning_of_month) }
+      let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.current.beginning_of_month) }
+      let(:left_member) { create(:user, facility: nil) }
+      let!(:modality_assignment) { create(:modality_assignment, user: left_member, schedule_day: schedule_day) }
+
+      it "脱退メンバーをmembersに含める" do
+        subject
+        res = JSON.parse(response.body)
+        member_ids = res["members"].map { |member| member["id"] }
+        expect(member_ids).to include(left_member.id)
+      end
+    end
+
     context "削除済みユーザーに過去の勤務割当がある時" do
       let(:user) { create(:user, :admin) }
       let(:date) { Date.current.prev_month.beginning_of_month }

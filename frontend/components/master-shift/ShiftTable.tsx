@@ -4,6 +4,8 @@ import { LockKeyhole } from "lucide-react";
 import { useState } from "react";
 
 import { DayOffTypeItem } from "@/components/master-shift/DayOffTypeItem";
+import { ModalityTypeItem } from "@/components/master-shift/ModalityTypeItem";
+import { ShiftDisplayToggles } from "@/components/master-shift/ShiftDisplayToggles";
 import { WorkTypeItem } from "@/components/master-shift/WorkTypeItem";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,10 +18,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useShiftDisplayVisibility } from "@/hooks/use-shift-display-visibility";
 import { cn } from "@/lib/utils";
 import type { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
 import type { DayOffType } from "@/types/day-off-type";
 import type { Member } from "@/types/member";
+import type { ModalityAssignmentsByUserAndDay } from "@/types/modality-assignment";
+import type { ModalityType } from "@/types/modality-type";
 import type { ScheduleDay } from "@/types/schedule-day";
 import type { WorkAssignmentsByUserAndDay } from "@/types/work-assignment";
 import type { WorkType } from "@/types/work-type";
@@ -29,8 +34,10 @@ type Props = {
   members: Member[];
   workTypes: WorkType[];
   dayOffTypes: DayOffType[];
+  modalityTypes: ModalityType[];
   workAssignmentsByUserAndDay: WorkAssignmentsByUserAndDay;
   dayOffAssignmentsByUserAndDay: DayOffAssignmentsByUserAndDay;
+  modalityAssignmentsByUserAndDay: ModalityAssignmentsByUserAndDay;
   days: ScheduleDay[];
   year: number;
   month: number;
@@ -45,8 +52,10 @@ export function ShiftTable({
   members,
   workTypes,
   dayOffTypes,
+  modalityTypes,
   workAssignmentsByUserAndDay,
   dayOffAssignmentsByUserAndDay,
+  modalityAssignmentsByUserAndDay,
   days,
   year,
   month,
@@ -54,103 +63,152 @@ export function ShiftTable({
 }: Props) {
   const [openCellKey, setOpenCellKey] = useState<string | null>(null);
 
+  const { visibility, updateVisibility } = useShiftDisplayVisibility();
+
   const activeWorkTypeIds = workTypes.map((workType) => workType.id);
 
   const activeDayOffTypeIds = dayOffTypes.map((dayOffType) => dayOffType.id);
 
+  const activeModalityTypeIds = modalityTypes.map(
+    (modalityType) => modalityType.id,
+  );
+
   return (
-    <div
-      className=" flex-1 overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm"
-      onScroll={() => setOpenCellKey(null)}
-    >
-      <table className="w-max min-w-full border-collapse text-xs md:text-sm">
-        <thead className="sticky top-0 z-20">
-          <tr>
-            <th className="sticky left-0 z-30  border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center text-xs font-semibold md:p-1 md:text-sm">
-              スタッフ
-            </th>
-
-            {days.map((day) => (
-              <th
-                key={day.date}
-                className="w-10 min-w-10 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center last:border-r-0 md:w-14 md:min-w-14 md:p-1"
-              >
-                <div
-                  className={cn(
-                    "text-xs font-bold leading-none md:text-sm",
-                    day.isSunday && "text-red-500",
-                    day.isSaturday && "text-blue-500",
-                  )}
-                >
-                  {day.day}
-                </div>
-
-                <div
-                  className={cn(
-                    "mt-0.5 text-[9px] font-medium md:mt-1 md:text-[10px]",
-                    day.isSunday && "text-red-500",
-                    day.isSaturday && "text-blue-500",
-                  )}
-                >
-                  {day.weekdayLabel}
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {members.map((member, rowIndex) => (
-            <tr key={member.id}>
-              <th
-                className={cn(
-                  "sticky left-0 z-10 border-r border-b border-slate-200 p-0.5 text-center text-xs font-medium md:p-1 md:text-sm",
-                  rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
-                )}
-              >
-                <span className="block truncate">{member.name}</span>
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <ShiftDisplayToggles
+        visibility={visibility}
+        onChange={updateVisibility}
+      />
+      <div
+        className=" flex-1 overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm"
+        onScroll={() => setOpenCellKey(null)}
+      >
+        <table className="w-max min-w-full border-collapse text-xs md:text-sm">
+          <thead className="sticky top-0 z-20">
+            <tr>
+              <th className="sticky left-0 z-30  border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center text-xs font-semibold md:p-1 md:text-sm">
+                スタッフ
               </th>
 
-              {days.map((day) => {
-                const cellKey = getCellKey(member.id, day.date);
+              {days.map((day) => (
+                <th
+                  key={day.date}
+                  className="w-10 min-w-10 border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center last:border-r-0 md:w-14 md:min-w-14 md:p-1"
+                >
+                  <div
+                    className={cn(
+                      "text-xs font-bold leading-none md:text-sm",
+                      day.isSunday && "text-red-500",
+                      day.isSaturday && "text-blue-500",
+                    )}
+                  >
+                    {day.day}
+                  </div>
 
-                const cellWorkAssignments =
-                  workAssignmentsByUserAndDay?.[String(member.id)]?.[
-                    String(day.id)
-                  ] ?? [];
+                  <div
+                    className={cn(
+                      "mt-0.5 text-[9px] font-medium md:mt-1 md:text-[10px]",
+                      day.isSunday && "text-red-500",
+                      day.isSaturday && "text-blue-500",
+                    )}
+                  >
+                    {day.weekdayLabel}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
 
-                const cellDayOffAssignments =
-                  dayOffAssignmentsByUserAndDay?.[String(member.id)]?.[
-                    String(day.id)
-                  ] ?? [];
+          <tbody>
+            {members.map((member, rowIndex) => (
+              <tr key={member.id}>
+                <th
+                  className={cn(
+                    "sticky left-0 z-10 border-r border-b border-slate-200 p-0.5 text-center text-xs font-medium md:p-1 md:text-sm",
+                    rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
+                  )}
+                >
+                  <span className="block truncate">{member.name}</span>
+                </th>
 
-                const inactiveWorkAssignments = cellWorkAssignments.filter(
-                  (workAssignment) =>
-                    !activeWorkTypeIds.includes(workAssignment.workType.id),
-                );
+                {days.map((day) => {
+                  const cellKey = getCellKey(member.id, day.date);
 
-                const inactiveDayOffAssignments = cellDayOffAssignments.filter(
-                  (dayOffAssignment) =>
-                    !activeDayOffTypeIds.includes(
-                      dayOffAssignment.dayOffType.id,
-                    ),
-                );
+                  const cellWorkAssignments =
+                    workAssignmentsByUserAndDay?.[String(member.id)]?.[
+                      String(day.id)
+                    ] ?? [];
 
-                const assignmentBadges = (
-                  <div className="flex flex-col items-center gap-0.5 md:gap-1">
-                    {cellWorkAssignments.map((workAssignment) =>
-                      isEditable && workAssignment.workRequestId != null ? (
-                        <Tooltip key={workAssignment.id}>
-                          <TooltipTrigger asChild>
+                  const cellDayOffAssignments =
+                    dayOffAssignmentsByUserAndDay?.[String(member.id)]?.[
+                      String(day.id)
+                    ] ?? [];
+
+                  const cellModalityAssignments =
+                    modalityAssignmentsByUserAndDay?.[String(member.id)]?.[
+                      String(day.id)
+                    ] ?? [];
+
+                  const inactiveWorkAssignments = cellWorkAssignments.filter(
+                    (workAssignment) =>
+                      !activeWorkTypeIds.includes(workAssignment.workType.id),
+                  );
+
+                  const inactiveDayOffAssignments =
+                    cellDayOffAssignments.filter(
+                      (dayOffAssignment) =>
+                        !activeDayOffTypeIds.includes(
+                          dayOffAssignment.dayOffType.id,
+                        ),
+                    );
+
+                  const inactiveModalityAssignments =
+                    cellModalityAssignments.filter(
+                      (modalityAssignment) =>
+                        !activeModalityTypeIds.includes(
+                          modalityAssignment.modalityType.id,
+                        ),
+                    );
+
+                  const assignmentBadges = (
+                    <div className="flex flex-col items-center gap-0.5 md:gap-1">
+                      {visibility.work &&
+                        cellWorkAssignments.map((workAssignment) =>
+                          isEditable && workAssignment.workRequestId != null ? (
+                            <Tooltip key={workAssignment.id}>
+                              <TooltipTrigger asChild>
+                                <Badge
+                                  variant="outline"
+                                  className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                                  style={badgeStyle(
+                                    workAssignment.workType.colorCode,
+                                  )}
+                                >
+                                  <LockKeyhole className="size-2.5" />
+
+                                  <span className="md:hidden">
+                                    {workAssignment.workType.name.slice(0, 1)}
+                                  </span>
+
+                                  <span className="hidden md:inline">
+                                    {workAssignment.workType.name}
+                                  </span>
+                                </Badge>
+                              </TooltipTrigger>
+
+                              <TooltipContent className="px-2 py-1.5 text-[10px]">
+                                <p>本人申請の割当</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
                             <Badge
+                              key={workAssignment.id}
                               variant="outline"
-                              className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                              className="h-[14px] rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
                               style={badgeStyle(
                                 workAssignment.workType.colorCode,
                               )}
                             >
-                              <LockKeyhole className="size-2.5" />
-
                               <span className="md:hidden">
                                 {workAssignment.workType.name.slice(0, 1)}
                               </span>
@@ -159,43 +217,50 @@ export function ShiftTable({
                                 {workAssignment.workType.name}
                               </span>
                             </Badge>
-                          </TooltipTrigger>
+                          ),
+                        )}
 
-                          <TooltipContent className="px-2 py-1.5 text-[10px]">
-                            <p>本人申請の割当</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ) : (
-                        <Badge
-                          key={workAssignment.id}
-                          variant="outline"
-                          className="h-[14px] rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
-                          style={badgeStyle(workAssignment.workType.colorCode)}
-                        >
-                          <span className="md:hidden">
-                            {workAssignment.workType.name.slice(0, 1)}
-                          </span>
+                      {visibility.dayOff &&
+                        cellDayOffAssignments.map((dayOffAssignment) =>
+                          isEditable &&
+                          dayOffAssignment.dayOffRequestId != null ? (
+                            <Tooltip key={dayOffAssignment.id}>
+                              <TooltipTrigger asChild>
+                                <Badge
+                                  variant="outline"
+                                  className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                                  style={badgeStyle(
+                                    dayOffAssignment.dayOffType.colorCode,
+                                  )}
+                                >
+                                  <LockKeyhole className="size-2.5" />
 
-                          <span className="hidden md:inline">
-                            {workAssignment.workType.name}
-                          </span>
-                        </Badge>
-                      ),
-                    )}
+                                  <span className="md:hidden">
+                                    {dayOffAssignment.dayOffType.name.slice(
+                                      0,
+                                      1,
+                                    )}
+                                  </span>
 
-                    {cellDayOffAssignments.map((dayOffAssignment) =>
-                      isEditable && dayOffAssignment.dayOffRequestId != null ? (
-                        <Tooltip key={dayOffAssignment.id}>
-                          <TooltipTrigger asChild>
+                                  <span className="hidden md:inline">
+                                    {dayOffAssignment.dayOffType.name}
+                                  </span>
+                                </Badge>
+                              </TooltipTrigger>
+
+                              <TooltipContent className="px-2 py-1.5 text-[10px]">
+                                <p>本人申請の割当</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
                             <Badge
+                              key={dayOffAssignment.id}
                               variant="outline"
                               className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
                               style={badgeStyle(
                                 dayOffAssignment.dayOffType.colorCode,
                               )}
                             >
-                              <LockKeyhole className="size-2.5" />
-
                               <span className="md:hidden">
                                 {dayOffAssignment.dayOffType.name.slice(0, 1)}
                               </span>
@@ -204,187 +269,234 @@ export function ShiftTable({
                                 {dayOffAssignment.dayOffType.name}
                               </span>
                             </Badge>
-                          </TooltipTrigger>
+                          ),
+                        )}
 
-                          <TooltipContent className="px-2 py-1.5 text-[10px]">
-                            <p>本人申請の割当</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ) : (
-                        <Badge
-                          key={dayOffAssignment.id}
-                          variant="outline"
-                          className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
-                          style={badgeStyle(
-                            dayOffAssignment.dayOffType.colorCode,
-                          )}
-                        >
-                          <span className="md:hidden">
-                            {dayOffAssignment.dayOffType.name.slice(0, 1)}
-                          </span>
-
-                          <span className="hidden md:inline">
-                            {dayOffAssignment.dayOffType.name}
-                          </span>
-                        </Badge>
-                      ),
-                    )}
-                  </div>
-                );
-
-                return (
-                  <td
-                    key={cellKey}
-                    className={cn(
-                      "h-10 w-10 border-r border-b border-slate-200 p-0 last:border-r-0 md:h-14 md:w-14",
-                      rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
-                    )}
-                  >
-                    {isEditable ? (
-                      <Popover
-                        open={openCellKey === cellKey}
-                        onOpenChange={(open) =>
-                          setOpenCellKey(open ? cellKey : null)
-                        }
-                      >
-                        <PopoverTrigger asChild>
-                          <button
-                            type="button"
-                            className="flex h-full w-full cursor-pointer items-center justify-center p-0.5 transition hover:bg-blue-50 active:bg-blue-50 md:p-1"
+                      {visibility.modality &&
+                        cellModalityAssignments.map((modalityAssignment) => (
+                          <Badge
+                            key={modalityAssignment.id}
+                            variant="outline"
+                            className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                            style={badgeStyle(
+                              modalityAssignment.modalityType.colorCode,
+                            )}
                           >
-                            {assignmentBadges}
-                          </button>
-                        </PopoverTrigger>
+                            <span className="md:hidden">
+                              {modalityAssignment.modalityType.name.slice(0, 1)}
+                            </span>
 
-                        <PopoverContent
-                          side="bottom"
-                          align="center"
-                          sideOffset={6}
-                          hideWhenDetached
-                          className="w-45 rounded-md border-slate-200 p-3 shadow-lg"
+                            <span className="hidden md:inline">
+                              {modalityAssignment.modalityType.name}
+                            </span>
+                          </Badge>
+                        ))}
+                    </div>
+                  );
+
+                  return (
+                    <td
+                      key={cellKey}
+                      className={cn(
+                        "h-10 w-10 border-r border-b border-slate-200 p-0 last:border-r-0 md:h-15 md:w-15",
+                        rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
+                      )}
+                    >
+                      {isEditable ? (
+                        <Popover
+                          open={openCellKey === cellKey}
+                          onOpenChange={(open) =>
+                            setOpenCellKey(open ? cellKey : null)
+                          }
                         >
-                          <div className="p-1">
-                            <p className="text-sm font-medium text-secondary">
-                              {member.name}
-                            </p>
+                          <PopoverTrigger asChild>
+                            <button
+                              type="button"
+                              className="flex h-full w-full cursor-pointer items-center justify-center p-0.5 transition hover:bg-blue-50 active:bg-blue-50 md:p-1"
+                            >
+                              {assignmentBadges}
+                            </button>
+                          </PopoverTrigger>
 
-                            <p className="mt-1 text-xs text-secondary">
-                              {`${year}年 ${month}月`}
-                              {day.day}日
-                            </p>
-                          </div>
+                          <PopoverContent
+                            side="bottom"
+                            align="center"
+                            sideOffset={6}
+                            hideWhenDetached
+                            className="w-130 rounded-md border-slate-200 p-3 shadow-lg"
+                          >
+                            <div className="p-1">
+                              <p className="text-sm font-medium text-secondary">
+                                {member.name}
+                              </p>
 
-                          <div className="mt-1 space-y-1">
-                            <p className="px-1 text-xs font-medium text-muted-foreground">
-                              勤務
-                            </p>
-
-                            <div>
-                              {workTypes.map((workType) => {
-                                const selectedWorkAssignment =
-                                  cellWorkAssignments.find(
-                                    (workAssignment) =>
-                                      workAssignment.workType.id ===
-                                      workType.id,
-                                  );
-
-                                return (
-                                  <WorkTypeItem
-                                    key={workType.id}
-                                    workType={workType}
-                                    selectedWorkAssignment={
-                                      selectedWorkAssignment
-                                    }
-                                    scheduleDayId={day.id}
-                                    userId={member.id}
-                                    memberName={member.name}
-                                    year={year}
-                                    month={month}
-                                    day={day.day}
-                                  />
-                                );
-                              })}
-
-                              {inactiveWorkAssignments.map((workAssignment) => (
-                                <WorkTypeItem
-                                  key={workAssignment.id}
-                                  workType={workAssignment.workType}
-                                  selectedWorkAssignment={workAssignment}
-                                  scheduleDayId={day.id}
-                                  userId={member.id}
-                                  memberName={member.name}
-                                  year={year}
-                                  month={month}
-                                  day={day.day}
-                                />
-                              ))}
+                              <p className="mt-1 text-xs text-secondary">
+                                {`${year}年 ${month}月`}
+                                {day.day}日
+                              </p>
                             </div>
-                          </div>
 
-                          <div className="my-1 border-t" />
+                            <div className="grid grid-cols-3 gap-4">
+                              <div className="space-y-1">
+                                <p className="px-1 text-xs font-medium text-muted-foreground">
+                                  勤務
+                                </p>
 
-                          <div className="space-y-1">
-                            <p className="px-1 text-xs font-medium text-muted-foreground">
-                              休み
-                            </p>
+                                <div>
+                                  {workTypes.map((workType) => {
+                                    const selectedWorkAssignment =
+                                      cellWorkAssignments.find(
+                                        (workAssignment) =>
+                                          workAssignment.workType.id ===
+                                          workType.id,
+                                      );
 
-                            <div>
-                              {dayOffTypes.map((dayOffType) => {
-                                const selectedDayOffAssignment =
-                                  cellDayOffAssignments.find(
-                                    (dayOffAssignment) =>
-                                      dayOffAssignment.dayOffType.id ===
-                                      dayOffType.id,
-                                  );
+                                    return (
+                                      <WorkTypeItem
+                                        key={workType.id}
+                                        workType={workType}
+                                        selectedWorkAssignment={
+                                          selectedWorkAssignment
+                                        }
+                                        scheduleDayId={day.id}
+                                        userId={member.id}
+                                        memberName={member.name}
+                                        year={year}
+                                        month={month}
+                                        day={day.day}
+                                      />
+                                    );
+                                  })}
 
-                                return (
-                                  <DayOffTypeItem
-                                    key={dayOffType.id}
-                                    dayOffType={dayOffType}
-                                    selectedDayOffAssignment={
-                                      selectedDayOffAssignment
-                                    }
-                                    scheduleDayId={day.id}
-                                    userId={member.id}
-                                    memberName={member.name}
-                                    year={year}
-                                    month={month}
-                                    day={day.day}
-                                  />
-                                );
-                              })}
+                                  {inactiveWorkAssignments.map(
+                                    (workAssignment) => (
+                                      <WorkTypeItem
+                                        key={workAssignment.id}
+                                        workType={workAssignment.workType}
+                                        selectedWorkAssignment={workAssignment}
+                                        scheduleDayId={day.id}
+                                        userId={member.id}
+                                        memberName={member.name}
+                                        year={year}
+                                        month={month}
+                                        day={day.day}
+                                      />
+                                    ),
+                                  )}
+                                </div>
+                              </div>
 
-                              {inactiveDayOffAssignments.map(
-                                (dayOffAssignment) => (
-                                  <DayOffTypeItem
-                                    key={dayOffAssignment.id}
-                                    dayOffType={dayOffAssignment.dayOffType}
-                                    selectedDayOffAssignment={dayOffAssignment}
-                                    scheduleDayId={day.id}
-                                    userId={member.id}
-                                    memberName={member.name}
-                                    year={year}
-                                    month={month}
-                                    day={day.day}
-                                  />
-                                ),
-                              )}
+                              <div className="space-y-1 border-l pl-4">
+                                <p className="px-1 text-xs font-medium text-muted-foreground">
+                                  休み
+                                </p>
+
+                                <div>
+                                  {dayOffTypes.map((dayOffType) => {
+                                    const selectedDayOffAssignment =
+                                      cellDayOffAssignments.find(
+                                        (dayOffAssignment) =>
+                                          dayOffAssignment.dayOffType.id ===
+                                          dayOffType.id,
+                                      );
+
+                                    return (
+                                      <DayOffTypeItem
+                                        key={dayOffType.id}
+                                        dayOffType={dayOffType}
+                                        selectedDayOffAssignment={
+                                          selectedDayOffAssignment
+                                        }
+                                        scheduleDayId={day.id}
+                                        userId={member.id}
+                                        memberName={member.name}
+                                        year={year}
+                                        month={month}
+                                        day={day.day}
+                                      />
+                                    );
+                                  })}
+
+                                  {inactiveDayOffAssignments.map(
+                                    (dayOffAssignment) => (
+                                      <DayOffTypeItem
+                                        key={dayOffAssignment.id}
+                                        dayOffType={dayOffAssignment.dayOffType}
+                                        selectedDayOffAssignment={
+                                          dayOffAssignment
+                                        }
+                                        scheduleDayId={day.id}
+                                        userId={member.id}
+                                        memberName={member.name}
+                                        year={year}
+                                        month={month}
+                                        day={day.day}
+                                      />
+                                    ),
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="space-y-1 border-l pl-4">
+                                <p className="px-1 text-xs font-medium text-muted-foreground">
+                                  モダリティ
+                                </p>
+
+                                <div>
+                                  {modalityTypes.map((modalityType) => {
+                                    const selectedModalityAssignment =
+                                      cellModalityAssignments.find(
+                                        (modalityAssignment) =>
+                                          modalityAssignment.modalityType.id ===
+                                          modalityType.id,
+                                      );
+
+                                    return (
+                                      <ModalityTypeItem
+                                        key={modalityType.id}
+                                        modalityType={modalityType}
+                                        selectedModalityAssignment={
+                                          selectedModalityAssignment
+                                        }
+                                        scheduleDayId={day.id}
+                                        userId={member.id}
+                                      />
+                                    );
+                                  })}
+
+                                  {inactiveModalityAssignments.map(
+                                    (modalityAssignment) => (
+                                      <ModalityTypeItem
+                                        key={modalityAssignment.id}
+                                        modalityType={
+                                          modalityAssignment.modalityType
+                                        }
+                                        selectedModalityAssignment={
+                                          modalityAssignment
+                                        }
+                                        scheduleDayId={day.id}
+                                        userId={member.id}
+                                      />
+                                    ),
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center p-0.5 md:p-1">
-                        {assignmentBadges}
-                      </div>
-                    )}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center p-0.5 md:p-1">
+                          {assignmentBadges}
+                        </div>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

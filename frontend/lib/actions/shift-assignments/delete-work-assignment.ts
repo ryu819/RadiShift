@@ -46,6 +46,7 @@ export async function deleteWorkAssignmentForm(
     if (isClientError(res.status)) {
       await setFlashToast({
         type: "failure",
+        message: data.message,
       });
       return {
         error: data.error,
