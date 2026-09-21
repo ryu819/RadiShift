@@ -61,7 +61,7 @@ Rails.application.routes.draw do
           patch :override
         end
       end
-      resources :modality_assignments, only: [:index, :create, :update, :destroy]
+      resources :modality_assignments, only: [:create, :update, :destroy]
       resources :day_off_requests, only: [:index, :create, :update, :destroy]
       resources :work_requests, only: [:index, :create, :update, :destroy]
       get "health_check", to: "health_check#index"

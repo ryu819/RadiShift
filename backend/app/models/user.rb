@@ -48,5 +48,9 @@ class User < ApplicationRecord
     day_off_assignments
       .where(schedule_day: future_schedule_days)
       .destroy_all
+
+    modality_assignments
+      .where(schedule_day: future_schedule_days)
+      .destroy_all
   end
 end

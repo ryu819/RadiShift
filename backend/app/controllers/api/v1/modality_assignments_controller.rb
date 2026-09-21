@@ -9,31 +9,6 @@ module Api
       before_action :validate_user_for_facility!, only: [:create]
       before_action :validate_modality_type_for_facility!, only: [:create, :update]
 
-      def index
-        modality_assignments = ModalityAssignment
-                                 .joins(schedule_day: :schedule_month)
-                                 .where(schedule_months: { facility_id: current_user.facility_id })
-                                 .includes(:schedule_day, :user, :modality_type)
-                                 .order(:schedule_day_id, :user_id)
-
-        render json: {
-          modality_assignments: modality_assignments.as_json(
-            only: [:id, :schedule_day_id, :user_id, :modality_type_id],
-            include: {
-              schedule_day: {
-                only: [:id, :date, :is_holiday]
-              },
-              user: {
-                only: [:id, :name]
-              },
-              modality_type: {
-                only: [:id, :name, :color_code]
-              }
-            }
-          )
-        }, status: :ok
-      end
-
       def create
         modality_assignment = ModalityAssignment.new(modality_assignment_params)
 
@@ -112,9 +87,9 @@ module Api
         modality_type_id = modality_assignment_params[:modality_type_id]
 
         return if modality_type_id.blank?
-        return if current_user.facility.modality_types.exists?(id: modality_type_id)
+        return if current_user.facility.modality_types.active.exists?(id: modality_type_id)
 
-        render json: { message: "モダリティパターンが存在しません。" }, status: :not_found
+        render json: { message: "モダリティが存在しません。" }, status: :not_found
       end
     end
   end

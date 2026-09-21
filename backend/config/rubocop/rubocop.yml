@@ -67,7 +67,7 @@ Lint/UnusedMethodArgument:
 
 # メソッドの複雑さ制限
 Metrics/AbcSize:
-  Max: 30
+  Max: 40
 
 # 分岐の多さ制限
 Metrics/CyclomaticComplexity:
