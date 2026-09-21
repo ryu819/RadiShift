@@ -22,7 +22,7 @@ type Props = {
 export async function MyShift({ searchParams }: Props) {
   const params = await searchParams;
 
-  const [scheduleMonths, dayOffTypes, workTypes, currentYearMonth] =
+  const [scheduleMonthList, dayOffTypes, workTypes, currentYearMonth] =
     await Promise.all([
       getScheduleMonths(),
       getDayOffTypes(),
@@ -30,9 +30,7 @@ export async function MyShift({ searchParams }: Props) {
       getCurrentYearMonth(),
     ]);
 
-  const scheduleMonthList = scheduleMonths ?? [];
-
-  if (scheduleMonthList.length === 0) {
+  if (!scheduleMonthList) {
     return <MyShiftsEmpty />;
   }
 
@@ -53,6 +51,10 @@ export async function MyShift({ searchParams }: Props) {
       getDayOffRequests(selectedScheduleMonth.id),
       getWorkRequests(selectedScheduleMonth.id),
     ]);
+
+  if (!scheduleMonth) {
+    return <MyShiftsEmpty />;
+  }
 
   return (
     <>
@@ -77,12 +79,12 @@ export async function MyShift({ searchParams }: Props) {
 
       <div className="space-y-4 ">
         <MyShiftsCalendar
-          scheduleDays={scheduleMonth?.scheduleDays ?? []}
-          selectedScheduleMonthId={selectedScheduleMonth.id}
+          scheduleMonth={scheduleMonth}
           dayOffTypes={dayOffTypes ?? []}
           workTypes={workTypes ?? []}
-          dayOffAssignment={myShiftAssignments?.dayOffAssignments ?? []}
+          dayOffAssignments={myShiftAssignments?.dayOffAssignments ?? []}
           workAssignments={myShiftAssignments?.workAssignments ?? []}
+          modalityAssignments={myShiftAssignments?.modalityAssignments ?? []}
         />
 
         <RequestsHistory
