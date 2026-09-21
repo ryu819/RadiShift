@@ -30,7 +30,7 @@ export async function MyShift({ searchParams }: Props) {
       getCurrentYearMonth(),
     ]);
 
-  if (!scheduleMonthList) {
+  if (!scheduleMonthList || scheduleMonthList.length === 0) {
     return <MyShiftsEmpty />;
   }
 

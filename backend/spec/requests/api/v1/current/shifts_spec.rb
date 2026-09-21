@@ -99,7 +99,7 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
       end
 
       context "モダリティ割当がある時" do
-        let(:modality_assignment) do
+        let!(:modality_assignment) do
           create(:modality_assignment, user: user, schedule_day: schedule_day, modality_type: create(:modality_type, facility: user.facility))
         end
         it "モダリティ割当を返さない" do

@@ -41,7 +41,7 @@ export async function MasterShifts({ searchParams }: Props) {
     ? Number(params.scheduleMonthId)
     : null;
 
-  if (!scheduleMonthList) {
+  if (!scheduleMonthList || scheduleMonthList.length === 0) {
     return <MasterShiftsEmpty />;
   }
 
