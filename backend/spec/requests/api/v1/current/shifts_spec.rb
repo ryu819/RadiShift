@@ -51,30 +51,66 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
     end
 
     context "シフトが公開前の時" do
-      let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
       let(:schedule_month_is_published) { false }
 
-      let(:work_request) do
-        create(:work_request, user: user, facility: user.facility, schedule_day: schedule_day, work_type: work_type, request_status: :approved)
+      context "勤務割当がある時" do
+        let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true) }
+        let(:work_request) do
+          create(:work_request, user: user, facility: user.facility, schedule_day: schedule_day, work_type: work_type, request_status: :approved)
+        end
+        let!(:request_based_work_assignment) do
+          create(:work_assignment, user: user, schedule_day: schedule_day, work_type: work_type, work_request: work_request)
+        end
+        let!(:admin_work_assignment) do
+          create(:work_assignment, user: user, schedule_day: schedule_day, work_type: create(:work_type, facility: user.facility), work_request: nil)
+        end
+
+        it "申請由来の勤務割当だけを返す" do
+          subject
+          res = JSON.parse(response.body)
+          work_assignment_ids = res["work_assignments"].map { |assignment| assignment["id"] }
+          expect(work_assignment_ids).to include(request_based_work_assignment.id)
+          expect(work_assignment_ids).not_to include(admin_work_assignment.id)
+          expect(response).to have_http_status(:ok)
+        end
       end
 
-      let!(:request_based_assignment) { create(:work_assignment, user: user, schedule_day: schedule_day, work_type: work_type, work_request: work_request) }
+      context "休み割当がある時" do
+        let(:day_off_type) { create(:day_off_type, facility: user.facility) }
+        let(:day_off_request) do
+          create(:day_off_request, user: user, facility: user.facility, schedule_day: schedule_day, day_off_type: day_off_type, request_status: :approved)
+        end
+        let!(:request_based_day_off_assignment) do
+          create(:day_off_assignment, user: user, schedule_day: schedule_day, day_off_type: day_off_type, day_off_request: day_off_request)
+        end
+        let!(:admin_day_off_assignment) do
+          create(:day_off_assignment, user: user, schedule_day: schedule_day, day_off_type: create(:day_off_type, facility: user.facility),
+                                      day_off_request: nil)
+        end
 
-      let!(:admin_assignment) do
-        create(:work_assignment, user: user, schedule_day: schedule_day, work_type: create(:work_type, facility: user.facility), work_request: nil)
+        it "申請由来の休み割当だけを返す" do
+          subject
+          res = JSON.parse(response.body)
+          day_off_assignment_ids = res["day_off_assignments"].map { |assignment| assignment["id"] }
+          expect(day_off_assignment_ids).to include(request_based_day_off_assignment.id)
+          expect(day_off_assignment_ids).not_to include(admin_day_off_assignment.id)
+          expect(response).to have_http_status(:ok)
+        end
       end
 
-      it "申請由来の勤務割当だけを返す" do
-        subject
-        res = JSON.parse(response.body)
-        work_assignment_ids = res["work_assignments"].map { |assignment| assignment["id"] }
-        expect(work_assignment_ids).to include(request_based_assignment.id)
-        expect(work_assignment_ids).not_to include(admin_assignment.id)
-        expect(response).to have_http_status(:ok)
+      context "モダリティ割当がある時" do
+        let(:modality_assignment) do
+          create(:modality_assignment, user: user, schedule_day: schedule_day, modality_type: create(:modality_type, facility: user.facility))
+        end
+        it "モダリティ割当を返さない" do
+          subject
+          res = JSON.parse(response.body)
+          expect(res["modality_assignments"]).to eq([])
+        end
       end
     end
 
-    context "休み割当がある時" do
+    context "休み割当がある公開済みシフトの時" do
       let(:day_off_type) { create(:day_off_type, facility: user.facility) }
       let(:other_user) { create(:user, facility: user.facility) }
       let(:other_schedule_month) do
@@ -105,6 +141,24 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
         expect(res["day_off_assignments"].first["user_id"]).to eq(user.id)
         expect(res["day_off_assignments"].first["schedule_day_id"]).to eq(schedule_day.id)
         expect(res["day_off_assignments"].first["day_off_type"]).to be_present
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "モダリティ割当がある公開済みシフトの時" do
+      let(:modality_type) { create(:modality_type, facility: user.facility) }
+      let(:other_user) { create(:user, facility: user.facility) }
+      let!(:own_modality_assignment) { create(:modality_assignment, user: user, schedule_day: schedule_day, modality_type: modality_type) }
+      let!(:other_user_modality_assignment) { create(:modality_assignment, user: other_user, schedule_day: schedule_day, modality_type: modality_type) }
+      it "選択月にある自分のモダリティ割当だけを返す" do
+        subject
+        res = JSON.parse(response.body)
+        modality_assignment_ids = res["modality_assignments"].map { |modality_assignment| modality_assignment["id"] }
+        expect(modality_assignment_ids).to include(own_modality_assignment.id)
+        expect(modality_assignment_ids).not_to include(other_user_modality_assignment.id)
+        expect(res["modality_assignments"].first["user_id"]).to eq(user.id)
+        expect(res["modality_assignments"].first["schedule_day_id"]).to eq(schedule_day.id)
+        expect(res["modality_assignments"].first["modality_type"]).to be_present
         expect(response).to have_http_status(:ok)
       end
     end

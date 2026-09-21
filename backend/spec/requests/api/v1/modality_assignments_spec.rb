@@ -6,38 +6,6 @@ RSpec.describe "Api::V1::ModalityAssignments", type: :request do
   let(:user) { create(:user, :with_facility) }
   let(:token) { login_and_get_token(user) }
 
-  describe "GET /api/v1/modality_assignments" do
-    subject { get(api_v1_modality_assignments_path, headers: { "Authorization": token }) }
-
-    context "施設に所属している時" do
-      let!(:modality_assignment) { create(:modality_assignment, facility: user.facility) }
-      let!(:other_facility_modality_assignment) { create(:modality_assignment, facility: create(:facility)) }
-
-      it "ログインユーザーの施設のモダリティ割当だけを返す" do
-        subject
-        res = JSON.parse(response.body)
-        modality_assignment_ids = res["modality_assignments"].map { |modality_assignment| modality_assignment["id"] }
-        expect(modality_assignment_ids).to include(modality_assignment.id)
-        expect(modality_assignment_ids).not_to include(other_facility_modality_assignment.id)
-        expect(res["modality_assignments"].first["schedule_day"]).to be_present
-        expect(res["modality_assignments"].first["user"]).to be_present
-        expect(res["modality_assignments"].first["modality_type"]).to be_present
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context "施設に所属していない時" do
-      let(:user) { create(:user) }
-
-      it "not_found エラーが返る" do
-        subject
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("施設に所属していません。")
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-  end
-
   describe "POST /api/v1/modality_assignments" do
     subject { post(api_v1_modality_assignments_path, params: params, headers: { "Authorization": token }) }
 
@@ -130,7 +98,18 @@ RSpec.describe "Api::V1::ModalityAssignments", type: :request do
         it "not_found エラーが返る" do
           expect { subject }.not_to change { ModalityAssignment.count }
           res = JSON.parse(response.body)
-          expect(res["message"]).to eq("モダリティパターンが存在しません。")
+          expect(res["message"]).to eq("モダリティが存在しません。")
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "無効化済みの modality_type_id を送る時" do
+        let(:modality_type) { create(:modality_type, facility: user.facility, is_active: false) }
+
+        it "not_found エラーが返る" do
+          expect { subject }.not_to change { ModalityAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("モダリティが存在しません。")
           expect(response).to have_http_status(:not_found)
         end
       end
@@ -198,7 +177,20 @@ RSpec.describe "Api::V1::ModalityAssignments", type: :request do
           original_modality_type = modality_assignment.modality_type
           subject
           res = JSON.parse(response.body)
-          expect(res["message"]).to eq("モダリティパターンが存在しません。")
+          expect(res["message"]).to eq("モダリティが存在しません。")
+          expect(modality_assignment.reload.modality_type).to eq(original_modality_type)
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "無効化済みの modality_type_id を送る時" do
+        let(:modality_type) { create(:modality_type, facility: user.facility, is_active: false) }
+
+        it "not_found エラーが返る" do
+          original_modality_type = modality_assignment.modality_type
+          subject
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("モダリティが存在しません。")
           expect(modality_assignment.reload.modality_type).to eq(original_modality_type)
           expect(response).to have_http_status(:not_found)
         end
@@ -269,6 +261,30 @@ RSpec.describe "Api::V1::ModalityAssignments", type: :request do
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("モダリティ割当を削除しました。")
         expect(response).to have_http_status(:ok)
+      end
+
+      context "脱退済みユーザーのモダリティ割当の時" do
+        before do
+          modality_assignment.user.update!(facility: nil)
+        end
+
+        it "モダリティ割当を削除できる" do
+          expect { subject }.to change { ModalityAssignment.count }.by(-1)
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("モダリティ割当を削除しました。")
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "モダリティタイプが無効化済みの時" do
+        before { modality_assignment.modality_type.update!(is_active: false) }
+
+        it "モダリティ割当を削除できる" do
+          expect { subject }.to change { ModalityAssignment.count }.by(-1)
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("モダリティ割当を削除しました。")
+          expect(response).to have_http_status(:ok)
+        end
       end
     end
 

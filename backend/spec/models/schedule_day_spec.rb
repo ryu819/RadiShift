@@ -29,7 +29,7 @@ RSpec.describe ScheduleDay, type: :model do
     end
   end
 
-  describe "holiday_nameメソッド" do
+  describe "#holiday_name" do
     context "祝日の時" do
       let(:schedule_day) { build(:schedule_day, date: Date.new(2026, 1, 1)) }
 
@@ -39,6 +39,7 @@ RSpec.describe ScheduleDay, type: :model do
     end
 
     context "祝日ではない時" do
+      let(:schedule_day) { build(:schedule_day, date: Date.new(2026, 7, 13)) }
       it "nil を返す" do
         expect(schedule_day.holiday_name).to be_nil
       end
