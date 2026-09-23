@@ -118,6 +118,12 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
         expect(response).to have_http_status(:created)
       end
 
+      it "未公開で作成した時はメンバー順を保存しない" do
+        subject
+        schedule_month = user.facility.schedule_months.find_by(year: 2026, month: 1)
+        expect(schedule_month.schedule_month_member_orders).to be_empty
+      end
+
       it "対象月の日数分 schedule_days が作成される" do
         subject
         schedule_month = user.facility.schedule_months.find_by(year: 2026, month: 1)
@@ -207,6 +213,29 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
         it "シフト公開済みに更新される" do
           subject
           expect(schedule_month.reload.is_published?).to be(true)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "公開時にメンバー順を保存する" do
+          subject
+
+          expect(schedule_month.reload.is_published?).to be(true)
+          expect(schedule_month.schedule_month_member_orders).to be_present
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "一度公開したシフトを再公開する時" do
+        let(:params) { { schedule_month: { is_published: true } } }
+
+        before do
+          schedule_month.update!(is_published: true)
+          schedule_month.capture_member_order!
+          schedule_month.update!(is_published: false)
+        end
+
+        it "保存済みのメンバー順を増やさない" do
+          expect { subject }.not_to change { schedule_month.schedule_month_member_orders.count }
           expect(response).to have_http_status(:ok)
         end
       end
