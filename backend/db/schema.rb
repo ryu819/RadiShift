@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_15_102812) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_22_071813) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -163,6 +163,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_102812) do
     t.index ["schedule_month_id"], name: "index_schedule_days_on_schedule_month_id"
   end
 
+  create_table "schedule_month_member_orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "display_order", null: false
+    t.bigint "schedule_month_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["schedule_month_id", "display_order"], name: "idx_on_schedule_month_id_display_order_f721427489"
+    t.index ["schedule_month_id", "user_id"], name: "idx_on_schedule_month_id_user_id_871bdf5db8", unique: true
+    t.index ["schedule_month_id"], name: "index_schedule_month_member_orders_on_schedule_month_id"
+    t.index ["user_id"], name: "index_schedule_month_member_orders_on_user_id"
+  end
+
   create_table "schedule_months", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "facility_id", null: false
@@ -180,6 +192,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_102812) do
     t.string "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "created_at", null: false
+    t.integer "display_order"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.bigint "facility_id"
@@ -193,6 +206,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_102812) do
     t.datetime "updated_at", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["facility_id", "display_order"], name: "index_users_on_facility_id_and_display_order"
     t.index ["facility_id"], name: "index_users_on_facility_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -263,6 +277,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_102812) do
   add_foreign_key "modality_assignments", "users"
   add_foreign_key "modality_types", "facilities"
   add_foreign_key "schedule_days", "schedule_months"
+  add_foreign_key "schedule_month_member_orders", "schedule_months"
+  add_foreign_key "schedule_month_member_orders", "users"
   add_foreign_key "schedule_months", "facilities"
   add_foreign_key "users", "facilities"
   add_foreign_key "work_assignments", "schedule_days"
