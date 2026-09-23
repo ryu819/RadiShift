@@ -8,6 +8,10 @@ FactoryBot.define do
     is_admin { false }
     confirmed_at { Time.current }
 
+    after(:build) do |user|
+      user.display_order = 1 if user.facility.present? && user.display_order.nil?
+    end
+
     trait :with_facility do
       facility
     end

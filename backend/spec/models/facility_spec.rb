@@ -110,6 +110,41 @@ RSpec.describe Facility, type: :model do
     end
   end
 
+  describe "#active_members_in_display_order" do
+    let(:facility) { create(:facility) }
+
+    let!(:second_member) { create(:user, facility: facility, display_order: 2) }
+
+    let!(:first_member) { create(:user, facility: facility, display_order: 1) }
+
+    let!(:deleted_member) { create(:user, facility: facility, display_order: 3, is_deleted: true) }
+
+    it "削除済みを除いてdisplay_order順で返す" do
+      expect(
+        facility.active_members_in_display_order.ids
+      ).to eq(
+        [
+          first_member.id,
+          second_member.id
+        ]
+      )
+    end
+  end
+
+  describe "#next_member_display_order" do
+    let(:facility) { create(:facility) }
+
+    before do
+      create(:user, facility: facility, display_order: 2)
+
+      create(:user, facility: facility, display_order: 5)
+    end
+
+    it "現在の最大値+1を返す" do
+      expect(facility.next_member_display_order).to eq(6)
+    end
+  end
+
   context "施設を削除したとき" do
     it "ユーザーのfacility_idがnilになる" do
       facility.destroy!

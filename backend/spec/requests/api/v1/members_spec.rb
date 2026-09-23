@@ -119,6 +119,7 @@ RSpec.describe "Api::V1::Members", type: :request do
           expect(res["message"]).to eq("ユーザーを脱退させました。")
           expect(member.facility).to be_nil
           expect(member.rules_text).to be_nil
+          expect(member.display_order).to be_nil
           expect(WorkAssignment.exists?(future_work_assignment.id)).to be false
           expect(response).to have_http_status(:ok)
         end

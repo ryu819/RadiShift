@@ -54,6 +54,37 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "display_order" do
+    context "施設に所属している時" do
+      let(:facility) { create(:facility) }
+      let(:user) { build(:user, facility: facility, display_order: 1) }
+
+      it "正の整数なら有効である" do
+        expect(user).to be_valid
+      end
+
+      it "nilなら無効である" do
+        user.display_order = nil
+        expect(user).to be_invalid
+      end
+    end
+
+    context "施設に所属していない時" do
+      let(:user) { build(:user, facility: nil) }
+      it "nilなら有効である" do
+        user.display_order = nil
+
+        expect(user).to be_valid
+      end
+
+      it "値が設定されていると無効である" do
+        user.display_order = 1
+
+        expect(user).to be_invalid
+      end
+    end
+  end
+
   describe "#cleanup_shift_data_for_facility_departure!" do
     subject(:cleanup) { user.cleanup_shift_data_for_facility_departure! }
 
