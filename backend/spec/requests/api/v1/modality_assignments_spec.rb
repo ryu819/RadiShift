@@ -265,7 +265,7 @@ RSpec.describe "Api::V1::ModalityAssignments", type: :request do
 
       context "脱退済みユーザーのモダリティ割当の時" do
         before do
-          modality_assignment.user.update!(facility: nil)
+          modality_assignment.user.update!(facility: nil, display_order: nil)
         end
 
         it "モダリティ割当を削除できる" do

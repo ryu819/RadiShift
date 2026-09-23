@@ -15,6 +15,11 @@ class User < ApplicationRecord
                                              message: "対応している画像形式（JPEG・PNG）のファイルを選択してください。" },
                              size: { less_than: 5.megabytes,
                                      message: "5MB以下の画像を選択してください。" }
+  validates :display_order, presence: true, numericality: { only_integer: true, greater_than: 0 },
+                            if: -> { facility.present? }
+
+  validates :display_order, absence: true, if: -> { facility.nil? }
+
   devise :database_authenticatable, :registerable, :validatable, :confirmable, :recoverable,
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 

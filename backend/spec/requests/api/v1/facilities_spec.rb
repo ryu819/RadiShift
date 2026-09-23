@@ -50,6 +50,11 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         expect(user.reload.is_admin).to be(true)
       end
 
+      it "施設を作成したユーザーのdisplay_orderが1になる" do
+        subject
+        expect(user.reload.display_order).to eq(1)
+      end
+
       context "バリデーションエラーの時" do
         let(:params) { { facility: { name: "" } } }
         it "作成に失敗する" do
@@ -201,6 +206,29 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      it "新規参加者を現在の末尾へ追加する" do
+        create(:user, facility: facility, display_order: 1)
+        create(:user, facility: facility, display_order: 2)
+
+        subject
+
+        expect(user.reload.display_order).to eq(3)
+      end
+
+      it "当月以降の固定済み月へ参加者を末尾追加する" do
+        existing_member = create(:user, facility: facility, display_order: 1)
+        future_month = create(:schedule_month, facility: facility, date: Date.current.next_month.beginning_of_month)
+        past_month = create(:schedule_month, facility: facility, date: Date.current.prev_month.beginning_of_month)
+
+        [past_month, future_month].each do |schedule_month|
+          create(:schedule_month_member_order, schedule_month: schedule_month, user: existing_member, display_order: 1)
+        end
+
+        subject
+        expect(future_month.schedule_month_member_orders.find_by(user: user).display_order).to eq(2)
+        expect(past_month.schedule_month_member_orders.find_by(user: user)).to be_nil
+      end
+
       context "invite_codeがない時" do
         let(:params) { {} }
 
@@ -265,6 +293,11 @@ RSpec.describe "Api::V1::Facilities", type: :request do
           expect(user.reload.facility).to be_nil
           expect(WorkAssignment.exists?(future_work_assignment.id)).to be false
           expect(response).to have_http_status(:ok)
+        end
+
+        it "脱退時にdisplay_orderを解除する" do
+          subject
+          expect(user.reload.display_order).to be_nil
         end
       end
 

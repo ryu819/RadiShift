@@ -80,14 +80,20 @@ module Api
       end
 
       def update
-        if @schedule_month.update(schedule_month_update_params)
-          render json: { message: "対象月のシフトを更新しました。" }, status: :ok
-        else
-          render json: {
-            message: "対象月のシフトの更新に失敗しました。",
-            errors: @schedule_month.errors.to_hash(true)
-          }, status: :unprocessable_content
+        current_user.facility.with_lock do
+          unless @schedule_month.update(schedule_month_update_params)
+            return render json: {
+              message: "対象月のシフトの更新に失敗しました。",
+              errors: @schedule_month.errors.to_hash(true)
+            }, status: :unprocessable_content
+          end
+
+          @schedule_month.capture_member_order! if @schedule_month.is_published?
         end
+
+        render json: {
+          message: "対象月のシフトを更新しました。"
+        }, status: :ok
       end
 
       def destroy

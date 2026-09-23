@@ -267,7 +267,7 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
 
       context "脱退済みユーザーの勤務割当の時" do
         before do
-          work_assignment.user.update!(facility: nil)
+          work_assignment.user.update!(facility: nil, display_order: nil)
         end
 
         it "勤務割当を削除できる" do

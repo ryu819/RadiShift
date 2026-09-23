@@ -265,7 +265,7 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
 
       context "脱退済みユーザーの休み割当の時" do
         before do
-          day_off_assignment.user.update!(facility: nil)
+          day_off_assignment.user.update!(facility: nil, display_order: nil)
         end
 
         it "休み割当を削除できる" do

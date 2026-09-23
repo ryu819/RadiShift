@@ -140,6 +140,7 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         user.reload
         expect(user.facility).to be_nil
         expect(user.rules_text).to be_nil
+        expect(user.display_order).to be_nil
         expect(user.avatar_image).not_to be_attached
         expect(response).to have_http_status(:ok)
       end

@@ -102,4 +102,46 @@ RSpec.describe ScheduleMonth, type: :model do
       expect(schedule_month).to be_invalid
     end
   end
+
+  describe "#capture_member_order!" do
+    let(:facility) { create(:facility) }
+    let(:schedule_month) { create(:schedule_month, facility: facility) }
+    let!(:first_member) { create(:user, facility: facility, display_order: 1) }
+    let!(:second_member) { create(:user, facility: facility, display_order: 2) }
+
+    it "現在の施設メンバー順を保存する" do
+      schedule_month.capture_member_order!
+
+      orders = schedule_month.schedule_month_member_orders.order(:display_order)
+
+      expect(orders.map(&:user_id)).to eq([first_member.id, second_member.id])
+    end
+
+    it "すでに固定されている場合は上書きしない" do
+      schedule_month.capture_member_order!
+      original_orders = schedule_month.schedule_month_member_orders.order(:display_order).pluck(:user_id, :display_order)
+      first_member.update!(display_order: 2)
+      second_member.update!(display_order: 1)
+      schedule_month.capture_member_order!
+      expect(schedule_month.schedule_month_member_orders.order(:display_order).pluck(:user_id, :display_order)).to eq(original_orders)
+    end
+  end
+
+  describe "#append_member_to_fixed_order!" do
+    let(:facility) { create(:facility) }
+    let(:schedule_month) { create(:schedule_month, facility: facility) }
+    let(:existing_member) { create(:user, facility: facility, display_order: 1) }
+    let(:new_member) { create(:user, facility: facility, display_order: 2) }
+    before { create(:schedule_month_member_order, schedule_month: schedule_month, user: existing_member, display_order: 1) }
+
+    it "固定済み順の末尾へ追加する" do
+      schedule_month.append_member_to_fixed_order!(new_member)
+      expect(schedule_month.schedule_month_member_orders.find_by(user: new_member).display_order).to eq(2)
+    end
+
+    it "すでに固定順に存在する場合は元の順番を維持する" do
+      schedule_month.append_member_to_fixed_order!(existing_member)
+      expect(schedule_month.schedule_month_member_orders.find_by(user: existing_member).display_order).to eq(1)
+    end
+  end
 end

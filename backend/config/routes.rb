@@ -38,6 +38,10 @@ Rails.application.routes.draw do
                               module: :facilities
       end
       resources :members, only: [:index, :update, :destroy] do
+        collection do
+          patch :reorder
+        end
+
         member do
           patch :add_admin
           patch :remove_admin

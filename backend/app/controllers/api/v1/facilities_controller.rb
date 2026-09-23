@@ -23,7 +23,7 @@ module Api
                           status: :unprocessable_content
           end
 
-          current_user.update!(facility: facility, is_admin: true)
+          current_user.update!(facility: facility, is_admin: true, display_order: 1)
         end
 
         render json: { message: "新規施設を作成しました。" }, status: :created
@@ -38,12 +38,18 @@ module Api
       end
 
       def destroy
-        Facility.transaction do
-          current_facility.users.where(is_admin: true).find_each do |user|
-            user.update!(is_admin: false)
+        current_facility.with_lock do
+          current_facility.users.find_each do |user|
+            user.update!(
+              facility: nil,
+              display_order: nil,
+              is_admin: false
+            )
           end
+
+          current_facility.destroy!
         end
-        current_facility.destroy!
+
         render json: { message: "施設を削除しました。" }, status: :ok
       end
 
@@ -58,17 +64,33 @@ module Api
 
         return render json: { message: "招待コードの有効期限が切れています。" }, status: :gone if facility.invite_expires_at.past?
 
-        current_user.update!(facility: facility)
+        facility.with_lock do
+          current_user.with_lock do
+            current_user.update!(
+              facility: facility,
+              display_order: facility.next_member_display_order
+            )
 
+            fixed_schedule_months_from_current_month(facility).find_each do |schedule_month|
+              schedule_month.append_member_to_fixed_order!(current_user)
+            end
+          end
+        end
         render json: { message: "施設に参加しました。" }, status: :ok
       end
 
       def leave
         return render json: { message: "管理者は脱退できません。（管理者権限の移譲が必要です。）" }, status: :forbidden if current_user.is_admin?
 
-        current_user.with_lock do
-          current_user.cleanup_shift_data_for_facility_departure!
-          current_user.update!(facility: nil)
+        current_facility.with_lock do
+          current_user.with_lock do
+            current_user.cleanup_shift_data_for_facility_departure!
+
+            current_user.update!(
+              facility: nil,
+              display_order: nil
+            )
+          end
         end
 
         render json: { message: "施設を脱退しました。" }, status: :ok
@@ -82,6 +104,19 @@ module Api
 
       def current_facility
         current_user.facility
+      end
+
+      def fixed_schedule_months_from_current_month(facility)
+        current_month = Date.current.beginning_of_month
+
+        facility.schedule_months
+          .where(
+            "year > :year OR (year = :year AND month >= :month)",
+            year: current_month.year,
+            month: current_month.month
+          )
+          .joins(:schedule_month_member_orders)
+          .distinct
       end
     end
   end
