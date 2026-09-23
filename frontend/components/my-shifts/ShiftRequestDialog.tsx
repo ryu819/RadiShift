@@ -150,13 +150,13 @@ export function ShiftRequestDialog({
               )}
             </div>
 
-            <div className="my-2 min-h-18 flex flex-col justify-center items-center gap-1.5">
+            <div className="my-1 sm:my-2 min-h-12 sm:min-h-17 flex flex-col justify-center items-center gap-0.5 sm:gap-1">
               {shiftDisplayVisibility.work &&
                 workAssignments.map((workAssignment) => (
                   <Badge
                     key={workAssignment.id}
                     variant="outline"
-                    className="m-0 w-full  rounded-md font-semibold max-sm:text-[9px] max-sm:px-1"
+                    className=" w-full px-1 rounded-md font-semibold max-sm:text-[9px] max-sm:h-[14px]"
                     style={badgeStyle(workAssignment.workType.colorCode)}
                   >
                     <span className="overflow-hidden">
@@ -170,7 +170,7 @@ export function ShiftRequestDialog({
                   <Badge
                     key={dayOffAssignment.id}
                     variant="outline"
-                    className="m-0 w-full  rounded-md font-semibold max-sm:text-[9px] max-sm:px-1"
+                    className="w-full px-1 rounded-md font-semibold max-sm:text-[9px] max-sm:h-[14px]"
                     style={badgeStyle(dayOffAssignment.dayOffType.colorCode)}
                   >
                     <span className="overflow-hidden">
@@ -184,7 +184,7 @@ export function ShiftRequestDialog({
                   <Badge
                     key={modalityAssignment.id}
                     variant="outline"
-                    className="m-0 w-full rounded-md font-semibold max-sm:text-[9px] max-sm:px-1"
+                    className="w-full px-1 rounded-md font-semibold max-sm:text-[9px] max-sm:h-[14px]"
                     style={badgeStyle(
                       modalityAssignment.modalityType.colorCode,
                     )}

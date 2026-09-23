@@ -171,7 +171,7 @@ export function ShiftTable({
                     );
 
                   const assignmentBadges = (
-                    <div className="flex flex-col items-center gap-0.5 md:gap-1">
+                    <div className="flex flex-col w-11 items-center gap-0.5 md:gap-1">
                       {visibility.work &&
                         cellWorkAssignments.map((workAssignment) =>
                           isEditable && workAssignment.workRequestId != null ? (
@@ -179,18 +179,14 @@ export function ShiftTable({
                               <TooltipTrigger asChild>
                                 <Badge
                                   variant="outline"
-                                  className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                                  className="h-[14px] max-w-full gap-0 rounded-md px-1 py-0 text-[9px] md:text-[10px]  font-semibold leading-none md:px-1.5 md:py-0.5"
                                   style={badgeStyle(
                                     workAssignment.workType.colorCode,
                                   )}
                                 >
                                   <LockKeyhole className="size-2.5" />
 
-                                  <span className="md:hidden">
-                                    {workAssignment.workType.name.slice(0, 1)}
-                                  </span>
-
-                                  <span className="hidden md:inline">
+                                  <span className="overflow-hidden">
                                     {workAssignment.workType.name}
                                   </span>
                                 </Badge>
@@ -204,16 +200,12 @@ export function ShiftTable({
                             <Badge
                               key={workAssignment.id}
                               variant="outline"
-                              className="h-[14px] rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                              className="h-[14px] max-w-full rounded-md px-1 py-0 text-[9px] md:text-[10px] font-semibold leading-none  md:px-1.5 md:py-0.5"
                               style={badgeStyle(
                                 workAssignment.workType.colorCode,
                               )}
                             >
-                              <span className="md:hidden">
-                                {workAssignment.workType.name.slice(0, 1)}
-                              </span>
-
-                              <span className="hidden md:inline">
+                              <span className="overflow-hidden">
                                 {workAssignment.workType.name}
                               </span>
                             </Badge>
@@ -228,21 +220,14 @@ export function ShiftTable({
                               <TooltipTrigger asChild>
                                 <Badge
                                   variant="outline"
-                                  className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                                  className="h-[14px] max-w-full gap-0 rounded-md px-1 py-0 text-[9px] md:text-[10px]  font-semibold leading-none md:px-1.5 md:py-0.5"
                                   style={badgeStyle(
                                     dayOffAssignment.dayOffType.colorCode,
                                   )}
                                 >
                                   <LockKeyhole className="size-2.5" />
 
-                                  <span className="md:hidden">
-                                    {dayOffAssignment.dayOffType.name.slice(
-                                      0,
-                                      1,
-                                    )}
-                                  </span>
-
-                                  <span className="hidden md:inline">
+                                  <span className="overflow-hidden">
                                     {dayOffAssignment.dayOffType.name}
                                   </span>
                                 </Badge>
@@ -256,16 +241,12 @@ export function ShiftTable({
                             <Badge
                               key={dayOffAssignment.id}
                               variant="outline"
-                              className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                              className="h-[14px] max-w-full gap-0 rounded-md px-1 py-0 text-[9px] md:text-[10px]  font-semibold leading-none md:px-1.5 md:py-0.5"
                               style={badgeStyle(
                                 dayOffAssignment.dayOffType.colorCode,
                               )}
                             >
-                              <span className="md:hidden">
-                                {dayOffAssignment.dayOffType.name.slice(0, 1)}
-                              </span>
-
-                              <span className="hidden md:inline">
+                              <span className="overflow-hidden">
                                 {dayOffAssignment.dayOffType.name}
                               </span>
                             </Badge>
@@ -277,16 +258,12 @@ export function ShiftTable({
                           <Badge
                             key={modalityAssignment.id}
                             variant="outline"
-                            className="h-[14px] gap-0 rounded px-1 py-0 text-[10px] font-semibold leading-none md:rounded-md md:px-1.5 md:py-0.5"
+                            className="h-[14px] max-w-full  gap-0 rounded-md px-1 py-0 text-[9px] md:text-[10px]   font-semibold leading-none  md:px-1.5 md:py-0.5"
                             style={badgeStyle(
                               modalityAssignment.modalityType.colorCode,
                             )}
                           >
-                            <span className="md:hidden">
-                              {modalityAssignment.modalityType.name.slice(0, 1)}
-                            </span>
-
-                            <span className="hidden md:inline">
+                            <span className="overflow-hidden">
                               {modalityAssignment.modalityType.name}
                             </span>
                           </Badge>
@@ -298,7 +275,7 @@ export function ShiftTable({
                     <td
                       key={cellKey}
                       className={cn(
-                        "h-10 w-10 border-r border-b border-slate-200 p-0 last:border-r-0 md:h-15 md:w-15",
+                        "h-13 w-13 border-r border-b border-slate-200 p-0 last:border-r-0 md:h-15 md:max-w-15",
                         rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
                       )}
                     >
