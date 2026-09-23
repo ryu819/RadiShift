@@ -27,30 +27,26 @@ module Api
         end
 
         def destroy
-          return render json: { message: "管理者は削除できません。（管理者権限の移譲が必要です。）" }, status: :forbidden if current_user.is_admin?
+          if current_user.is_admin?
+            return render json: {
+              message: "管理者は削除できません。（管理者権限の移譲が必要です。）"
+            }, status: :forbidden
+          end
 
           random_password = SecureRandom.urlsafe_base64(32)
 
-          current_user.with_lock do
-            current_user.cleanup_shift_data_for_facility_departure! if current_user.facility
+          facility = current_user.facility
 
-            current_user.avatar_image.purge if current_user.avatar_image.attached?
-
-            current_user.skip_reconfirmation!
-
-            current_user.update!(
-              facility_id: nil,
-              email: "deleted_user_#{current_user.id}@example.invalid",
-              password: random_password,
-              password_confirmation: random_password,
-              reset_password_token: nil,
-              reset_password_sent_at: nil,
-              confirmation_token: nil,
-              confirmation_sent_at: nil,
-              unconfirmed_email: nil,
-              rules_text: nil,
-              is_deleted: true
-            )
+          if facility
+            facility.with_lock do
+              current_user.with_lock do
+                destroy_current_user!(random_password)
+              end
+            end
+          else
+            current_user.with_lock do
+              destroy_current_user!(random_password)
+            end
           end
 
           render json: { message: "アカウントを削除しました。" }, status: :ok
@@ -81,6 +77,29 @@ module Api
           rails_representation_url(
             current_user.avatar_image.variant(:avatar),
             host: ENV.fetch("APP_HOST")
+          )
+        end
+
+        def destroy_current_user!(random_password)
+          current_user.cleanup_shift_data_for_facility_departure! if current_user.facility
+
+          current_user.avatar_image.purge if current_user.avatar_image.attached?
+
+          current_user.skip_reconfirmation!
+
+          current_user.update!(
+            facility_id: nil,
+            display_order: nil,
+            email: "deleted_user_#{current_user.id}@example.invalid",
+            password: random_password,
+            password_confirmation: random_password,
+            reset_password_token: nil,
+            reset_password_sent_at: nil,
+            confirmation_token: nil,
+            confirmation_sent_at: nil,
+            unconfirmed_email: nil,
+            rules_text: nil,
+            is_deleted: true
           )
         end
       end

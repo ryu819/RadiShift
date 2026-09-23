@@ -32,13 +32,18 @@ module Api
       def destroy
         return render json: { message: "管理者は脱退させられません。先に管理者権限を解除してください。" }, status: :forbidden if @member.is_admin?
 
-        @member.with_lock do
-          @member.cleanup_shift_data_for_facility_departure!
+        facility = current_user.facility
 
-          @member.update!(
-            facility_id: nil,
-            rules_text: nil
-          )
+        facility.with_lock do
+          @member.with_lock do
+            @member.cleanup_shift_data_for_facility_departure!
+
+            @member.update!(
+              facility_id: nil,
+              display_order: nil,
+              rules_text: nil
+            )
+          end
         end
 
         render json: { message: "ユーザーを脱退させました。" }, status: :ok
