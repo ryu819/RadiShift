@@ -23,6 +23,16 @@ RSpec.describe "Api::V1::Members", type: :request do
         expect(user_ids).not_to include(deleted_member.id)
         expect(response).to have_http_status(:ok)
       end
+
+      it "display_order順でユーザー一覧を返す" do
+        user.update!(display_order: 2)
+        member.update!(display_order: 4)
+        first_member = create(:user, facility: user.facility, display_order: 1)
+        third_member = create(:user, facility: user.facility, display_order: 3)
+        subject
+        res = JSON.parse(response.body)
+        expect(res.map { |member| member["id"] }).to eq([first_member.id, user.id, third_member.id, member.id])
+      end
     end
 
     context "施設に所属していない時" do
@@ -308,6 +318,63 @@ RSpec.describe "Api::V1::Members", type: :request do
       it "not_found エラーが返る" do
         subject
         expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe "PATCH /api/v1/members/reorder" do
+    subject { patch(reorder_api_v1_members_path, params: params, headers: { "Authorization": token }) }
+
+    let!(:second_member) { create(:user, facility: user.facility, display_order: 2) }
+    let!(:third_member) { create(:user, facility: user.facility, display_order: 3) }
+
+    context "管理者である時" do
+      let(:params) { { member_ids: [third_member.id, user.id, second_member.id] } }
+
+      it "指定した順番でdisplay_orderを更新する" do
+        subject
+        expect(third_member.reload.display_order).to eq(1)
+        expect(user.reload.display_order).to eq(2)
+        expect(second_member.reload.display_order).to eq(3)
+        expect(response).to have_http_status(:ok)
+      end
+
+      context "IDが重複している時" do
+        let(:params) { { member_ids: [user.id, second_member.id, second_member.id] } }
+
+        it "unprocessable_contentを返す" do
+          subject
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
+      context "一部メンバーが含まれていない時" do
+        let(:params) { { member_ids: [user.id, second_member.id] } }
+
+        it "conflictを返す" do
+          subject
+          expect(response).to have_http_status(:conflict)
+        end
+      end
+
+      context "別施設ユーザーが含まれている時" do
+        let(:other_member) { create(:user, :with_facility) }
+        let(:params) { { member_ids: [user.id, second_member.id, other_member.id] } }
+
+        it "conflictを返す" do
+          subject
+          expect(response).to have_http_status(:conflict)
+        end
+      end
+    end
+
+    context "管理者でない時" do
+      let(:user) { create(:user, :with_facility) }
+      let(:params) { { member_ids: [user.id, second_member.id, third_member.id] } }
+
+      it "forbiddenを返す" do
+        subject
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end
