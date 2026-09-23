@@ -109,6 +109,61 @@ RSpec.describe "Api::V1::MasterShifts", type: :request do
       end
     end
 
+    context "管理者が未公開月のメンバー順を取得する時" do
+      let(:user) { create(:user, :admin, display_order: 2) }
+      let(:schedule_month) { create(:schedule_month, facility: user.facility, is_published: false) }
+
+      let!(:first_member) { create(:user, facility: user.facility, display_order: 1) }
+      let!(:third_member) { create(:user, facility: user.facility, display_order: 3) }
+
+      it "施設共通のdisplay_order順で返す" do
+        subject
+        res = JSON.parse(response.body)
+        expect(res["members"].map { |member| member["id"] }).to eq([first_member.id, user.id, third_member.id])
+      end
+    end
+
+    context "公開時のメンバー順が固定されている時" do
+      let(:user) { create(:user, :admin, display_order: 1) }
+      let(:schedule_month) { create(:schedule_month, facility: user.facility, is_published: true) }
+      let!(:second_member) { create(:user, facility: user.facility, display_order: 2) }
+
+      before do
+        create(:schedule_month_member_order, schedule_month: schedule_month, user: user, display_order: 1)
+        create(:schedule_month_member_order, schedule_month: schedule_month, user: second_member, display_order: 2)
+        user.update!(display_order: 2)
+        second_member.update!(display_order: 1)
+      end
+
+      it "施設共通順ではなく固定順で返す" do
+        subject
+        res = JSON.parse(response.body)
+        expect(res["members"].map { |member| member["id"] }).to eq([user.id, second_member.id])
+      end
+    end
+
+    context "固定済み当月にAssignmentを持つ脱退メンバーがいる時" do
+      let(:user) { create(:user, :admin, display_order: 1) }
+      let(:schedule_month) { create(:schedule_month, facility: user.facility, date: Date.current.beginning_of_month, is_published: true) }
+      let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.current.beginning_of_month) }
+
+      let!(:current_member) { create(:user, facility: user.facility, display_order: 2) }
+      let!(:left_member) { create(:user, facility: nil) }
+
+      before do
+        create(:schedule_month_member_order, schedule_month: schedule_month, user: user, display_order: 1)
+        create(:schedule_month_member_order, schedule_month: schedule_month, user: left_member, display_order: 2)
+        create(:schedule_month_member_order, schedule_month: schedule_month, user: current_member, display_order: 3)
+        create(:work_assignment, user: left_member, schedule_day: schedule_day)
+      end
+
+      it "脱退メンバーを公開時の位置で返す" do
+        subject
+        res = JSON.parse(response.body)
+        expect(res["members"].map { |member| member["id"] }).to eq([user.id, left_member.id, current_member.id])
+      end
+    end
+
     context "管理者が公開済み月を指定した時" do
       let(:user) { create(:user, :admin) }
       let(:schedule_month) { create(:schedule_month, facility: user.facility, is_published: true) }

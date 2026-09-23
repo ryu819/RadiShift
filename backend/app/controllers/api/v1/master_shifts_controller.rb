@@ -62,7 +62,7 @@ module Api
           day_off_assignments_by_user_and_day:
             group_day_off_assignments_by_user_and_day(day_off_assignments),
           modality_assignments_by_user_and_day:
-    group_modality_assignments_by_user_and_day(modality_assignments)
+            group_modality_assignments_by_user_and_day(modality_assignments)
         }, status: :ok
       end
 
@@ -76,26 +76,57 @@ module Api
       end
 
       def members_for(schedule_month, work_assignments, day_off_assignments, modality_assignments)
-        current_members = current_user.facility.users
-                            .where(is_deleted: false)
-                            .order(:id)
+        current_members = current_user.facility.active_members_in_display_order.to_a
+        current_member_ids = current_members.map(&:id)
+
+        assignment_user_ids = (
+          work_assignments.map(&:user_id) +
+          day_off_assignments.map(&:user_id) +
+          modality_assignments.map(&:user_id)
+        ).uniq
+
+        if schedule_month.member_order_fixed?
+          return fixed_order_members(
+            schedule_month,
+            current_member_ids,
+            assignment_user_ids
+          )
+        end
 
         return current_members if future_schedule_month?(schedule_month)
 
-        current_member_ids = current_members.map(&:id)
-        work_assignment_user_ids = work_assignments.map(&:user_id)
-        day_off_assignment_user_ids = day_off_assignments.map(&:user_id)
-        modality_assignment_user_ids = modality_assignments.map(&:user_id)
+        extra_member_ids = assignment_user_ids - current_member_ids
+        extra_members = User.where(id: extra_member_ids).order(:id).to_a
 
-        member_ids =
-          current_member_ids +
-          work_assignment_user_ids +
-          day_off_assignment_user_ids +
-          modality_assignment_user_ids
+        current_members + extra_members
+      end
 
-        User
-          .where(id: member_ids.uniq)
-          .order(:id)
+      def fixed_order_members(schedule_month, current_member_ids, assignment_user_ids)
+        visible_member_ids = if future_schedule_month?(schedule_month)
+                               current_member_ids
+                             else
+                               (current_member_ids + assignment_user_ids).uniq
+                             end
+
+        fixed_member_ids =
+          schedule_month
+            .schedule_month_member_orders
+            .order(:display_order, :id)
+            .pluck(:user_id)
+
+        ordered_member_ids =
+          fixed_member_ids.select do |member_id|
+            visible_member_ids.include?(member_id)
+          end
+
+        extra_member_ids = visible_member_ids - fixed_member_ids
+        ordered_member_ids += extra_member_ids.sort
+
+        members = User.where(id: ordered_member_ids).to_a
+
+        ordered_member_ids.filter_map do |member_id|
+          members.find { |member| member.id == member_id }
+        end
       end
 
       def future_schedule_month?(schedule_month)
