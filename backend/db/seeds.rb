@@ -16,6 +16,7 @@ ActiveRecord::Base.transaction do
     password_confirmation: "password",
     facility: facility,
     is_admin: true,
+    display_order: 1,
     confirmed_at: Time.current
   )
 
@@ -28,6 +29,7 @@ ActiveRecord::Base.transaction do
       password: "password",
       password_confirmation: "password",
       facility: facility,
+      display_order: i + 2,
       confirmed_at: Time.current
     )
 

@@ -45,4 +45,14 @@ class Facility < ApplicationRecord
       days_remaining: (deadline_date - date).to_i
     }
   end
+
+  def active_members_in_display_order
+    users
+      .where(is_deleted: false)
+      .order(:display_order, :id)
+  end
+
+  def next_member_display_order
+    active_members_in_display_order.maximum(:display_order).to_i + 1
+  end
 end
