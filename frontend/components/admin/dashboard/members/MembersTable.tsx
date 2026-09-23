@@ -1,12 +1,12 @@
 "use client";
 
+import { DragDropProvider } from "@dnd-kit/react";
+import { isSortable } from "@dnd-kit/react/sortable";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { InvitationDialogForm } from "@/components/admin/dashboard/members/InvitationDialogForm";
-import { MemberActionsMenu } from "@/components/admin/dashboard/members/MemberActionsMenu";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { SortableMemberRow } from "@/components/admin/dashboard/members/SortableMemberRow";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   InputGroup,
@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { reorderMembers } from "@/lib/actions/members/reorder-members";
 import { FacilityInvitation } from "@/types/facility-invitation";
 import { Member } from "@/types/member";
 
@@ -31,10 +32,37 @@ type Props = {
 
 export function MembersTable({ members, invitation }: Props) {
   const [searchText, setSearchText] = useState("");
+  const [orderedMembers, setOrderedMembers] = useState(members);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const filteredMembers = members.filter((member) => {
+  useEffect(() => {
+    setOrderedMembers(members);
+  }, [members]);
+
+  const filteredMembers = orderedMembers.filter((member) => {
     return member.name.includes(searchText);
   });
+
+  const sortingDisabled = searchText.length > 0 || isSaving;
+
+  async function saveMemberOrder(
+    previousMembers: Member[],
+    nextMembers: Member[],
+  ) {
+    try {
+      const result = await reorderMembers(
+        nextMembers.map((member) => member.id),
+      );
+
+      if (!result.success) {
+        setOrderedMembers(previousMembers);
+      }
+    } catch {
+      setOrderedMembers(previousMembers);
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
     <Card className="gap-0 px-3 max-sm:px-2 pt-5 pb-0 shadow-none">
@@ -73,84 +101,71 @@ export function MembersTable({ members, invitation }: Props) {
       </CardHeader>
 
       <CardContent className="p-0">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[15%] text-center px-0">名前</TableHead>
+        <DragDropProvider
+          onDragEnd={(event) => {
+            if (event.canceled || sortingDisabled) return;
 
-              <TableHead className="w-[15%] text-center px-0">権限</TableHead>
+            const { source } = event.operation;
 
-              <TableHead className="text-center px-0">個別ルール</TableHead>
+            if (!isSortable(source)) return;
 
-              <TableHead className="w-[10%] px-0" />
-            </TableRow>
-          </TableHeader>
+            const { initialIndex, index } = source;
 
-          <TableBody>
-            {filteredMembers.length > 0 ? (
-              filteredMembers.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell className=" px-0">
-                    <div className="flex items-center max-sm:justify-center gap-2">
-                      <Avatar className="size-7 max-sm:hidden">
-                        <AvatarImage
-                          src={
-                            member.avatarImageUrl ??
-                            "/images/default-user-icon.png"
-                          }
-                        />
-                      </Avatar>
+            if (initialIndex === index) return;
 
-                      <span className="font-medium max-sm:text-xs">
-                        {member.name}
-                      </span>
-                    </div>
-                  </TableCell>
+            const previousMembers = orderedMembers;
+            const nextMembers = [...orderedMembers];
 
-                  <TableCell className="px-2">
-                    <div className="flex items-center justify-center">
-                      <Badge
-                        variant={member.isAdmin ? "default" : "outline"}
-                        className="transition-none max-sm:text-[10px]"
-                      >
-                        {member.isAdmin ? "管理者" : "メンバー"}
-                      </Badge>
-                    </div>
-                  </TableCell>
+            const [movedMember] = nextMembers.splice(initialIndex, 1);
 
-                  <TableCell className="px-0">
-                    <div className="flex items-center justify-center">
-                      <p
-                        className={
-                          member.rulesText
-                            ? "max-w-md whitespace-normal text-sm max-sm:text-xs"
-                            : "max-w-md whitespace-normal text-sm max-sm:text-xs text-muted-foreground"
-                        }
-                      >
-                        {member.rulesText ?? "未設定"}
-                      </p>
-                    </div>
-                  </TableCell>
+            if (!movedMember) return;
 
-                  <TableCell className="px-0">
-                    <div className="flex items-center justify-center">
-                      <MemberActionsMenu member={member} />
-                    </div>
+            nextMembers.splice(index, 0, movedMember);
+
+            setOrderedMembers(nextMembers);
+            setIsSaving(true);
+
+            saveMemberOrder(previousMembers, nextMembers);
+          }}
+        >
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-10 px-0" />
+
+                <TableHead className="w-[15%] text-center px-0">名前</TableHead>
+
+                <TableHead className="w-[15%] text-center px-0">権限</TableHead>
+
+                <TableHead className="text-center px-0">個別ルール</TableHead>
+
+                <TableHead className="w-[10%] px-0" />
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {filteredMembers.length > 0 ? (
+                filteredMembers.map((member, index) => (
+                  <SortableMemberRow
+                    key={member.id}
+                    member={member}
+                    index={index}
+                    disabled={sortingDisabled}
+                  />
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="h-20 p-0 py-3 text-center text-muted-foreground"
+                  >
+                    該当するメンバーはいません
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="h-20 p-0 py-3 text-center text-muted-foreground"
-                >
-                  該当するメンバーはいません
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              )}
+            </TableBody>
+          </Table>
+        </DragDropProvider>
       </CardContent>
     </Card>
   );

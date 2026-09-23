@@ -1,4 +1,10 @@
-import { MoreHorizontal, Search, ShieldCheck, Users } from "lucide-react";
+import {
+  GripHorizontal,
+  MoreHorizontal,
+  Search,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,6 +97,7 @@ export function MembersSkeleton() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10 px-0" />
                 <TableHead className="w-[15%] px-0 text-center">名前</TableHead>
 
                 <TableHead className="w-[15%] px-0 text-center">権限</TableHead>
@@ -104,6 +111,13 @@ export function MembersSkeleton() {
             <TableBody>
               {Array.from({ length: 10 }).map((_, index) => (
                 <TableRow key={index}>
+                  <TableCell className="w-10 px-0">
+                    <div className="flex items-center justify-center">
+                      <Button variant="ghost" size="icon-sm" disabled>
+                        <GripHorizontal className="size-4 max-sm:size-3" />
+                      </Button>
+                    </div>
+                  </TableCell>
                   <TableCell className="px-0">
                     <div className="flex items-center gap-2 max-sm:justify-center">
                       <Skeleton className="size-7 rounded-full max-sm:hidden" />
