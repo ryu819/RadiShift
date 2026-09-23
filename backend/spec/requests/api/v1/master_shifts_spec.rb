@@ -164,6 +164,25 @@ RSpec.describe "Api::V1::MasterShifts", type: :request do
       end
     end
 
+    context "過去固定月のsnapshot作成後に新しいメンバーが加入した時" do
+      let(:user) { create(:user, :admin, display_order: 1) }
+      let(:past_date) { Date.current.prev_month.beginning_of_month }
+      let(:schedule_month) { create(:schedule_month, facility: user.facility, date: past_date, is_published: true) }
+      let!(:new_member) { create(:user, facility: user.facility, display_order: 2) }
+      before do
+        create(:schedule_month_member_order, schedule_month: schedule_month, user: user, display_order: 1)
+      end
+
+      it "当該月にAssignmentがない新規加入メンバーを返さない" do
+        subject
+        res = JSON.parse(response.body)
+        member_ids = res["members"].map { |member| member["id"] }
+        expect(member_ids).to eq([user.id])
+        expect(member_ids).not_to include(new_member.id)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
     context "管理者が公開済み月を指定した時" do
       let(:user) { create(:user, :admin) }
       let(:schedule_month) { create(:schedule_month, facility: user.facility, is_published: true) }

@@ -102,25 +102,27 @@ module Api
       end
 
       def fixed_order_members(schedule_month, current_member_ids, assignment_user_ids)
-        visible_member_ids = if future_schedule_month?(schedule_month)
-                               current_member_ids
-                             else
-                               (current_member_ids + assignment_user_ids).uniq
-                             end
-
         fixed_member_ids =
           schedule_month
             .schedule_month_member_orders
             .order(:display_order, :id)
             .pluck(:user_id)
 
-        ordered_member_ids =
-          fixed_member_ids.select do |member_id|
-            visible_member_ids.include?(member_id)
-          end
+        if future_schedule_month?(schedule_month)
+          ordered_member_ids =
+            fixed_member_ids.select do |member_id|
+              current_member_ids.include?(member_id)
+            end
+        else
+          ordered_member_ids =
+            fixed_member_ids.select do |member_id|
+              current_member_ids.include?(member_id) ||
+                assignment_user_ids.include?(member_id)
+            end
 
-        extra_member_ids = visible_member_ids - fixed_member_ids
-        ordered_member_ids += extra_member_ids.sort
+          extra_member_ids = assignment_user_ids - fixed_member_ids
+          ordered_member_ids += extra_member_ids.sort
+        end
 
         members = User.where(id: ordered_member_ids).to_a
 
