@@ -29,6 +29,18 @@ RSpec.describe "Api::V1::ModalityAssignments", type: :request do
         expect(response).to have_http_status(:created)
       end
 
+      context "過去日の schedule_day_id を送る時" do
+        let(:schedule_month) { create(:schedule_month, facility: user.facility, date: Date.current.yesterday) }
+        let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.current.yesterday) }
+
+        it "モダリティ割当を作成できない" do
+          expect { subject }.not_to change { ModalityAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
       context "schedule_day_id がない時" do
         let(:params) { { modality_assignment: { schedule_day_id: nil, user_id: assigned_user.id, modality_type_id: modality_type.id } } }
 
@@ -155,6 +167,21 @@ RSpec.describe "Api::V1::ModalityAssignments", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      context "過去日のモダリティ割当の時" do
+        before do
+          modality_assignment.schedule_day.update!(date: Date.current.yesterday)
+        end
+
+        it "モダリティ割当を更新できない" do
+          original_modality_type = modality_assignment.modality_type
+          subject
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(modality_assignment.reload.modality_type).to eq(original_modality_type)
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
       context "modality_type_id がない時" do
         let(:params) { { modality_assignment: { modality_type_id: nil } } }
 
@@ -261,6 +288,20 @@ RSpec.describe "Api::V1::ModalityAssignments", type: :request do
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("モダリティ割当を削除しました。")
         expect(response).to have_http_status(:ok)
+      end
+
+      context "過去日のモダリティ割当の時" do
+        before do
+          modality_assignment.schedule_day.update!(date: Date.current.yesterday)
+        end
+
+        it "モダリティ割当を削除できない" do
+          expect { subject }.not_to change { ModalityAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(modality_assignment.reload).to be_present
+          expect(response).to have_http_status(:unprocessable_content)
+        end
       end
 
       context "脱退済みユーザーのモダリティ割当の時" do

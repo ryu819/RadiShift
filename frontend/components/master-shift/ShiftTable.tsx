@@ -18,7 +18,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { APP_TIME_ZONE } from "@/constants/time-zone";
 import { useShiftDisplayVisibility } from "@/hooks/use-shift-display-visibility";
+import { dayjs } from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 import type { DayOffAssignmentsByUserAndDay } from "@/types/day-off-assignment";
 import type { DayOffType } from "@/types/day-off-type";
@@ -41,7 +43,7 @@ type Props = {
   days: ScheduleDay[];
   year: number;
   month: number;
-  isEditable: boolean;
+  isAdmin: boolean;
 };
 
 const getCellKey = (memberId: number, date: string) => {
@@ -59,7 +61,7 @@ export function ShiftTable({
   days,
   year,
   month,
-  isEditable,
+  isAdmin,
 }: Props) {
   const [openCellKey, setOpenCellKey] = useState<string | null>(null);
 
@@ -134,6 +136,12 @@ export function ShiftTable({
                 {days.map((day) => {
                   const cellKey = getCellKey(member.id, day.date);
 
+                  const isPast = dayjs
+                    .tz(day.date, APP_TIME_ZONE)
+                    .isBefore(dayjs().tz(APP_TIME_ZONE), "day");
+
+                  const canEditCell = isAdmin && !isPast;
+
                   const cellWorkAssignments =
                     workAssignmentsByUserAndDay?.[String(member.id)]?.[
                       String(day.id)
@@ -174,7 +182,7 @@ export function ShiftTable({
                     <div className="flex flex-col w-11 items-center gap-0.5 md:gap-1">
                       {visibility.work &&
                         cellWorkAssignments.map((workAssignment) =>
-                          isEditable && workAssignment.workRequestId != null ? (
+                          isAdmin && workAssignment.workRequestId != null ? (
                             <Tooltip key={workAssignment.id}>
                               <TooltipTrigger asChild>
                                 <Badge
@@ -214,7 +222,7 @@ export function ShiftTable({
 
                       {visibility.dayOff &&
                         cellDayOffAssignments.map((dayOffAssignment) =>
-                          isEditable &&
+                          isAdmin &&
                           dayOffAssignment.dayOffRequestId != null ? (
                             <Tooltip key={dayOffAssignment.id}>
                               <TooltipTrigger asChild>
@@ -279,7 +287,7 @@ export function ShiftTable({
                         rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
                       )}
                     >
-                      {isEditable ? (
+                      {canEditCell ? (
                         <Popover
                           open={openCellKey === cellKey}
                           onOpenChange={(open) =>
@@ -462,7 +470,12 @@ export function ShiftTable({
                           </PopoverContent>
                         </Popover>
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center p-0.5 md:p-1">
+                        <div
+                          className={cn(
+                            "flex h-full w-full items-center justify-center p-0.5 md:p-1",
+                            isPast && isAdmin && "cursor-not-allowed",
+                          )}
+                        >
                           {assignmentBadges}
                         </div>
                       )}

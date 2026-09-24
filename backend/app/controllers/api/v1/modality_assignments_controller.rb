@@ -6,6 +6,7 @@ module Api
       before_action :require_admin!, only: [:create, :update, :destroy]
       before_action :set_modality_assignment, only: [:update, :destroy]
       before_action :validate_schedule_day_for_facility!, only: [:create]
+      before_action :validate_not_past_schedule_day!, only: [:create, :update, :destroy]
       before_action :validate_user_for_facility!, only: [:create]
       before_action :validate_modality_type_for_facility!, only: [:create, :update]
 
@@ -64,14 +65,27 @@ module Api
         schedule_day_id = modality_assignment_params[:schedule_day_id]
 
         return if schedule_day_id.blank?
-        return if ScheduleDay.joins(:schedule_month).exists?(
-          id: schedule_day_id,
-          schedule_months: {
-            facility_id: current_user.facility_id
-          }
-        )
+
+        @schedule_day = ScheduleDay
+                          .joins(:schedule_month)
+                          .find_by(
+                            id: schedule_day_id,
+                            schedule_months: {
+                              facility_id: current_user.facility_id
+                            }
+                          )
+
+        return if @schedule_day.present?
 
         render json: { message: "対象日が存在しません。" }, status: :not_found
+      end
+
+      def validate_not_past_schedule_day!
+        schedule_day = @schedule_day || @modality_assignment&.schedule_day
+
+        return if schedule_day.blank? || schedule_day.date >= Date.current
+
+        render json: { message: "過去日のシフトは変更できません。" }, status: :unprocessable_content
       end
 
       def validate_user_for_facility!

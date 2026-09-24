@@ -31,6 +31,18 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
         expect(response).to have_http_status(:created)
       end
 
+      context "過去日の schedule_day_id を送る時" do
+        let(:schedule_month) { create(:schedule_month, facility: user.facility, date: Date.current.yesterday) }
+        let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.current.yesterday) }
+
+        it "勤務割当を作成できない" do
+          expect { subject }.not_to change { WorkAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
       context "schedule_day_id がない時" do
         let(:params) { { work_assignment: { schedule_day_id: nil, user_id: assigned_user.id, work_type_id: work_type.id } } }
 
@@ -157,6 +169,21 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      context "過去日の勤務割当の時" do
+        before do
+          work_assignment.schedule_day.update!(date: Date.current.yesterday)
+        end
+
+        it "勤務割当を更新できない" do
+          original_work_type = work_assignment.work_type
+          subject
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(work_assignment.reload.work_type).to eq(original_work_type)
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
       context "work_type_id がない時" do
         let(:params) { { work_assignment: { work_type_id: nil } } }
 
@@ -263,6 +290,20 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("勤務割当を削除しました。")
         expect(response).to have_http_status(:ok)
+      end
+
+      context "過去日の勤務割当の時" do
+        before do
+          work_assignment.schedule_day.update!(date: Date.current.yesterday)
+        end
+
+        it "勤務割当を削除できない" do
+          expect { subject }.not_to change { WorkAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(work_assignment.reload).to be_present
+          expect(response).to have_http_status(:unprocessable_content)
+        end
       end
 
       context "脱退済みユーザーの勤務割当の時" do
@@ -372,6 +413,20 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
         expect(work_assignment.reload.work_request).to be_nil
         expect(res["message"]).to eq("勤務割当を管理者管理に切り替えました。")
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "過去日の申請由来の勤務割当の時" do
+      before do
+        schedule_day.update!(date: Date.current.yesterday)
+      end
+
+      it "管理者管理に切り替えない" do
+        subject
+        res = JSON.parse(response.body)
+        expect(work_assignment.reload.work_request).to eq(assigned_user_work_request)
+        expect(res["message"]).to eq("過去日のシフトは変更できません。")
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 

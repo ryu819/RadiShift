@@ -29,6 +29,18 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
         expect(response).to have_http_status(:created)
       end
 
+      context "過去日の schedule_day_id を送る時" do
+        let(:schedule_month) { create(:schedule_month, facility: user.facility, date: Date.current.yesterday) }
+        let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.current.yesterday) }
+
+        it "休み割当を作成できない" do
+          expect { subject }.not_to change { DayOffAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
       context "schedule_day_id がない時" do
         let(:params) { { day_off_assignment: { schedule_day_id: nil, user_id: assigned_user.id, day_off_type_id: day_off_type.id } } }
 
@@ -155,6 +167,21 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      context "過去日の休み割当の時" do
+        before do
+          day_off_assignment.schedule_day.update!(date: Date.current.yesterday)
+        end
+
+        it "休み割当を更新できない" do
+          original_day_off_type = day_off_assignment.day_off_type
+          subject
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(day_off_assignment.reload.day_off_type).to eq(original_day_off_type)
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
       context "day_off_type_id がない時" do
         let(:params) { { day_off_assignment: { day_off_type_id: nil } } }
 
@@ -261,6 +288,20 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("休み割当を削除しました。")
         expect(response).to have_http_status(:ok)
+      end
+
+      context "過去日の休み割当の時" do
+        before do
+          day_off_assignment.schedule_day.update!(date: Date.current.yesterday)
+        end
+
+        it "休み割当を削除できない" do
+          expect { subject }.not_to change { DayOffAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("過去日のシフトは変更できません。")
+          expect(day_off_assignment.reload).to be_present
+          expect(response).to have_http_status(:unprocessable_content)
+        end
       end
 
       context "脱退済みユーザーの休み割当の時" do
@@ -372,6 +413,20 @@ RSpec.describe "Api::V1::DayOffAssignments", type: :request do
         expect(day_off_assignment.reload.day_off_request).to be_nil
         expect(res["message"]).to eq("休み割当を管理者管理に切り替えました。")
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "過去日の申請由来の休み割当の時" do
+      before do
+        schedule_day.update!(date: Date.current.yesterday)
+      end
+
+      it "管理者管理に切り替えない" do
+        subject
+        res = JSON.parse(response.body)
+        expect(day_off_assignment.reload.day_off_request).to eq(assigned_user_day_off_request)
+        expect(res["message"]).to eq("過去日のシフトは変更できません。")
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 

@@ -94,7 +94,7 @@ export async function MasterShifts({ searchParams }: Props) {
         days={scheduleMonth?.scheduleDays ?? []}
         year={selectedScheduleMonth.year}
         month={selectedScheduleMonth.month}
-        isEditable={currentUser?.isAdmin ?? false}
+        isAdmin={currentUser?.isAdmin ?? false}
       />
     </>
   );
