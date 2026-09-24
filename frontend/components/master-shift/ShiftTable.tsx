@@ -13,6 +13,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -64,6 +65,8 @@ export function ShiftTable({
   isAdmin,
 }: Props) {
   const [openCellKey, setOpenCellKey] = useState<string | null>(null);
+
+  const [selectedEditTab, setSelectedEditTab] = useState("work");
 
   const { visibility, updateVisibility } = useShiftDisplayVisibility();
 
@@ -307,8 +310,9 @@ export function ShiftTable({
                             side="bottom"
                             align="center"
                             sideOffset={6}
+                            collisionPadding={8}
                             hideWhenDetached
-                            className="w-130 rounded-md border-slate-200 p-3 shadow-lg"
+                            className="max-h-70 md:max-h-100 w-60  rounded-md border-slate-200 p-3 shadow-lg"
                           >
                             <div className="p-1">
                               <p className="text-sm font-medium text-secondary">
@@ -321,12 +325,36 @@ export function ShiftTable({
                               </p>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4">
-                              <div className="space-y-1">
-                                <p className="px-1 text-xs font-medium text-muted-foreground">
+                            <Tabs
+                              value={selectedEditTab}
+                              onValueChange={setSelectedEditTab}
+                              className="min-h-0"
+                            >
+                              <TabsList className="grid  grid-cols-3 w-full">
+                                <TabsTrigger
+                                  value="work"
+                                  className="text-xs cursor-pointer"
+                                >
                                   勤務
-                                </p>
+                                </TabsTrigger>
+                                <TabsTrigger
+                                  value="dayOff"
+                                  className="text-xs cursor-pointer"
+                                >
+                                  休み
+                                </TabsTrigger>
+                                <TabsTrigger
+                                  value="modality"
+                                  className="text-xs cursor-pointer"
+                                >
+                                  モダリティ
+                                </TabsTrigger>
+                              </TabsList>
 
+                              <TabsContent
+                                value="work"
+                                className="overflow-y-auto"
+                              >
                                 <div>
                                   {workTypes.map((workType) => {
                                     const selectedWorkAssignment =
@@ -369,13 +397,12 @@ export function ShiftTable({
                                     ),
                                   )}
                                 </div>
-                              </div>
+                              </TabsContent>
 
-                              <div className="space-y-1 border-l pl-4">
-                                <p className="px-1 text-xs font-medium text-muted-foreground">
-                                  休み
-                                </p>
-
+                              <TabsContent
+                                value="dayOff"
+                                className="overflow-y-auto"
+                              >
                                 <div>
                                   {dayOffTypes.map((dayOffType) => {
                                     const selectedDayOffAssignment =
@@ -420,13 +447,12 @@ export function ShiftTable({
                                     ),
                                   )}
                                 </div>
-                              </div>
+                              </TabsContent>
 
-                              <div className="space-y-1 border-l pl-4">
-                                <p className="px-1 text-xs font-medium text-muted-foreground">
-                                  モダリティ
-                                </p>
-
+                              <TabsContent
+                                value="modality"
+                                className="overflow-y-auto"
+                              >
                                 <div>
                                   {modalityTypes.map((modalityType) => {
                                     const selectedModalityAssignment =
@@ -465,8 +491,8 @@ export function ShiftTable({
                                     ),
                                   )}
                                 </div>
-                              </div>
-                            </div>
+                              </TabsContent>
+                            </Tabs>
                           </PopoverContent>
                         </Popover>
                       ) : (
