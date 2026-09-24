@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { calendarWeekdays } from "@/components/admin/dashboard/day-off-slots/calendar/day-off-slot-calendar-week-days";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,22 @@ export function MyShiftsSkeleton() {
       </div>
 
       <div className="space-y-4">
+        <div className="flex flex-wrap items-center gap-4 px-3 py-2">
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked disabled />
+            <span>勤務</span>
+          </label>
+
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked disabled />
+            <span>休み</span>
+          </label>
+
+          <label className="flex items-center gap-2 text-sm">
+            <Checkbox checked disabled />
+            <span>モダリティ</span>
+          </label>
+        </div>
         <Card className="gap-0 py-0 shadow-none">
           <div className="grid grid-cols-7 border-b bg-muted/30">
             {calendarWeekdays.map((weekday, index) => (
@@ -50,13 +67,12 @@ export function MyShiftsSkeleton() {
                 <div
                   key={index}
                   className={cn(
-                    "min-h-20 bg-muted/20 p-2 sm:min-h-28",
+                    "min-h-21 bg-muted/20 p-2 sm:min-h-45",
                     !isLastColumn && "border-r",
                     !isLastRow && "border-b",
                   )}
                 >
                   <Skeleton className="h-4 w-4" />
-                  <Skeleton className="mt-4 h-5 w-full" />
                 </div>
               );
             })}

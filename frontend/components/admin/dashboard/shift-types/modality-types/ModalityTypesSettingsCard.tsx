@@ -53,7 +53,7 @@ export function ModalityTypesSettingsCard({
                 >
                   <div className="flex  items-center gap-2">
                     <span
-                      className="size-3 rounded-full"
+                      className="size-3 rounded-full shrink-0"
                       style={{
                         backgroundColor: modalityType.colorCode,
                       }}
