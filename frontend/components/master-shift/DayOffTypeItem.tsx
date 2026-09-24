@@ -49,8 +49,8 @@ export function DayOffTypeItem({
     selectedDayOffAssignment?.dayOffRequestId !== undefined;
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between px-2">
+      <div className="flex min-w-0 items-center gap-2">
         <span
           className="h-2.5 w-2.5 rounded-full"
           style={{
@@ -58,14 +58,14 @@ export function DayOffTypeItem({
           }}
         />
 
-        <p
+        <span
           className={cn(
-            "font-medium text-secondary",
+            "font-medium text-secondary truncate",
             isSelected && "text-primary hover:text-primary",
           )}
         >
           {dayOffType.name}
-        </p>
+        </span>
       </div>
 
       {selectedDayOffAssignment ? (
