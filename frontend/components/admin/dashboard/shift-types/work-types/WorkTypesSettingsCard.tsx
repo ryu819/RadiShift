@@ -30,6 +30,7 @@ export function WorkTypesSettingsCard({
           <CardAction>
             <Button
               variant="outline"
+              size="sm"
               onClick={() => {
                 setFormDialogOpen(true);
               }}

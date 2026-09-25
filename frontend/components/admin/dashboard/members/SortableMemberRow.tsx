@@ -68,7 +68,7 @@ export function SortableMemberRow({ member, index, disabled }: Props) {
           <p
             className={
               member.rulesText
-                ? "max-w-md whitespace-normal text-sm max-sm:text-xs"
+                ? "max-w-md whitespace-normal text-sm max-sm:text-xs "
                 : "max-w-md whitespace-normal text-sm max-sm:text-xs text-muted-foreground"
             }
           >

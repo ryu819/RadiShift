@@ -30,6 +30,11 @@ export function AppSidebar() {
                 label="マイシフト"
               />
               <SidebarItem
+                href={`${ROUTES.facility}`}
+                icon="building"
+                label="施設情報"
+              />
+              <SidebarItem
                 href={`${ROUTES.settings}`}
                 icon="settings"
                 label="設定"

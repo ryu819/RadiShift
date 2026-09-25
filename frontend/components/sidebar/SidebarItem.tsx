@@ -1,5 +1,11 @@
 "use client";
-import { Calendar, House, LayoutDashboard, Settings } from "lucide-react";
+import {
+  Building2,
+  Calendar,
+  House,
+  LayoutDashboard,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -14,6 +20,7 @@ type Props = {
 const iconMap = {
   house: House,
   calendar: Calendar,
+  building: Building2,
   settings: Settings,
   layoutDashboard: LayoutDashboard,
 };

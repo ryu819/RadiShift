@@ -30,6 +30,7 @@ export function DayOffTypesSettingsCard({
           <CardAction>
             <Button
               variant="outline"
+              size="sm"
               onClick={() => {
                 setFormDialogOpen(true);
               }}

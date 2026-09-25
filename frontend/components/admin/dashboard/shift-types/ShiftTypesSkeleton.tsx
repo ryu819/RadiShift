@@ -17,7 +17,7 @@ function SettingsCardSkeleton({ title }: { title: string }) {
         <CardTitle className="text-base">{title}</CardTitle>
 
         <CardAction>
-          <Button variant="outline" disabled>
+          <Button variant="outline" size="sm" disabled>
             追加
           </Button>
         </CardAction>

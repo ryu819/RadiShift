@@ -3,8 +3,7 @@
 ActiveRecord::Base.transaction do
   facility = Facility.create!(
     name: "デモ病院",
-    request_deadline_day: 15,
-    rules_text: "デモ用の施設です。"
+    request_deadline_day: 15
   )
 
   users = []
