@@ -152,6 +152,12 @@
     overflow: visible !important;
   }
 
+  body.master-shift-printing .master-shift-print-area .sticky {
+    position: static !important;
+    inset: auto !important;
+    z-index: auto !important;
+  }
+
   body.master-shift-printing [data-slot="sidebar-gap"] {
     display: none !important;
   }
