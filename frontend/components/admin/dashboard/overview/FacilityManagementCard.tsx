@@ -20,13 +20,13 @@ const facilityManagementItems = [
   {
     title: "申請の締切を設定",
     description: "申請の締切日を管理しましょう",
-    href: `${ROUTES.adminDashboard}`,
+    href: `${ROUTES.facility}`,
     icon: CalendarClock,
   },
   {
     title: "施設ルールの編集",
     description: "施設ルールを設定します",
-    href: `${ROUTES.adminDashboard}`,
+    href: `${ROUTES.facility}`,
     icon: SlidersHorizontal,
   },
 ];

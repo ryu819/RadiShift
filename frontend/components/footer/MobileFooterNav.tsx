@@ -17,9 +17,9 @@ export function MobileFooterNav() {
           label="マイシフト"
         />
         <MobileFooterNavItem
-          href={`${ROUTES.settings}`}
-          icon="settings"
-          label="設定"
+          href={`${ROUTES.facility}`}
+          icon="building"
+          label="施設情報"
         />
         <MoreNavItem />
       </ul>

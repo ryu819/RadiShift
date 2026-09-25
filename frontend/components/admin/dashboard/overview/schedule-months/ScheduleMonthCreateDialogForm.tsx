@@ -90,6 +90,7 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
                 id="monthlyDaysOff"
                 name="monthlyDaysOff"
                 type="number"
+                inputMode="numeric"
                 min={0}
                 step={0.5}
                 defaultValue={DEFAULT_MONTHLY_DAYS_OFF}
