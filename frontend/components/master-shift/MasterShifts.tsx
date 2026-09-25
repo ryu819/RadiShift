@@ -67,11 +67,11 @@ export async function MasterShifts({ searchParams }: Props) {
         />
 
         {scheduleMonth?.isPublished ? (
-          <Badge className="bg-emerald-100 text-emerald-700 rounded-sm">
+          <Badge className="bg-emerald-100 text-emerald-700 rounded-sm master-shift-print-hide">
             シフト公開済
           </Badge>
         ) : (
-          <Badge className="bg-amber-100 text-amber-700 rounded-sm">
+          <Badge className="bg-amber-100 text-amber-700 rounded-sm master-shift-print-hide">
             シフト未公開
           </Badge>
         )}

@@ -38,7 +38,7 @@ export function MonthNavigation({
       : null;
 
   return (
-    <div className="flex items-center justify-center gap-1 md:gap-3">
+    <div className="flex items-center justify-center gap-1 md:gap-3 master-shift-print-hide">
       {previousScheduleMonth ? (
         <Button asChild variant="link" size="icon">
           <Link

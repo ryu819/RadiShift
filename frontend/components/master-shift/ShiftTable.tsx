@@ -4,6 +4,7 @@ import { LockKeyhole } from "lucide-react";
 import { useState } from "react";
 
 import { DayOffTypeItem } from "@/components/master-shift/DayOffTypeItem";
+import { MasterShiftPrintButton } from "@/components/master-shift/MasterShiftPrintButton";
 import { ModalityTypeItem } from "@/components/master-shift/ModalityTypeItem";
 import { ShiftDisplayToggles } from "@/components/master-shift/ShiftDisplayToggles";
 import { WorkTypeItem } from "@/components/master-shift/WorkTypeItem";
@@ -80,18 +81,25 @@ export function ShiftTable({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
-      <ShiftDisplayToggles
-        visibility={visibility}
-        onChange={updateVisibility}
-      />
+      <div className="flex justify-between items-center master-shift-print-hide">
+        <ShiftDisplayToggles
+          visibility={visibility}
+          onChange={updateVisibility}
+        />
+        <MasterShiftPrintButton />
+      </div>
+
+      <h1 className="master-shift-print-area master-shift-print-only hidden text-center text-3xl font-semibold mb-4">
+        {year}年{month}月
+      </h1>
       <div
-        className=" flex-1 overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm"
+        className="master-shift-print-area flex-1 overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm"
         onScroll={() => setOpenCellKey(null)}
       >
         <table className="w-max min-w-full border-collapse text-xs md:text-sm">
           <thead className="sticky top-0 z-20">
             <tr>
-              <th className="sticky left-0 z-30  border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center text-xs font-semibold md:p-1 md:text-sm">
+              <th className="sticky left-0 z-30  border-r border-b border-slate-200 bg-slate-50 p-0.5 text-center text-xs font-semibold md:p-1 md:text-sm print:w-px print:whitespace-nowrap">
                 スタッフ
               </th>
 
@@ -131,6 +139,7 @@ export function ShiftTable({
                   className={cn(
                     "sticky left-0 z-10 border-r border-b border-slate-200 p-0.5 text-center text-xs font-medium md:p-1 md:text-sm",
                     rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
+                    rowIndex === members.length - 1 && "border-b-0",
                   )}
                 >
                   <span className="block truncate">{member.name}</span>
@@ -195,7 +204,7 @@ export function ShiftTable({
                                     workAssignment.workType.colorCode,
                                   )}
                                 >
-                                  <LockKeyhole className="size-2.5" />
+                                  <LockKeyhole className="size-2.5 master-shift-print-hide" />
 
                                   <span className="overflow-hidden">
                                     {workAssignment.workType.name}
@@ -236,7 +245,7 @@ export function ShiftTable({
                                     dayOffAssignment.dayOffType.colorCode,
                                   )}
                                 >
-                                  <LockKeyhole className="size-2.5" />
+                                  <LockKeyhole className="size-2.5 master-shift-print-hide" />
 
                                   <span className="overflow-hidden">
                                     {dayOffAssignment.dayOffType.name}
@@ -288,6 +297,7 @@ export function ShiftTable({
                       className={cn(
                         "h-13 w-13 border-r border-b border-slate-200 p-0 last:border-r-0 md:h-15 md:max-w-15",
                         rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50",
+                        rowIndex === members.length - 1 && "border-b-0",
                       )}
                     >
                       {canEditCell ? (
@@ -312,7 +322,7 @@ export function ShiftTable({
                             sideOffset={6}
                             collisionPadding={8}
                             hideWhenDetached
-                            className="max-h-70 md:max-h-100 w-60  rounded-md border-slate-200 p-3 shadow-lg"
+                            className="max-h-70 md:max-h-100 w-60  rounded-md border-slate-200 p-3 shadow-lg master-shift-print-hide"
                           >
                             <div className="p-1">
                               <p className="text-sm font-medium text-secondary">

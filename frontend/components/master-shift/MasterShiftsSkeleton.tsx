@@ -33,21 +33,24 @@ export function MasterShiftsSkeleton() {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
-        <div className="flex flex-wrap items-center gap-4 px-3 py-2">
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox checked disabled />
-            <span>勤務</span>
-          </label>
-
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox checked disabled />
-            <span>休み</span>
-          </label>
-
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox checked disabled />
-            <span>モダリティ</span>
-          </label>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3 px-3 py-2">
+            <div className="flex items-center gap-1 text-sm">
+              <Checkbox checked disabled />
+              <label className="whitespace-nowrap">勤務</label>
+            </div>
+            <div className="flex items-center gap-1 text-sm">
+              <Checkbox checked disabled />
+              <label className="whitespace-nowrap">休み</label>
+            </div>
+            <div className="flex items-center gap-1 text-sm">
+              <Checkbox checked disabled />
+              <label className="whitespace-nowrap">モダリティ</label>
+            </div>
+          </div>
+          <Button type="button" variant="outline" size="sm" disabled>
+            <span>印刷</span>
+          </Button>
         </div>
 
         <div className="flex-1 overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm">

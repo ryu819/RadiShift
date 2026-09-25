@@ -4,7 +4,7 @@ import { ROUTES } from "@/constants/routes";
 
 export function Footer() {
   return (
-    <footer className="bg-white border-t border-border p-4 w-full flex flex-col justify-center items-center text-secondary text-sm gap-3 z-20">
+    <footer className="bg-white border-t border-border p-4 w-full flex flex-col justify-center items-center text-secondary text-sm gap-3 z-20 master-shift-print-hide">
       <div className="space-x-4 ">
         <Link
           href={`${ROUTES.terms}`}
