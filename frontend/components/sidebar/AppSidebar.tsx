@@ -14,7 +14,7 @@ import { ROUTES } from "@/constants/routes";
 
 export function AppSidebar() {
   return (
-    <Sidebar className="fixed left-0 z-0">
+    <Sidebar className="fixed left-0 z-0 master-shift-print-hide">
       <SidebarContent className="bg-white mt-16">
         <SidebarGroup className="mt-4">
           <SidebarGroupContent>

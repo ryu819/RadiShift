@@ -6,7 +6,7 @@ import { HeaderAuthSection } from "@/components/header/HeaderAuthSection";
 
 export function Header() {
   return (
-    <header className="bg-white border-b border-border  px-4 fixed w-full h-16 flex justify-between items-center z-20">
+    <header className="bg-white border-b border-border  px-4 fixed w-full h-16 flex justify-between items-center z-20 master-shift-print-hide">
       <Link href="/" className="flex items-center gap-1">
         <Image src="/icon.png" alt="icon" width={50} height={50} />
         <div className="hidden xs:block text-3xl font-semibold text-primary">

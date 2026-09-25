@@ -88,7 +88,7 @@ export function FacilityDeleteDialog({ facilityName }: Props) {
               className="w-full"
               disabled={!isAgreed || isPending}
             >
-              {isPending ? <Loader2 className="animate-spin" /> : "施設を削除"}
+              {isPending ? <Loader2 className="animate-spin" /> : "削除"}
             </Button>
           </DialogFooter>
         </form>
