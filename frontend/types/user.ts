@@ -4,6 +4,6 @@ export type User = {
   email: string;
   isAdmin: boolean;
   rulesText: string | null;
-  facilityId: number;
+  facilityId: number | null;
   avatarImageUrl: string | null;
 };
