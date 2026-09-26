@@ -21,7 +21,7 @@ export function MasterShiftsEmpty() {
         </EmptyTitle>
 
         <EmptyDescription className="sm:text-base">
-          シフト月が作成されると、ここに全体シフトが表示されます。
+          シフトが公開されると、全体シフトが表示されます。
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

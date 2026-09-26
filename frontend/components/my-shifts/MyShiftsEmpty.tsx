@@ -21,7 +21,7 @@ export function MyShiftsEmpty() {
         </EmptyTitle>
 
         <EmptyDescription className="sm:text-base">
-          シフト月が作成されると、ここにマイシフトが表示されます。
+          シフトが作成されると、マイシフトが表示されます。
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

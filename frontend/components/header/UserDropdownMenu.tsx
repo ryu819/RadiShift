@@ -1,4 +1,4 @@
-import { BadgeCheckIcon, LogOutIcon } from "lucide-react";
+import { Building2, LogOutIcon, Settings } from "lucide-react";
 import Link from "next/link";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ROUTES } from "@/constants/routes";
 import { logout } from "@/lib/actions/auth/logout";
+import { hasFacility } from "@/lib/auth/has-facility";
 import { User } from "@/types/user";
 
 export function UserDropdownMenu({ user }: { user: User | null }) {
@@ -28,9 +29,17 @@ export function UserDropdownMenu({ user }: { user: User | null }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
+          {!hasFacility(user) && (
+            <DropdownMenuItem asChild>
+              <Link href="/" className="cursor-pointer">
+                <Building2 />
+                施設登録
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem asChild>
             <Link href={`${ROUTES.settings}`} className="cursor-pointer">
-              <BadgeCheckIcon />
+              <Settings />
               アカウント設定
             </Link>
           </DropdownMenuItem>
