@@ -211,10 +211,14 @@ export function ShiftRequestDialog({
                     dayOffSlot && (
                       <div
                         key={dayOffType.id}
-                        className="flex items-center justify-between gap-1 text-[11px]"
+                        className="flex items-center justify-between gap-1 text-[10px]"
                       >
-                        <span>{dayOffSlot.dayOffType.name}</span>
-                        <span>残り{dayOffSlot.remainingSlots}</span>
+                        <span className="truncate">
+                          {dayOffSlot.dayOffType.name}
+                        </span>
+                        <span className="whitespace-nowrap">
+                          残り{dayOffSlot.remainingSlots}
+                        </span>
                       </div>
                     )
                   );

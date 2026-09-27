@@ -17,7 +17,7 @@ export function MoreNavItem() {
       <Sheet>
         <SheetTrigger className="flex flex-col items-center justify-center gap-2 hover:opacity-70 transition text-secondary cursor-pointer">
           <MoreHorizontal className="size-5" />
-          <span className="text-xs font-semibold leading-none">その他</span>
+          <span className="text-[11px] font-semibold leading-none">その他</span>
         </SheetTrigger>
         <SheetContent side="bottom" className="gap-1">
           <SheetHeader>

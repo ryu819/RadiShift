@@ -11,7 +11,7 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
   if (!user) redirect("/");
 
   if (hasFacility(user)) {
-    return <FacilityShell>{children}</FacilityShell>;
+    return <FacilityShell isAdmin={user.isAdmin}>{children}</FacilityShell>;
   }
 
   return (
