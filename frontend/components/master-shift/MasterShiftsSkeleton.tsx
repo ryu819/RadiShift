@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,6 +16,10 @@ const SkeletonDays = Array.from({ length: 31 }, (_, index) => index + 1);
 export function MasterShiftsSkeleton() {
   return (
     <>
+      <div className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+        <CalendarDays className="size-3.5 md:size-4" />
+        <span>全体シフト</span>
+      </div>
       <div className="flex flex-col items-center justify-center gap-2">
         <div className="flex items-center justify-center gap-1 md:gap-3">
           <Button variant="link" size="icon" disabled>
