@@ -1,8 +1,16 @@
-import { List } from "lucide-react";
+import { ChevronRight, List } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ROUTES } from "@/constants/routes";
 import { getDayOffTypes } from "@/lib/actions/shift-types/get-day-off-types";
 import { getModalityTypes } from "@/lib/actions/shift-types/get-modality-types";
 import { getWorkTypes } from "@/lib/actions/shift-types/get-work-types";
@@ -13,8 +21,17 @@ export function TypesCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <List className="size-5" />
-          シフト一覧
+          シフトタイプ一覧
         </CardTitle>
+        <CardAction>
+          <Link
+            href={ROUTES.adminShiftTypes}
+            className="group flex items-center gap-1 text-sm font-medium text-primary hover:opacity-70"
+          >
+            シフト設定
+            <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5  group-active:translate-x-0.5" />
+          </Link>
+        </CardAction>
       </CardHeader>
 
       <CardContent>
@@ -76,7 +93,7 @@ function TypeRow({ title, items }: { title: string; items: TypeItem[] }) {
           </>
         ) : (
           <p className="p-2 text-center text-sm text-muted-foreground">
-            作成済みのシフトタイプはありません
+            未設定
           </p>
         )}
       </div>
