@@ -1,7 +1,6 @@
 import { CalendarDays, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import {
   Empty,
   EmptyContent,
