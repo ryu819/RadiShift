@@ -1,6 +1,3 @@
-import { Suspense } from "react";
-
-import { AdminSidebarItem } from "@/components/sidebar/AdminSidebarItem";
 import { SidebarItem } from "@/components/sidebar/SidebarItem";
 import {
   Sidebar,
@@ -12,7 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ROUTES } from "@/constants/routes";
 
-export function AppSidebar() {
+export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
   return (
     <Sidebar className="fixed left-0 z-0 master-shift-print-hide">
       <SidebarContent className="bg-white mt-16">
@@ -39,9 +36,13 @@ export function AppSidebar() {
                 icon="settings"
                 label="設定"
               />
-              <Suspense fallback={null}>
-                <AdminSidebarItem />
-              </Suspense>
+              {isAdmin && (
+                <SidebarItem
+                  href={`${ROUTES.adminDashboard}`}
+                  icon="layoutDashboard"
+                  label="管理画面TOP"
+                />
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

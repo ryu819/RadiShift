@@ -39,7 +39,7 @@ export function MobileFooterNavItem({ href, icon, label }: Props) {
         )}
       >
         <ItemIcon icon={icon} />
-        <span className="text-xs font-semibold leading-none">{label}</span>
+        <span className="text-[11px] font-semibold leading-none">{label}</span>
       </Link>
     </li>
   );
