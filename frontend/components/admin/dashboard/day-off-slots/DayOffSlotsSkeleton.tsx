@@ -24,14 +24,14 @@ function DayOffSlotRuleSkeleton() {
           <CardTitle className="text-base">基本ルール</CardTitle>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            新しくシフト月を作成するときに曜日ごとの休み枠を設定します
+            新しいシフト表を作成するとき、曜日ごとの休み枠として使用される基本ルールです
           </p>
         </div>
       </CardHeader>
 
       <CardContent className="px-4">
         <div className="divide-y sm:hidden">
-          {Array.from({ length: 2 }).map((_, index) => (
+          {Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="space-y-3 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -79,7 +79,7 @@ function DayOffSlotRuleSkeleton() {
             </TableHeader>
 
             <TableBody>
-              {Array.from({ length: 2 }).map((_, index) => (
+              {Array.from({ length: 3 }).map((_, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ function DayOffSlotCalendarSkeleton() {
           <CardTitle className="text-base">特定日の調整</CardTitle>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            日付を選択して、休み枠を変更します
+            作成済みのシフト表について、特定の日だけ休み枠を調整します
           </p>
         </div>
       </CardHeader>
@@ -166,7 +166,7 @@ function DayOffSlotCalendarSkeleton() {
           </div>
 
           <div className="grid grid-cols-7">
-            {Array.from({ length: 42 }).map((_, index) => {
+            {Array.from({ length: 35 }).map((_, index) => {
               const isLastColumn = index % 7 === 6;
 
               return (
