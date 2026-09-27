@@ -2,7 +2,7 @@
 
 import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
-import { Search } from "lucide-react";
+import { CircleHelp, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { InvitationDialogForm } from "@/components/admin/dashboard/members/InvitationDialogForm";
@@ -13,6 +13,11 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -68,7 +73,32 @@ export function MembersTable({ members, invitation }: Props) {
     <Card className="gap-0 px-3 max-sm:px-2 pt-5 pb-0 shadow-none">
       <CardHeader className="border-b px-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base">所属メンバー</CardTitle>
+          <div className="flex items-center gap-3">
+            <CardTitle className="text-base">所属メンバー</CardTitle>
+
+            <Popover>
+              <PopoverTrigger className="flex cursor-pointer items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-primary">
+                <CircleHelp className="size-3.5" />
+                ヘルプ
+              </PopoverTrigger>
+
+              <PopoverContent
+                align="start"
+                sideOffset={6}
+                className="w-80 space-y-1 p-3 text-secondary"
+              >
+                <p className="text-sm font-medium">メンバーの表示順</p>
+
+                <ul className="list-disc space-y-1 pl-4 text-sm">
+                  <li>
+                    左端のハンドルをドラッグ＆ドロップすると、表示順を変更できます
+                  </li>
+                  <li>変更した順番は、今後の全体シフトに反映されます</li>
+                  <li>公開済みのシフト月の表示順は変更されません</li>
+                </ul>
+              </PopoverContent>
+            </Popover>
+          </div>
 
           <div className="flex items-center justify-center gap-2">
             <InputGroup className="max-sm:hidden">
