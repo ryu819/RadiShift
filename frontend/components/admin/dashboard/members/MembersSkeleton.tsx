@@ -1,4 +1,5 @@
 import {
+  CircleHelp,
   GripHorizontal,
   MoreHorizontal,
   Search,
@@ -67,7 +68,13 @@ export function MembersSkeleton() {
       <Card className="gap-0 px-3 pt-5 pb-0 shadow-none max-sm:px-2">
         <CardHeader className="border-b px-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">所属メンバー</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle className="text-base">所属メンバー</CardTitle>
+              <div className="flex  items-center gap-1 text-sm text-muted-foreground ">
+                <CircleHelp className="size-3.5" />
+                ヘルプ
+              </div>
+            </div>
 
             <div className="flex items-center justify-center gap-2">
               <InputGroup className="max-sm:hidden">

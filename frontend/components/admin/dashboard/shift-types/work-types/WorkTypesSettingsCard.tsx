@@ -43,7 +43,7 @@ export function WorkTypesSettingsCard({
         <CardContent className="px-4">
           {workTypes.length === 0 ? (
             <p className="px-6 pt-4 pb-6 text-center text-sm text-muted-foreground">
-              勤務タイプがありません
+              右上の「追加」から勤務タイプを作成してください
             </p>
           ) : (
             <div className="divide-y">

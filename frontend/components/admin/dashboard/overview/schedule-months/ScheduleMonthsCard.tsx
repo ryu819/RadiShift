@@ -10,17 +10,17 @@ import { getScheduleMonths } from "@/lib/actions/schedule-months/get-schedule-mo
 
 export function ScheduleMonthsCard() {
   return (
-    <Card className="gap-4 py-5 shadow-none">
+    <Card className="gap-4 py-5 shadow-none scroll-mt-60" id="schedule-months">
       <CardHeader className="flex items-center justify-between">
         <CardTitle className="flex items-center gap-2 text-base">
           <CalendarCheck2 className="size-5" />
-          シフト月
+          シフト
         </CardTitle>
 
         <Suspense
           fallback={
             <Button type="button" variant="outline" size="sm" disabled>
-              シフト月を作成
+              シフト表を作成
             </Button>
           }
         >
@@ -43,7 +43,7 @@ async function ScheduleMonthsList() {
   if (scheduleMonths.length == 0) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
-        作成済みのシフト月はありません
+        作成済みのシフト表はありません
       </p>
     );
   }

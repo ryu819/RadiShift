@@ -21,7 +21,7 @@ export function MyShiftsEmpty() {
         </EmptyTitle>
 
         <EmptyDescription className="sm:text-base">
-          シフトが作成されると、マイシフトが表示されます。
+          シフト表がまだ作成されていません。管理者がシフト表を作成すると、マイシフトを利用できます。
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

@@ -86,6 +86,7 @@ export function ShiftTable({
           visibility={visibility}
           onChange={updateVisibility}
         />
+
         <MasterShiftPrintButton />
       </div>
 

@@ -14,7 +14,7 @@ export function PublishedScheduleMonthSummaryCard({
           <CalendarCheck2 className="size-6 text-primary" />
 
           <p className="text-sm font-medium text-muted-foreground">
-            公開シフト月
+            公開シフト
           </p>
         </div>
 

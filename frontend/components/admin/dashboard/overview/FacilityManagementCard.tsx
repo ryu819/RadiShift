@@ -13,19 +13,19 @@ import { ROUTES } from "@/constants/routes";
 const facilityManagementItems = [
   {
     title: "招待コードを確認",
-    description: "新しいメンバー招待に必要です",
+    description: "施設に参加するメンバーを招待します",
     href: `${ROUTES.adminMembers}`,
     icon: KeyRound,
   },
   {
     title: "申請の締切を設定",
-    description: "申請の締切日を管理しましょう",
+    description: "休み希望の自動承認に使用する締切日を設定します",
     href: `${ROUTES.facility}`,
     icon: CalendarClock,
   },
   {
     title: "施設ルールの編集",
-    description: "施設ルールを設定します",
+    description: "メンバーが確認する施設共通のルールを設定します",
     href: `${ROUTES.facility}`,
     icon: SlidersHorizontal,
   },

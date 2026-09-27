@@ -43,7 +43,7 @@ export function DayOffTypesSettingsCard({
         <CardContent className="px-4">
           {dayOffTypes.length === 0 ? (
             <p className="px-6 pt-4 pb-6 text-center text-sm text-muted-foreground">
-              休みタイプがありません
+              右上の「追加」から休みタイプを作成してください
             </p>
           ) : (
             <div className="divide-y">

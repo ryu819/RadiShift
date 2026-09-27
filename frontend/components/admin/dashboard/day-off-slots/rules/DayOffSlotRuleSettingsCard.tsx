@@ -29,7 +29,7 @@ export function DayOffSlotRuleSettingsCard({
           <CardTitle className="text-base">基本ルール</CardTitle>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            新しくシフト月を作成するときに曜日ごとの休み枠を設定します
+            新しいシフト表を作成するとき、曜日ごとの休み枠として使用される基本ルールです
           </p>
         </div>
       </CardHeader>
@@ -37,7 +37,7 @@ export function DayOffSlotRuleSettingsCard({
       <CardContent className="px-4">
         {dayOffTypes.length === 0 ? (
           <p className="px-6 pt-4 pb-6 text-center text-sm text-muted-foreground">
-            休み枠を使用する休みタイプがありません
+            シフト設定で「休み枠を使用」を有効にした休みタイプがありません
           </p>
         ) : (
           <>

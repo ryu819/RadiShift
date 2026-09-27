@@ -76,6 +76,7 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
                     <>
                       <Button
                         type="button"
+                        key="cancel"
                         variant="secondaryOutline"
                         size="sm"
                         disabled={isPending}
@@ -86,6 +87,7 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
 
                       <Button
                         type="submit"
+                        key="save"
                         size="sm"
                         className="w-14"
                         disabled={isPending}
@@ -100,6 +102,7 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
                   ) : (
                     <Button
                       type="button"
+                      key="edit"
                       variant="outline"
                       size="sm"
                       onClick={handleEdit}
@@ -115,14 +118,11 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
           <CardContent className="space-y-3">
             <div className="space-y-1">
               {isEditing ? (
-                <Label
-                  htmlFor="name"
-                  className="text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="name" className="text-sm font-normal ">
                   施設名
                 </Label>
               ) : (
-                <p className="text-sm text-muted-foreground">施設名</p>
+                <p className="text-sm ">施設名</p>
               )}
 
               <div className="flex min-h-9 items-center">
@@ -132,7 +132,7 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
                     name="name"
                     defaultValue={facility.name}
                     aria-invalid={!!nameError}
-                    className="font-medium max-w-xs"
+                    className="font-medium max-w-xs md:text-base"
                     required
                   />
                 ) : (
@@ -151,13 +151,16 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
               {isEditing ? (
                 <Label
                   htmlFor="requestDeadlineDay"
-                  className="text-sm font-normal text-muted-foreground"
+                  className="text-sm font-normal "
                 >
                   申請締切の設定
                 </Label>
               ) : (
-                <p className="text-sm text-muted-foreground">申請締切の設定</p>
+                <p className="text-sm ">申請締切の設定</p>
               )}
+              <p className="text-xs text-muted-foreground">
+                休み枠を使う休み希望が、自動承認される期限です
+              </p>
 
               <div className="flex min-h-9 items-center">
                 {isEditing ? (
@@ -173,7 +176,7 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
                       inputMode="numeric"
                       defaultValue={facility.requestDeadlineDay}
                       aria-invalid={!!requestDeadlineDayError}
-                      className="w-15 font-medium"
+                      className="w-15 font-medium md:text-base"
                       required
                     />
 
@@ -196,7 +199,7 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
             <Separator />
 
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm ">
                 {facility.nextRequestDeadline.month}
                 月シフトの申請締切
               </p>
@@ -210,14 +213,11 @@ export function FacilityInformationCard({ facility, isAdmin }: Props) {
 
             <div className="space-y-2">
               {isEditing ? (
-                <Label
-                  htmlFor="rulesText"
-                  className="text-sm font-normal text-muted-foreground"
-                >
+                <Label htmlFor="rulesText" className="text-sm font-normal ">
                   施設ルール
                 </Label>
               ) : (
-                <p className="text-sm text-muted-foreground">施設ルール</p>
+                <p className="text-sm ">施設ルール</p>
               )}
 
               <div className="min-h-24">

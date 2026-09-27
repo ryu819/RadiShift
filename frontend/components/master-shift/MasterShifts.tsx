@@ -1,7 +1,14 @@
+import { CalendarDays, CircleHelp, LockKeyhole } from "lucide-react";
+
 import { MasterShiftsEmpty } from "@/components/master-shift/MasterShiftsEmpty";
 import { MonthNavigation } from "@/components/master-shift/MonthNavigation";
 import { ShiftTable } from "@/components/master-shift/ShiftTable";
 import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { getCurrentUser } from "@/lib/actions/account/get-current-user";
 import { getMasterShiftScheduleMonths } from "@/lib/actions/schedule-months/get-master-shift-schedule-months";
 import { getScheduleMonth } from "@/lib/actions/schedule-months/get-schedule-month";
@@ -42,7 +49,7 @@ export async function MasterShifts({ searchParams }: Props) {
     : null;
 
   if (!scheduleMonthList || scheduleMonthList.length === 0) {
-    return <MasterShiftsEmpty />;
+    return <MasterShiftsEmpty isAdmin={currentUser?.isAdmin ?? false} />;
   }
 
   const selectedScheduleMonth = selectScheduleMonth({
@@ -58,6 +65,37 @@ export async function MasterShifts({ searchParams }: Props) {
 
   return (
     <>
+      <div className="master-shift-print-hide flex items-center justify-between text-xs md:text-sm">
+        <div className="flex items-center gap-1 md:gap-2">
+          <CalendarDays className="size-3.5 md:size-4" />
+          <span>全体シフト</span>
+        </div>
+
+        {currentUser?.isAdmin && (
+          <Popover>
+            <PopoverTrigger className="flex  items-center cursor-pointer gap-1 transition-colors hover:text-primary active:text-primary">
+              <CircleHelp className="size-3" />
+              ヘルプ
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              sideOffset={6}
+              className="w-72 space-y-1 p-3 text-secondary"
+            >
+              <p className="text-sm font-medium">使い方</p>
+
+              <ul className="list-disc space-y-1 pl-4 text-sm">
+                <li>セルを選択すると、シフトを編集できます</li>
+                <li>過去日のシフトは編集できません</li>
+                <li>
+                  <LockKeyhole className="mb-1 mr-0.5 inline size-3.5" />
+                  鍵アイコンは本人申請から作成された割当です
+                </li>
+              </ul>
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
       <div className="flex flex-col items-center justify-center gap-2">
         <MonthNavigation
           scheduleMonths={scheduleMonthList}

@@ -43,7 +43,7 @@ export function ModalityTypesSettingsCard({
         <CardContent className="px-4">
           {modalityTypes.length === 0 ? (
             <p className="px-6 pt-4 pb-6 text-center text-sm text-muted-foreground">
-              モダリティがありません
+              右上の「追加」からモダリティを作成してください
             </p>
           ) : (
             <div className="divide-y">
