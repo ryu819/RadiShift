@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, CircleHelp } from "lucide-react";
 
 import { calendarWeekdays } from "@/components/admin/dashboard/day-off-slots/calendar/day-off-slot-calendar-week-days";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,17 @@ import { cn } from "@/lib/utils";
 export function MyShiftsSkeleton() {
   return (
     <>
+      <div className="flex items-center justify-between text-xs md:text-sm">
+        <div className="flex items-center gap-1 md:gap-2">
+          <Calendar className="size-3.5 md:size-4" />
+          <span>マイシフト</span>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <CircleHelp className="size-3" />
+          <span>ヘルプ</span>
+        </div>
+      </div>
       <div className="flex flex-col items-center justify-center gap-2">
         <div className="flex items-center justify-center gap-1 md:gap-3">
           <Button variant="link" size="icon" disabled>
