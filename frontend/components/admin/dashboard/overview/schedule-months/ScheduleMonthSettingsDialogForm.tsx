@@ -158,10 +158,15 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
                     </Label>
                   </div>
                 </RadioGroup>
+
                 {statusError && (
                   <p className="text-red-500 text-sm">{statusError}</p>
                 )}
               </Field>
+
+              <div className="flex items-center justify-center rounded-md border bg-muted/40 p-2 text-xs">
+                未公開では、マイシフトで本人申請由来の勤務・休みのみ表示されます。公開すると、全ての割当を確認できるようになります。
+              </div>
             </FieldGroup>
 
             <Button type="submit" disabled={isPending} className="w-full mt-5">
@@ -192,7 +197,7 @@ export function ScheduleMonthSettingsDialogForm({ scheduleMonth }: Props) {
               className="w-full"
               onClick={openDeleteDialog}
             >
-              シフト月を削除
+              シフト表を削除
             </Button>
           </div>
         </DialogContent>

@@ -58,11 +58,11 @@ export function ScheduleMonthDeleteDialog({
         <DialogHeader>
           <DialogTitle className="text-center">
             {scheduleMonth.year}年 {scheduleMonth.month}
-            月のシフト月を削除
+            月のシフト表を削除
           </DialogTitle>
 
           <p className="my-4 text-left">
-            シフト月を削除すると、これまでのデータは全て削除され、復元できなくなります。この操作は取り消せません。本当にシフト月を削除してもよろしいですか？
+            シフト表を削除すると、これまでのデータは全て削除され、復元できなくなります。この操作は取り消せません。本当にシフト表を削除してもよろしいですか？
           </p>
         </DialogHeader>
         <div className="mb-4 flex items-center gap-2">
@@ -72,7 +72,7 @@ export function ScheduleMonthDeleteDialog({
             onCheckedChange={(checked) => setIsAgreed(checked === true)}
           />
           <label htmlFor="deleteAgreement" className="text-sm">
-            内容を確認し、シフト月を削除します
+            内容を確認し、シフト表を削除します
           </label>
         </div>
 

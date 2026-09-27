@@ -55,7 +55,7 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button type="button" variant="outline" size="sm">
-          シフト月を作成
+          シフト表を作成
         </Button>
       </DialogTrigger>
 
@@ -63,13 +63,13 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
         <form action={formAction}>
           <DialogHeader>
             <DialogTitle className="text-center text-xl">
-              シフト月を作成
+              シフト表を作成
             </DialogTitle>
           </DialogHeader>
 
           <FieldGroup className="mt-4 gap-3">
             <Field className="gap-2">
-              <Label htmlFor="yearAndMonth">シフト月</Label>
+              <Label htmlFor="yearAndMonth">年月</Label>
 
               <Input
                 id="yearAndMonth"
@@ -99,7 +99,7 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
               />
 
               <p className="mt-1 ml-1 text-xs text-muted-foreground">
-                0.5日単位で設定できます
+                1人あたりの公休日数を0.5日単位で設定できます
               </p>
               {monthlyDaysOffError && (
                 <p className="text-red-500 text-sm">{monthlyDaysOffError}</p>
