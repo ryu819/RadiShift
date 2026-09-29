@@ -40,6 +40,9 @@ gem "devise-i18n"
 # 祝日判定をする
 gem "holiday_japan"
 
+# Google ID Tokenの検証
+gem "googleauth", "~> 1.17.4"
+
 group :development, :test do
   # 開発環境でメール送信をテストする
   gem "letter_opener_web"

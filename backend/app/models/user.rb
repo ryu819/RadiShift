@@ -19,6 +19,7 @@ class User < ApplicationRecord
                             if: -> { facility.present? }
 
   validates :display_order, absence: true, if: -> { facility.nil? }
+  validates :google_sub, uniqueness: true, allow_nil: true
 
   devise :database_authenticatable, :registerable, :validatable, :confirmable, :recoverable,
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
@@ -57,5 +58,20 @@ class User < ApplicationRecord
     modality_assignments
       .where(schedule_day: future_schedule_days)
       .destroy_all
+  end
+
+  def password_set?
+    encrypted_password.present?
+  end
+
+  private
+
+  def password_required?
+    return false if google_sub.present? &&
+                    encrypted_password.blank? &&
+                    password.nil? &&
+                    password_confirmation.nil?
+
+    super
   end
 end
