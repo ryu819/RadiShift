@@ -23,14 +23,11 @@ class GoogleIdentityVerifier
     {
       sub: payload["sub"],
       email: payload["email"],
-      picture: payload["picture"].presence
+      picture: payload["picture"]
     }
-  rescue Google::Auth::IDTokens::KeySourceError => e
-    Rails.logger.warn("Google ID token key fetch failed: #{e.class}")
-
-    raise ServiceUnavailableError,
-          "Google認証サービスを確認できませんでした。"
   rescue Google::Auth::IDTokens::VerificationError
     raise VerificationError, "Google認証に失敗しました。"
+  rescue Google::Auth::IDTokens::KeySourceError
+    raise ServiceUnavailableError, "Google認証サービスを確認できませんでした。"
   end
 end

@@ -22,6 +22,7 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
+      post "google_login", to: "google_sessions#create"
       namespace :current do
         resource :user, only: [:show, :update, :destroy] do
           patch :avatar_image
