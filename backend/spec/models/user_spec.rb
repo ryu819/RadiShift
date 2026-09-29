@@ -205,4 +205,49 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe "Google認証" do
+    context "Google登録ユーザーがパスワードを設定していない時" do
+      let(:google_user) { build(:user, :google_registered) }
+
+      it "有効である" do
+        expect(google_user).to be_valid
+      end
+
+      it "パスワード未設定として扱う" do
+        expect(google_user.password_set?).to be false
+      end
+    end
+
+    context "通常登録ユーザーがパスワードを設定していない時" do
+      let(:user) { build(:user, password: nil) }
+
+      it "無効である" do
+        expect(user).to be_invalid
+      end
+    end
+
+    context "Google登録ユーザーが後からパスワードを設定する時" do
+      let(:google_user) { create(:user, :google_registered) }
+
+      it "パスワードを設定できる" do
+        google_user.password = "password"
+        google_user.password_confirmation = "password"
+
+        google_user.save!
+
+        expect(google_user.reload.password_set?).to be true
+        expect(google_user.valid_password?("password")).to be true
+      end
+    end
+
+    context "同じgoogle_subがすでに登録されている時" do
+      let!(:existing_user) { create(:user, :google_registered) }
+      let(:user) { build(:user, :google_registered, google_sub: existing_user.google_sub) }
+
+      it "無効である" do
+        expect(user).to be_invalid
+      end
+    end
+  end
 end
