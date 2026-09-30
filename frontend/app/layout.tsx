@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import { Suspense } from "react";
 
+import { GoogleIdentityProvider } from "@/components/google-auth/GoogleIdentityProvider";
 import { Header } from "@/components/header/Header";
 import { FlashToastServer } from "@/components/toast/FlashToastServer";
 import { Toaster } from "@/components/ui/sonner";
@@ -32,14 +33,18 @@ export default function RootLayout({
       <body
         className={`${notoSansJP.variable} antialiased font-sans bg-slate-50 min-h-screen flex flex-col text-secondary`}
       >
-        <Toaster closeButton />
-        <Suspense fallback={null}>
-          <FlashToastServer />
-        </Suspense>
+        <GoogleIdentityProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+        >
+          <Toaster closeButton />
+          <Suspense fallback={null}>
+            <FlashToastServer />
+          </Suspense>
 
-        <Header />
+          <Header />
 
-        {children}
+          {children}
+        </GoogleIdentityProvider>
       </body>
     </html>
   );

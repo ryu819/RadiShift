@@ -15,3 +15,17 @@ export async function deleteJwt() {
   const cookieStore = await cookies();
   cookieStore.delete("jwt");
 }
+
+export async function setJwt(jwt: string | null) {
+  if (!jwt) return;
+
+  const cookieStore = await cookies();
+
+  cookieStore.set("jwt", jwt, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24,
+  });
+}

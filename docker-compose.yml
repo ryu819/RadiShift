@@ -16,6 +16,7 @@ services:
     command: bash
     environment:
       APP_HOST: localhost:3000
+      GOOGLE_CLIENT_ID: 805388227113-dkoianm0ormcdrcb8cop5iqtdol0n1nv.apps.googleusercontent.com
     volumes:
       - ./backend:/backend
     ports:

@@ -1,8 +1,8 @@
 "use server";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { ROUTES } from "@/constants/routes";
+import { setJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
@@ -50,17 +50,9 @@ export async function submitLoginForm(
       return { values: { email } };
     }
 
-    const jwt = res.headers.get("authorization") as string;
+    const jwt = res.headers.get("authorization");
 
-    const cookieStore = await cookies();
-
-    cookieStore.set("jwt", jwt, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24,
-    });
+    await setJwt(jwt);
 
     await setFlashToast({ type: "success", message: data.message });
   } catch {
