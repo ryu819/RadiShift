@@ -40,6 +40,7 @@ Rails.application.routes.draw do
         resource :user, only: [:show, :update, :destroy] do
           patch :avatar_image
         end
+        resource :google_account, only: [:create, :destroy]
         resources :shifts, only: :show
       end
       namespace :admin do

@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe "Api::V1::GoogleRegistrations", type: :request do
   let(:credential) { "google-id-token" }
 
-  let(:google_identity) { { sub: "123456789", email: "google@gmail.com", picture: nil } }
+  let(:google_identity) { { sub: "123456789", email: "google@gmail.com" } }
 
   before do
     allow(GoogleIdentityVerifier)

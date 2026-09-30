@@ -21,13 +21,6 @@ module Api
         }, status: :service_unavailable
       end
 
-      rescue_from ActiveRecord::RecordNotUnique do
-        render json: {
-          message: "Googleアカウントの登録状態が変更されました。もう一度お試しください。",
-          code: "google_account_conflict"
-        }, status: :conflict
-      end
-
       def check
         google_identity = GoogleIdentityVerifier.call(params[:credential])
 
@@ -135,7 +128,9 @@ module Api
       end
 
       def link_google_account(user, google_identity)
-        unless user.valid_password?(params[:current_password].to_s)
+        password = params[:current_password]
+
+        unless password.present? && user.valid_password?(password)
           render json: {
             message: "パスワードが正しくありません。",
             errors: {

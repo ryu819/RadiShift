@@ -8,9 +8,9 @@ module Api
 
         def show
           render json: current_user.as_json(
-            only: [:id, :name, :email, :facility_id, :is_admin]
+            only: [:id, :name, :email, :facility_id, :is_admin, :google_email]
           ).merge(
-            avatar_image_url: avatar_image_url
+            avatar_image_url: avatar_image_url, password_set: current_user.password_set?
           )
         end
 
@@ -93,6 +93,8 @@ module Api
             email: "deleted_user_#{current_user.id}@example.invalid",
             password: random_password,
             password_confirmation: random_password,
+            google_sub: nil,
+            google_email: nil,
             reset_password_token: nil,
             reset_password_sent_at: nil,
             confirmation_token: nil,

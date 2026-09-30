@@ -10,7 +10,7 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
     subject { get(api_v1_current_shift_path(schedule_month), headers: { "Authorization": token }) }
 
     let(:schedule_month) do
-      create(:schedule_month, facility: user.facility, is_published: schedule_month_is_published)
+      create(:schedule_month, date: Date.current, facility: user.facility, is_published: schedule_month_is_published)
     end
 
     let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month) }

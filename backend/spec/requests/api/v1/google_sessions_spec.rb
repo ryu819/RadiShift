@@ -18,8 +18,7 @@ RSpec.describe "Api::V1::GoogleSessions", type: :request do
                 .and_return(
                   {
                     sub: "123456789",
-                    email: "new@gmail.com",
-                    picture: nil
+                    email: "new@gmail.com"
                   }
                 )
       end
@@ -50,8 +49,7 @@ RSpec.describe "Api::V1::GoogleSessions", type: :request do
                 .and_return(
                   {
                     sub: "unregistered-google-sub",
-                    email: "unregistered@gmail.com",
-                    picture: nil
+                    email: "unregistered@gmail.com"
                   }
                 )
       end
@@ -84,8 +82,7 @@ RSpec.describe "Api::V1::GoogleSessions", type: :request do
                 .and_return(
                   {
                     sub: user.google_sub,
-                    email: user.google_email,
-                    picture: nil
+                    email: user.google_email
                   }
                 )
       end
@@ -108,8 +105,7 @@ RSpec.describe "Api::V1::GoogleSessions", type: :request do
                 .and_return(
                   {
                     sub: user.google_sub,
-                    email: user.google_email,
-                    picture: nil
+                    email: user.google_email
                   }
                 )
       end

@@ -6,4 +6,6 @@ export type User = {
   rulesText: string | null;
   facilityId: number | null;
   avatarImageUrl: string | null;
+  googleEmail: string | null;
+  passwordSet: boolean;
 };

@@ -54,6 +54,17 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "Googleアカウントが連携されている時" do
+      let(:user) { create(:user, google_sub: "123456789", google_email: "google@gmail.com") }
+
+      it "Google連携情報を返す" do
+        subject
+        res = JSON.parse(response.body)
+        expect(res["google_email"]).to eq("google@gmail.com")
+        expect(res["password_set"]).to be true
+      end
+    end
   end
 
   describe "PUT /api/v1/current/user" do
@@ -116,7 +127,7 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
     subject { delete(api_v1_current_user_path, headers: { "Authorization": token }) }
 
     context "施設に所属している自分のアカウントを削除する時" do
-      let(:user) { create(:user, :with_facility, :with_avatar, rules_text: "個別ルール") }
+      let(:user) { create(:user, :with_facility, :with_avatar, rules_text: "個別ルール", google_sub: "123456789", google_email: "google@gmail.com") }
       let(:facility) { user.facility }
       let(:future_date) { Date.current.next_month.beginning_of_month }
       let(:future_schedule_month) { create(:schedule_month, facility: user.facility, date: future_date) }
@@ -148,6 +159,13 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       it "未来のAssignmentを削除してからアカウントを削除する" do
         subject
         expect(WorkAssignment.exists?(future_work_assignment.id)).to be false
+      end
+
+      it "Google連携情報を削除する" do
+        subject
+        user.reload
+        expect(user.google_sub).to be_nil
+        expect(user.google_email).to be_nil
       end
 
       it "削除前に発行されたJWTでは認証できない" do

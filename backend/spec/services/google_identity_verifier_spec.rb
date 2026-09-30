@@ -9,8 +9,7 @@ RSpec.describe GoogleIdentityVerifier do
     {
       "sub" => "123456789",
       "email" => "test@gmail.com",
-      "email_verified" => true,
-      "picture" => "https://example.com/avatar.png"
+      "email_verified" => true
     }
   end
 
@@ -33,7 +32,6 @@ RSpec.describe GoogleIdentityVerifier do
 
       expect(result[:sub]).to eq("123456789")
       expect(result[:email]).to eq("test@gmail.com")
-      expect(result[:picture]).to eq("https://example.com/avatar.png")
     end
 
     it "Google Client IDを使ってTokenを検証する" do
@@ -45,22 +43,6 @@ RSpec.describe GoogleIdentityVerifier do
                 credential,
                 aud: "test-client-id.apps.googleusercontent.com"
               )
-    end
-  end
-
-  context "プロフィール画像がない時" do
-    let(:payload) do
-      {
-        "sub" => "123456789",
-        "email" => "test@gmail.com",
-        "email_verified" => true
-      }
-    end
-
-    it "pictureはnilになる" do
-      result = GoogleIdentityVerifier.call(credential)
-
-      expect(result[:picture]).to be_nil
     end
   end
 
