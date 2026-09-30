@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import snakecaseKeys from "snakecase-keys";
 
 import { ROUTES } from "@/constants/routes";
+import { getJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 type PasswordResetResponse = {
@@ -31,6 +32,8 @@ export async function submitPasswordResetForm(
   const password = formData.get("password") as string;
   const passwordConfirmation = formData.get("passwordConfirmation") as string;
   const resetPasswordToken = formData.get("resetPasswordToken") as string;
+
+  const jwt = await getJwt();
 
   try {
     const res = await fetch(`${process.env.RAILS_API_URL}/password`, {
@@ -75,5 +78,9 @@ export async function submitPasswordResetForm(
     };
   }
 
-  redirect(ROUTES.settings);
+  if (jwt) {
+    redirect(ROUTES.settings);
+  }
+
+  redirect("/");
 }

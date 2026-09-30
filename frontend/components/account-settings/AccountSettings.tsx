@@ -30,7 +30,7 @@ export async function AccountSettings() {
             belongsToFacility ? "flex justify-between" : "flex justify-center"
           }
         >
-          <PasswordResetDialogButton />
+          <PasswordResetDialogButton passwordSet={user?.passwordSet ?? true} />
 
           {belongsToFacility && <LeaveFacilityDialogButton />}
         </div>
