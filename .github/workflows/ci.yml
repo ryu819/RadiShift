@@ -20,6 +20,7 @@ jobs:
     env:
       RAILS_ENV: test
       APP_HOST: example.com
+      GOOGLE_CLIENT_ID: test-client-id.apps.googleusercontent.com
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
       SECRET_KEY_BASE: dummy
 

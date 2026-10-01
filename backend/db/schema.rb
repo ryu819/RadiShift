@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_22_071813) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_29_111127) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -196,6 +196,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_071813) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.bigint "facility_id"
+    t.string "google_email"
+    t.string "google_sub"
     t.boolean "is_admin", default: false, null: false
     t.boolean "is_deleted", default: false, null: false
     t.string "name", null: false
@@ -208,6 +210,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_071813) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["facility_id", "display_order"], name: "index_users_on_facility_id_and_display_order"
     t.index ["facility_id"], name: "index_users_on_facility_id"
+    t.index ["google_sub"], name: "index_users_on_google_sub", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 

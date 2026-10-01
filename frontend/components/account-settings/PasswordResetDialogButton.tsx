@@ -17,7 +17,11 @@ import {
   requestPasswordReset,
 } from "@/lib/actions/auth/request-password-reset";
 
-export function PasswordResetDialogButton() {
+export function PasswordResetDialogButton({
+  passwordSet,
+}: {
+  passwordSet: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [_serverState, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
@@ -37,27 +41,34 @@ export function PasswordResetDialogButton() {
       values: {},
     },
   );
+
+  const title = passwordSet ? "パスワード再設定" : "パスワードを設定";
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button type="button" className="w-35" variant="outline">
-          パスワード再設定
+          {title}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xs sm:max-w-sm">
         <form action={formAction}>
           <DialogHeader>
-            <DialogTitle className="text-center">パスワード再設定</DialogTitle>
+            <DialogTitle className="text-center">{title}</DialogTitle>
             <p className="my-4 text-left">
-              登録済みのメールアドレス宛に、パスワード再設定用のメールを送信します。
+              {passwordSet
+                ? "登録済みのメールアドレス宛に、パスワード再設定用のメールを送信します。"
+                : "登録済みのメールアドレス宛に、パスワード設定用のメールを送信します。"}
             </p>
           </DialogHeader>
           <DialogFooter>
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending ? (
                 <Loader2 className="animate-spin" />
+              ) : passwordSet ? (
+                "パスワード再設定メールを送信"
               ) : (
-                "パスワード再設定を送信"
+                "パスワード設定メールを送信"
               )}
             </Button>
           </DialogFooter>

@@ -31,5 +31,12 @@ FactoryBot.define do
         user.avatar_image.attach(file)
       end
     end
+
+    trait :google_registered do
+      sequence(:google_sub) { |n| "google-sub-#{n}" }
+      sequence(:google_email) { |n| "google-#{n}@gmail.com" }
+      password { nil }
+      password_confirmation { nil }
+    end
   end
 end

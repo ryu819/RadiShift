@@ -11,5 +11,3 @@ export const accountUpdateSchema = z.object({
     },
   }),
 });
-
-export type SignupFormValues = z.infer<typeof accountUpdateSchema>;

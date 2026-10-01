@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { startTransition, useActionState, useState } from "react";
 import { Form, useForm } from "react-hook-form";
 
+import { GoogleLogin } from "@/components/header/login/GoogleLogin";
 import { RequestPasswordResetDialog } from "@/components/header/RequestPasswordResetDialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,22 +63,38 @@ export function LoginForm() {
           <Button variant="outline">ログイン</Button>
         </DialogTrigger>
 
-        <DialogContent className="max-w-xs sm:max-w-sm">
+        <DialogContent
+          className="max-w-xs sm:max-w-sm"
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+          }}
+        >
+          <DialogHeader className="mb-2 gap-3">
+            <DialogTitle className="text-center text-xl">ログイン</DialogTitle>
+          </DialogHeader>
+
+          <GoogleLogin />
+
+          <div className="flex items-center gap-3">
+            <hr className="flex-1 border-t" />
+
+            <span className="text-sm text-muted-foreground">または</span>
+
+            <hr className="flex-1 border-t" />
+          </div>
+
           <Form
             control={control}
             onSubmit={({ formData }) =>
-              startTransition(() => formAction(formData))
+              startTransition(() => {
+                formAction(formData);
+              })
             }
           >
-            <DialogHeader className="gap-3 mb-2">
-              <DialogTitle className="text-xl text-center">
-                ログイン
-              </DialogTitle>
-            </DialogHeader>
-
             <FieldGroup className="gap-2">
               <Field className="gap-2">
                 <Label htmlFor="login-email">メールアドレス</Label>
+
                 <Input
                   id="login-email"
                   {...register("email")}
@@ -87,8 +104,9 @@ export function LoginForm() {
                   aria-invalid={!!clientErrors.email?.message}
                   required
                 />
+
                 {clientErrors.email?.message && (
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {clientErrors.email.message}
                   </p>
                 )}
@@ -96,6 +114,7 @@ export function LoginForm() {
 
               <Field className="gap-2">
                 <Label htmlFor="login-password">パスワード</Label>
+
                 <Input
                   id="login-password"
                   {...register("password")}
@@ -105,8 +124,9 @@ export function LoginForm() {
                   aria-invalid={!!clientErrors.password?.message}
                   required
                 />
+
                 {clientErrors.password?.message && (
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {clientErrors.password.message}
                   </p>
                 )}
@@ -116,19 +136,19 @@ export function LoginForm() {
             <DialogFooter>
               <Button
                 type="submit"
-                className="mt-5 text-md w-full"
+                className="mt-5 w-full text-md"
                 disabled={isPending || !isValid}
               >
                 {isPending ? <Loader2 className="animate-spin" /> : "ログイン"}
               </Button>
             </DialogFooter>
 
-            <div className="text-center mt-4">
+            <div className="mt-4 text-center">
               パスワードをお忘れの方は
               <button
                 type="button"
                 onClick={openPasswordResetDialog}
-                className="text-primary underline hover:opacity-50 transition cursor-pointer"
+                className="cursor-pointer text-primary underline transition hover:opacity-50"
               >
                 こちら
               </button>

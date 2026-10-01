@@ -15,5 +15,3 @@ export const loginSchema = z.object({
     .min(6, { message: "パスワードは6文字以上で入力してください" })
     .max(128, { message: "パスワードは128文字以内で入力してください" }),
 });
-
-export type SignupFormValues = z.infer<typeof loginSchema>;

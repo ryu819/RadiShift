@@ -1,5 +1,5 @@
-import { LoginForm } from "@/components/header/LoginForm";
-import { SignUpForm } from "@/components/header/SignupForm";
+import { LoginForm } from "@/components/header/login/LoginForm";
+import { SignUpForm } from "@/components/header/signup/SignupForm";
 import { getCurrentUser } from "@/lib/actions/account/get-current-user";
 
 import { UserDropdownMenu } from "./UserDropdownMenu";
