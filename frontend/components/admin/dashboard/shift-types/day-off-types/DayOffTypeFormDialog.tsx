@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  ActionState,
+  type ActionState,
   createDayOffTypeForm,
 } from "@/lib/actions/shift-types/create-day-off-type";
 import { updateDayOffTypeForm } from "@/lib/actions/shift-types/update-day-off-type";

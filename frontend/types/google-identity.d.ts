@@ -18,6 +18,7 @@ type GoogleButtonConfiguration = {
   shape?: "rectangular" | "pill" | "circle" | "square";
   logo_alignment?: "left" | "center";
   locale?: string;
+  width?: string;
 };
 
 declare global {

@@ -26,6 +26,8 @@ export function GoogleButton({ text, onCredential }: Props) {
   useEffect(() => {
     if (!ready || !buttonRef.current || !window.google) return;
 
+    const width = Math.min(buttonRef.current.offsetWidth, 400);
+
     buttonRef.current.replaceChildren();
 
     window.google.accounts.id.renderButton(buttonRef.current, {
@@ -34,10 +36,11 @@ export function GoogleButton({ text, onCredential }: Props) {
       size: "large",
       text,
       shape: "rectangular",
-      logo_alignment: "left",
+      logo_alignment: "center",
       locale: "ja",
+      width: String(width),
     });
   }, [ready, text]);
 
-  return <div ref={buttonRef} className="flex w-full justify-center" />;
+  return <div ref={buttonRef} className="w-full" />;
 }
