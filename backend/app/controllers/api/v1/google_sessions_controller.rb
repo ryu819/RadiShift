@@ -16,8 +16,7 @@ module Api
 
         unless user
           return render json: {
-            message: "このGoogleアカウントは登録されていません。新規登録からGoogleで登録してください。",
-            code: "google_account_not_registered"
+            message: "このGoogleアカウントは登録されていません。新規登録からGoogleで登録してください。"
           }, status: :unprocessable_content
         end
 

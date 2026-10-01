@@ -59,7 +59,6 @@ RSpec.describe "Api::V1::GoogleSessions", type: :request do
         res = JSON.parse(response.body)
         expect(response).to have_http_status(:unprocessable_content)
         expect(res["message"]).to eq("このGoogleアカウントは登録されていません。新規登録からGoogleで登録してください。")
-        expect(res["code"]).to eq("google_account_not_registered")
       end
 
       it "JWTを発行しない" do

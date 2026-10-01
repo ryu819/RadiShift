@@ -65,38 +65,31 @@ module Api
 
         def render_already_linked
           render json: {
-            message: "Googleアカウントはすでに連携されています。",
-            code: "google_account_already_linked"
+            message: "Googleアカウントはすでに連携されています。"
           }, status: :conflict
         end
 
         def render_not_linked
           render json: {
-            message: "Googleアカウントは連携されていません。",
-            code: "google_account_not_linked"
+            message: "Googleアカウントは連携されていません。"
           }, status: :conflict
         end
 
         def render_password_not_set
           render json: {
-            message: "先にRadiShiftのパスワードを設定してください。",
-            code: "password_not_set"
+            message: "先にRadiShiftのパスワードを設定してください。"
           }, status: :unprocessable_content
         end
 
         def render_invalid_password
           render json: {
-            message: "パスワードが正しくありません。",
-            errors: {
-              current_password: ["が正しくありません。"]
-            }
+            message: "パスワードが正しくありません。"
           }, status: :unprocessable_content
         end
 
         def render_google_account_in_use
           render json: {
-            message: "このGoogleアカウントは別のRadiShiftアカウントに連携されています。",
-            code: "google_account_in_use"
+            message: "このGoogleアカウントは別のRadiShiftアカウントに連携されています。"
           }, status: :conflict
         end
       end

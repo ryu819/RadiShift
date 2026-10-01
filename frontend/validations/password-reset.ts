@@ -16,5 +16,3 @@ export const passwordResetSchema = z
     message: "パスワードが一致しません",
     path: ["passwordConfirmation"],
   });
-
-export type SignupFormValues = z.infer<typeof passwordResetSchema>;

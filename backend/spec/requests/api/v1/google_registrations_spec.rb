@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe "Api::V1::GoogleRegistrations", type: :request do
   let(:credential) { "google-id-token" }
 
-  let(:google_identity) { { sub: "123456789", email: "google@gmail.com" } }
+  let(:google_identity) { { sub: "123456789", email: "google@gmail.com", name: "test" } }
 
   before do
     allow(GoogleIdentityVerifier)
@@ -24,6 +24,7 @@ RSpec.describe "Api::V1::GoogleRegistrations", type: :request do
         expect(response).to have_http_status(:ok)
         expect(res["status"]).to eq("new_user")
         expect(res["email"]).to eq("google@gmail.com")
+        expect(res["name"]).to eq("test")
       end
     end
 
@@ -94,9 +95,7 @@ RSpec.describe "Api::V1::GoogleRegistrations", type: :request do
 
       it "Userを新しく作らない" do
         expect { subject }.not_to change { User.count }
-        res = JSON.parse(response.body)
         expect(response).to have_http_status(:conflict)
-        expect(res["code"]).to eq("existing_user_requires_password")
       end
     end
 
@@ -165,10 +164,8 @@ RSpec.describe "Api::V1::GoogleRegistrations", type: :request do
 
       it "上書きしない" do
         subject
-        res = JSON.parse(response.body)
         user.reload
         expect(response).to have_http_status(:conflict)
-        expect(res["code"]).to eq("google_account_already_linked")
         expect(user.google_sub).to eq("other-google-sub")
       end
     end

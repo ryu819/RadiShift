@@ -22,7 +22,8 @@ class GoogleIdentityVerifier
 
     {
       sub: payload["sub"],
-      email: payload["email"]
+      email: payload["email"],
+      name: payload["name"]
     }
   rescue Google::Auth::IDTokens::VerificationError
     raise VerificationError, "Google認証に失敗しました。"

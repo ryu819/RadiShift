@@ -10,5 +10,3 @@ export const requestPasswordResetSchema = z.object({
     },
   }),
 });
-
-export type SignupFormValues = z.infer<typeof requestPasswordResetSchema>;

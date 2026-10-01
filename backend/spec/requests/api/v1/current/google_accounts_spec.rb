@@ -62,10 +62,8 @@ RSpec.describe "Api::V1::Current::GoogleAccounts", type: :request do
 
       it "上書きしない" do
         subject
-        res = JSON.parse(response.body)
         user.reload
         expect(response).to have_http_status(:conflict)
-        expect(res["code"]).to eq("google_account_already_linked")
         expect(user.google_sub).to eq("already-linked")
       end
     end
@@ -75,9 +73,7 @@ RSpec.describe "Api::V1::Current::GoogleAccounts", type: :request do
 
       it "連携しない" do
         subject
-        res = JSON.parse(response.body)
         expect(response).to have_http_status(:conflict)
-        expect(res["code"]).to eq("google_account_in_use")
         expect(user.reload.google_sub).to be_nil
       end
     end
@@ -122,9 +118,7 @@ RSpec.describe "Api::V1::Current::GoogleAccounts", type: :request do
 
       it "先にパスワード設定を要求する" do
         subject
-        res = JSON.parse(response.body)
         expect(response).to have_http_status(:unprocessable_content)
-        expect(res["code"]).to eq("password_not_set")
         expect(user.reload.google_sub).to eq("123456789")
       end
     end

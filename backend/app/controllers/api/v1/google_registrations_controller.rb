@@ -39,7 +39,8 @@ module Api
 
         render json: {
           status: status,
-          email: google_identity[:email]
+          email: google_identity[:email],
+          name: google_identity[:name]
         }, status: :ok
       end
 
@@ -50,8 +51,7 @@ module Api
 
         if User.exists?(email: google_identity[:email])
           return render json: {
-            message: "このメールアドレスのRadiShiftアカウントが存在します。現在のパスワードを入力してください。",
-            code: "existing_user_requires_password"
+            message: "このメールアドレスのRadiShiftアカウントが存在します。現在のパスワードを入力してください。"
           }, status: :conflict
         end
 
@@ -87,8 +87,7 @@ module Api
 
         if user.nil?
           return render json: {
-            message: "既存のRadiShiftアカウントが見つかりません。もう一度Googleで登録してください。",
-            code: "existing_user_not_found"
+            message: "既存のRadiShiftアカウントが見つかりません。もう一度Googleで登録してください。"
           }, status: :conflict
         end
 
@@ -115,15 +114,13 @@ module Api
 
       def render_google_account_already_registered
         render json: {
-          message: "このGoogleアカウントは登録済みです。ログインしてください。",
-          code: "google_account_already_registered"
+          message: "このGoogleアカウントは登録済みです。ログインしてください。"
         }, status: :conflict
       end
 
       def render_link_failed(user)
         render json: {
-          message: "Googleアカウントの連携に失敗しました。",
-          errors: user.errors.to_hash(true)
+          message: "Googleアカウントの連携に失敗しました。"
         }, status: :unprocessable_content
       end
 
@@ -132,10 +129,8 @@ module Api
 
         unless password.present? && user.valid_password?(password)
           render json: {
-            message: "パスワードが正しくありません。",
-            errors: {
-              current_password: ["が正しくありません。"]
-            }
+            message: "パスワードが正しくありません。"
+
           }, status: :unprocessable_content
 
           return false
@@ -143,8 +138,7 @@ module Api
 
         if user.google_sub.present?
           render json: {
-            message: "このRadiShiftアカウントにはすでにGoogleアカウントが連携されています。",
-            code: "google_account_already_linked"
+            message: "このRadiShiftアカウントにはすでにGoogleアカウントが連携されています。"
           }, status: :conflict
 
           return false
@@ -167,11 +161,9 @@ module Api
       end
 
       def save_google_link(user)
-        if user.confirmed?
-          user.save!
-        else
-          user.confirm(ensure_valid: true)
-        end
+        return user.save if user.confirmed?
+
+        user.confirm(ensure_valid: true)
       end
     end
   end
