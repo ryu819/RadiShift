@@ -50,9 +50,7 @@ export async function submitLoginForm(
       return { values: { email } };
     }
 
-    const jwt = res.headers.get("authorization");
-
-    await setJwt(jwt);
+    await setJwt(res.headers.get("authorization"));
 
     await setFlashToast({ type: "success", message: data.message });
   } catch {
@@ -62,5 +60,5 @@ export async function submitLoginForm(
     return { values: { email } };
   }
 
-  redirect(`${ROUTES.masterShift}`);
+  redirect(ROUTES.masterShift);
 }
