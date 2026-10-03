@@ -65,6 +65,18 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         expect(res["password_set"]).to be true
       end
     end
+
+    context "デモ環境が期限切れになった時" do
+      let(:demo_environment) { create(:demo_environment, created_at: 24.hours.ago) }
+      let(:facility) { create(:facility, demo_environment: demo_environment) }
+      let(:user) { create(:user, facility: facility, demo_environment: demo_environment) }
+
+      it "期限内に発行されたJWTでも認証できない" do
+        token = login_and_get_token(user)
+        get(api_v1_current_user_path, headers: { "Authorization": token })
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
   end
 
   describe "PUT /api/v1/current/user" do

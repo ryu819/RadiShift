@@ -66,6 +66,14 @@ class User < ApplicationRecord
     encrypted_password.present?
   end
 
+  def demo_expired?
+    demo_environment&.expired? || false
+  end
+
+  def active_for_authentication?
+    super && !demo_expired?
+  end
+
   private
 
   def password_required?
