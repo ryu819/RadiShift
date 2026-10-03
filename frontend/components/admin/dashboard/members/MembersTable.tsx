@@ -77,9 +77,9 @@ export function MembersTable({ members, invitation }: Props) {
             <CardTitle className="text-base">所属メンバー</CardTitle>
 
             <Popover>
-              <PopoverTrigger className="flex cursor-pointer items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-primary">
-                <CircleHelp className="size-3.5" />
-                ヘルプ
+              <PopoverTrigger className="flex cursor-pointer items-center gap-1 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-secondary">
+                <CircleHelp className="size-3" />
+                使い方
               </PopoverTrigger>
 
               <PopoverContent

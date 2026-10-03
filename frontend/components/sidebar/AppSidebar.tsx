@@ -34,7 +34,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
               <SidebarItem
                 href={`${ROUTES.settings}`}
                 icon="settings"
-                label="設定"
+                label="アカウント設定"
               />
               {isAdmin && (
                 <SidebarItem

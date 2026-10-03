@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { submitLoginForm } from "@/lib/actions/auth/login";
 import { loginSchema } from "@/validations/login";
 
-export function LoginForm() {
+export function LoginForm({ triggerClassName }: { triggerClassName?: string }) {
   const [_serverState, formAction, isPending] = useActionState(
     submitLoginForm,
     {
@@ -60,7 +60,9 @@ export function LoginForm() {
     <>
       <Dialog open={loginOpen} onOpenChange={handleLoginOpenChange}>
         <DialogTrigger asChild>
-          <Button variant="outline">ログイン</Button>
+          <Button variant="outline" className={triggerClassName}>
+            ログイン
+          </Button>
         </DialogTrigger>
 
         <DialogContent

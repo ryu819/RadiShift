@@ -43,7 +43,7 @@ const workflowSteps = [
   },
   {
     title: "シフト表を公開",
-    description: "シフト月の公開状態を「公開」に変更します",
+    description: "シフト表の公開状態を「公開」に変更します",
     scrollTarget: "schedule-months",
   },
 ];

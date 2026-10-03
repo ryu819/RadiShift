@@ -16,7 +16,7 @@ const SkeletonDays = Array.from({ length: 31 }, (_, index) => index + 1);
 export function MasterShiftsSkeleton() {
   return (
     <>
-      <div className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+      <div className="flex items-center h-8 gap-1 md:gap-2 text-xs md:text-sm">
         <CalendarDays className="size-3.5 md:size-4" />
         <span>全体シフト</span>
       </div>
