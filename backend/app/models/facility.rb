@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Facility < ApplicationRecord
+  belongs_to :demo_environment, optional: true
   has_many :users, dependent: :nullify
   has_many :schedule_months, dependent: :destroy
   has_many :work_types, dependent: :destroy

@@ -54,6 +54,15 @@ RSpec.describe User, type: :model do
     end
   end
 
+  context "デモ環境に紐づいている時" do
+    let(:demo_environment) { create(:demo_environment) }
+    let(:user) { create(:user, demo_environment: demo_environment) }
+
+    it "デモ環境に属する" do
+      expect(user.demo_environment).to eq(demo_environment)
+    end
+  end
+
   describe "display_order" do
     context "施設に所属している時" do
       let(:facility) { create(:facility) }

@@ -2,14 +2,16 @@
 
 class User < ApplicationRecord
   belongs_to :facility, optional: true
+  belongs_to :demo_environment, optional: true
   has_one_attached :avatar_image do |attachable|
     attachable.variant :avatar, resize_to_fill: [256, 256]
   end
   has_many :day_off_requests, dependent: :destroy
   has_many :work_requests, dependent: :destroy
-  has_many :work_assignments, dependent: :restrict_with_error
-  has_many :day_off_assignments, dependent: :restrict_with_error
-  has_many :modality_assignments, dependent: :restrict_with_error
+  has_many :work_assignments, dependent: :destroy
+  has_many :day_off_assignments, dependent: :destroy
+  has_many :modality_assignments, dependent: :destroy
+  has_many :schedule_month_member_orders, dependent: :destroy
   validates :name, presence: true
   validates :avatar_image,   content_type: { in: %w[image/jpeg image/png],
                                              message: "対応している画像形式（JPEG・PNG）のファイルを選択してください。" },
