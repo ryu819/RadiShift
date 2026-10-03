@@ -50,7 +50,7 @@ export function DayOffSlotCalendarCard({
             <CardTitle className="text-base">特定日の調整</CardTitle>
 
             <p className="mt-1 text-sm text-muted-foreground">
-              作成済みのシフト表について、特定の日だけ休み枠を調整します
+              作成済みのシフト表について、特定の日付を選択し休み枠を調整します
             </p>
           </div>
         </CardHeader>

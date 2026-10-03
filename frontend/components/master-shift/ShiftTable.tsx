@@ -94,7 +94,7 @@ export function ShiftTable({
         {year}年{month}月
       </h1>
       <div
-        className="master-shift-print-area flex-1 overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm"
+        className="master-shift-print-area  overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm"
         onScroll={() => setOpenCellKey(null)}
       >
         <table className="w-max min-w-full border-collapse text-xs md:text-sm">
@@ -200,7 +200,7 @@ export function ShiftTable({
                               <TooltipTrigger asChild>
                                 <Badge
                                   variant="outline"
-                                  className="h-[14px] max-w-full gap-0 rounded-md px-1 py-0 text-[9px] md:text-[10px]  font-semibold leading-none md:px-1.5 md:py-0.5"
+                                  className="h-[14px] max-w-full gap-0 rounded-md px-1 py-0 text-[9px] md:text-[10px]  font-semibold leading-none md:px-1 md:py-0.5"
                                   style={badgeStyle(
                                     workAssignment.workType.colorCode,
                                   )}
@@ -241,7 +241,7 @@ export function ShiftTable({
                               <TooltipTrigger asChild>
                                 <Badge
                                   variant="outline"
-                                  className="h-[14px] max-w-full gap-0 rounded-md px-1 py-0 text-[9px] md:text-[10px]  font-semibold leading-none md:px-1.5 md:py-0.5"
+                                  className="h-[14px] max-w-full gap-0 rounded-md px-1 py-0 text-[9px] md:text-[10px]  font-semibold leading-none md:px-1 md:py-0.5"
                                   style={badgeStyle(
                                     dayOffAssignment.dayOffType.colorCode,
                                   )}

@@ -16,9 +16,9 @@ export function MyShiftsSkeleton() {
           <span>マイシフト</span>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex cursor-pointer items-center gap-1 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-secondary">
           <CircleHelp className="size-3" />
-          <span>ヘルプ</span>
+          <span>使い方</span>
         </div>
       </div>
       <div className="flex flex-col items-center justify-center gap-2">

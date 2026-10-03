@@ -48,6 +48,12 @@ ActiveRecord::Base.transaction do
     is_requestable: true
   )
 
+  after_night_work = WorkType.create!(
+    facility: facility,
+    name: "明け",
+    color_code: "#a78bfa"
+  )
+
   overtime_work = WorkType.create!(
     facility: facility,
     name: "拘束",
@@ -63,7 +69,7 @@ ActiveRecord::Base.transaction do
 
   afternoon_day_off = DayOffType.create!(
     facility: facility,
-    name: "午後休み",
+    name: "午後休",
     color_code: "#94a3b8",
     day_off_unit: 0.5
   )
@@ -98,71 +104,93 @@ ActiveRecord::Base.transaction do
     end
   end
 
-  ModalityType.create!(
-    facility: facility,
-    name: "MRI",
-    color_code: "#6366F1"
-  )
+  modality_types = [
+    ModalityType.create!(
+      facility: facility,
+      name: "MRI",
+      color_code: "#6366F1"
+    ),
+    ModalityType.create!(
+      facility: facility,
+      name: "CT",
+      color_code: "#0EA5E9"
+    ),
+    ModalityType.create!(
+      facility: facility,
+      name: "XA",
+      color_code: "#EF4444"
+    ),
+    ModalityType.create!(
+      facility: facility,
+      name: "一般",
+      color_code: "#F59E0B"
+    ),
+    ModalityType.create!(
+      facility: facility,
+      name: "透視",
+      color_code: "#14B8A6"
+    ),
+    ModalityType.create!(
+      facility: facility,
+      name: "マンモ",
+      color_code: "#EC4899"
+    ),
+    ModalityType.create!(
+      facility: facility,
+      name: "核医学",
+      color_code: "#8B5CF6"
+    ),
+    ModalityType.create!(
+      facility: facility,
+      name: "治療",
+      color_code: "#22C55E"
+    )
+  ]
 
-  ModalityType.create!(
-    facility: facility,
-    name: "CT",
-    color_code: "#0EA5E9"
-  )
+  # シフトパターン
+  #
+  # 夜勤の次は必ず明け
+  #
+  # 日勤 + 拘束
+  # 日勤 + モダリティ
+  # 夜勤
+  # 明け
+  # 日勤 + 午後休み
+  # 日勤 + 残業✕
+  # 休み
+  # 日勤 + モダリティ
 
-  ModalityType.create!(
-    facility: facility,
-    name: "アンギオ",
-    color_code: "#EF4444"
-  )
+  shift_patterns = [
+    :day_overtime,
+    :day,
+    :night,
+    :after_night,
+    :day_afternoon_off,
+    :day_no_overtime,
+    :off,
+    :day
+  ]
 
-  ModalityType.create!(
-    facility: facility,
-    name: "一般撮影",
-    color_code: "#F59E0B"
-  )
+  current_month = Date.current.beginning_of_month
 
-  ModalityType.create!(
-    facility: facility,
-    name: "透視",
-    color_code: "#14B8A6"
-  )
+  target_months = [
+    current_month.prev_month,
+    current_month,
+    current_month.next_month
+  ]
 
-  ModalityType.create!(
-    facility: facility,
-    name: "マンモグラフィ",
-    color_code: "#EC4899"
-  )
+  first_date = target_months.first
 
-  ModalityType.create!(
-    facility: facility,
-    name: "核医学",
-    color_code: "#8B5CF6"
-  )
-
-  ModalityType.create!(
-    facility: facility,
-    name: "放射線治療",
-    color_code: "#22C55E"
-  )
-
-  3.times do |i|
+  target_months.each_with_index do |month_start, month_index|
     schedule_month = ScheduleMonth.create!(
       facility: facility,
-      year: 2026,
-      month: i + 9,
-      monthly_days_off: i + 9
+      year: month_start.year,
+      month: month_start.month,
+      monthly_days_off: month_index + 9,
+      is_published: month_index < 2
     )
 
-    start_date = Date.new(
-      schedule_month.year,
-      schedule_month.month,
-      1
-    )
-
-    end_date = start_date.end_of_month
-
-    schedule_days = (start_date..end_date).map do |date|
+    schedule_days = (month_start..month_start.end_of_month).map do |date|
       ScheduleDay.create!(
         schedule_month: schedule_month,
         date: date,
@@ -189,118 +217,285 @@ ActiveRecord::Base.transaction do
       end
     end
 
-    # 管理者の勤務割当
-    WorkAssignment.create!(
-      schedule_day: schedule_days[0],
-      user: admin_user,
-      work_type: day_work
-    )
+    schedule_month.capture_member_order! if schedule_month.is_published?
 
-    WorkAssignment.create!(
-      schedule_day: schedule_days[0],
-      user: admin_user,
-      work_type: overtime_work
-    )
+    users.each_with_index do |user, user_index|
+      schedule_days.each do |schedule_day|
+        days_from_start =
+          (schedule_day.date - first_date).to_i
 
-    # -------------------------
-    # 勤務希望
-    # -------------------------
+        pattern_index =
+          (days_from_start + user_index) % shift_patterns.length
 
-    # 承認待ち
+        pattern = shift_patterns[pattern_index]
+
+        case pattern
+        when :night
+
+          WorkAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            work_type: night_work
+          )
+
+        when :after_night
+
+          WorkAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            work_type: after_night_work
+          )
+
+        when :day_overtime
+
+          WorkAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            work_type: day_work
+          )
+
+          WorkAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            work_type: overtime_work
+          )
+
+          modality_index =
+            (schedule_day.date.day + user_index) % modality_types.length
+
+          ModalityAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            modality_type: modality_types[modality_index]
+          )
+
+        when :day_afternoon_off
+
+          WorkAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            work_type: day_work
+          )
+
+          DayOffAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            day_off_type: afternoon_day_off
+          )
+
+          modality_index =
+            (schedule_day.date.day + user_index) % modality_types.length
+
+          ModalityAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            modality_type: modality_types[modality_index]
+          )
+
+        when :day_no_overtime
+
+          WorkAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            work_type: day_work
+          )
+
+          DayOffAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            day_off_type: no_overtime
+          )
+
+          modality_index =
+            (schedule_day.date.day + user_index) % modality_types.length
+
+          ModalityAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            modality_type: modality_types[modality_index]
+          )
+
+        when :off
+
+          DayOffAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            day_off_type: day_off
+          )
+
+        when :day
+
+          WorkAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            work_type: day_work
+          )
+
+          modality_index =
+            (schedule_day.date.day + user_index) % modality_types.length
+
+          ModalityAssignment.create!(
+            schedule_day: schedule_day,
+            user: user,
+            modality_type: modality_types[modality_index]
+          )
+        end
+      end
+    end
+
+    # 申請データは今月だけ作る
+
+    next unless month_start == current_month
+
+    admin_night_days = schedule_days.select do |schedule_day|
+      WorkAssignment.exists?(
+        schedule_day: schedule_day,
+        user: admin_user,
+        work_type: night_work
+      )
+    end
+
+    admin_day_off_days = schedule_days.select do |schedule_day|
+      DayOffAssignment.exists?(
+        schedule_day: schedule_day,
+        user: admin_user,
+        day_off_type: day_off
+      )
+    end
+
+    admin_day_work_days = schedule_days.select do |schedule_day|
+      WorkAssignment.exists?(
+        schedule_day: schedule_day,
+        user: admin_user,
+        work_type: day_work
+      )
+    end
+
     WorkRequest.create!(
       facility: facility,
-      user: users[0],
-      schedule_day: schedule_days[1],
-      work_type: day_work,
+      user: admin_user,
+      schedule_day: admin_day_work_days[0],
+      work_type: night_work,
       request_status: :pending,
       is_return: false
     )
 
-    # 承認済み
-    WorkRequest.create!(
+    night_day = admin_night_days[0]
+
+    approved_work_request = WorkRequest.create!(
       facility: facility,
-      user: users[0],
-      schedule_day: schedule_days[2],
+      user: admin_user,
+      schedule_day: night_day,
       work_type: night_work,
       request_status: :approved,
       is_return: false
     )
 
-    # 承認済みなので勤務割当も作る
-    WorkAssignment.create!(
-      schedule_day: schedule_days[2],
-      user: users[0],
+    WorkAssignment.find_by!(
+      schedule_day: night_day,
+      user: admin_user,
       work_type: night_work
+    ).update!(
+      work_request: approved_work_request
     )
 
-    # 返上リクエスト
     WorkRequest.create!(
       facility: facility,
-      user: users[0],
-      schedule_day: schedule_days[2],
+      user: admin_user,
+      schedule_day: night_day,
       work_type: night_work,
       request_status: :pending,
       is_return: true
     )
 
-    # 否認済み
     WorkRequest.create!(
       facility: facility,
-      user: users[0],
-      schedule_day: schedule_days[3],
-      work_type: overtime_work,
+      user: admin_user,
+      schedule_day: admin_day_work_days[1],
+      work_type: night_work,
       request_status: :rejected,
       is_return: false
     )
 
-    # -------------------------
-    # 休み希望
-    # -------------------------
-
-    # 承認待ち
     DayOffRequest.create!(
       facility: facility,
-      user: users[0],
-      schedule_day: schedule_days[5],
+      user: admin_user,
+      schedule_day: admin_day_work_days[2],
       day_off_type: day_off,
       request_status: :pending,
       is_return: false
     )
 
-    # 承認済み
-    DayOffRequest.create!(
+    day_off_day = admin_day_off_days[0]
+
+    approved_day_off_request = DayOffRequest.create!(
       facility: facility,
-      user: users[0],
-      schedule_day: schedule_days[6],
+      user: admin_user,
+      schedule_day: day_off_day,
       day_off_type: day_off,
       request_status: :approved,
       is_return: false
     )
 
-    # 承認済みなので休み割当も作る
-    DayOffAssignment.create!(
-      schedule_day: schedule_days[6],
-      user: users[0],
+    DayOffAssignment.find_by!(
+      schedule_day: day_off_day,
+      user: admin_user,
       day_off_type: day_off
+    ).update!(
+      day_off_request: approved_day_off_request
     )
 
-    # 返上リクエスト
     DayOffRequest.create!(
       facility: facility,
-      user: users[0],
-      schedule_day: schedule_days[6],
+      user: admin_user,
+      schedule_day: day_off_day,
       day_off_type: day_off,
       request_status: :pending,
       is_return: true
     )
 
-    # 否認済み
     DayOffRequest.create!(
       facility: facility,
-      user: users[0],
-      schedule_day: schedule_days[7],
+      user: admin_user,
+      schedule_day: admin_day_work_days[3],
       day_off_type: day_off,
       request_status: :rejected,
+      is_return: false
+    )
+
+    WorkRequest.create!(
+      facility: facility,
+      user: users[1],
+      schedule_day: schedule_days[10],
+      work_type: night_work,
+      request_status: :pending,
+      is_return: false
+    )
+
+    DayOffRequest.create!(
+      facility: facility,
+      user: users[2],
+      schedule_day: schedule_days[11],
+      day_off_type: day_off,
+      request_status: :pending,
+      is_return: false
+    )
+
+    WorkRequest.create!(
+      facility: facility,
+      user: users[3],
+      schedule_day: schedule_days[12],
+      work_type: night_work,
+      request_status: :pending,
+      is_return: false
+    )
+
+    DayOffRequest.create!(
+      facility: facility,
+      user: users[4],
+      schedule_day: schedule_days[17],
+      day_off_type: afternoon_day_off,
+      request_status: :pending,
       is_return: false
     )
   end

@@ -72,9 +72,9 @@ export async function MyShift({ searchParams }: Props) {
         </div>
 
         <Popover>
-          <PopoverTrigger className="flex  items-center cursor-pointer gap-1 transition-colors hover:text-primary active:text-primary">
+          <PopoverTrigger className="flex cursor-pointer items-center gap-1 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-secondary">
             <CircleHelp className="size-3" />
-            ヘルプ
+            使い方
           </PopoverTrigger>
 
           <PopoverContent
@@ -82,8 +82,6 @@ export async function MyShift({ searchParams }: Props) {
             sideOffset={6}
             className="w-72 space-y-1 p-3 text-secondary"
           >
-            <p className="text-sm font-medium">使い方</p>
-
             <ul className="list-disc space-y-1 pl-4 text-sm">
               <li>日付セルを選択すると、シフト希望を申請できます</li>
 

@@ -6,13 +6,17 @@ import { SignupContent } from "@/components/header/signup/SignupContent";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-export function SignUpForm() {
+export function SignUpForm({
+  triggerClassName,
+}: {
+  triggerClassName?: string;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>新規登録</Button>
+        <Button className={triggerClassName}>新規登録</Button>
       </DialogTrigger>
 
       <DialogContent
