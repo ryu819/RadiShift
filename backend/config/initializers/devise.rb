@@ -320,7 +320,8 @@ Devise.setup do |config|
       %w[POST /login],
       %w[POST /google_login],
       %w[POST /google_signup],
-      %w[POST /google_signup/link]
+      %w[POST /google_signup/link],
+      %w[POST /demo_session]
     ]
     jwt.revocation_requests = [
       %w[DELETE /logout],
