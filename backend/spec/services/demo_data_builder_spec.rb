@@ -20,11 +20,15 @@ RSpec.describe DemoDataBuilder do
   def expect_users(result, demo_environment)
     facility = result[:facility]
     admin_user = result[:admin_user]
+    member = facility.users.where(is_admin: false).first
 
     expect(facility.demo_environment).to eq(demo_environment)
     expect(facility.users.count).to eq(20)
     expect(facility.users.where(is_admin: true).count).to eq(1)
     expect(admin_user.demo_environment).to eq(demo_environment)
+
+    expect(admin_user.valid_password?("password")).to be false
+    expect(member.valid_password?("password")).to be false
   end
 
   def expect_schedule_months(result)

@@ -96,12 +96,21 @@ class DemoDataBuilder
     facility.users.order(:display_order).to_a
   end
 
+  def demo_password
+    @demo_password ||=
+      if demo_environment
+        SecureRandom.urlsafe_base64(32)
+      else
+        PASSWORD
+      end
+  end
+
   def create_admin_user
     User.create!(
       name: "管理者",
       email: admin_email,
-      password: PASSWORD,
-      password_confirmation: PASSWORD,
+      password: demo_password,
+      password_confirmation: demo_password,
       facility: facility,
       demo_environment: demo_environment,
       is_admin: true,
