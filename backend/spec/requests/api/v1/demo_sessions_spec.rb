@@ -59,8 +59,8 @@ RSpec.describe "Api::V1::DemoSessions", type: :request do
     end
 
     context "同じIPから短時間に大量作成した時" do
-      it "6回目を拒否する" do
-        5.times do
+      it "31回目を拒否する" do
+        30.times do
           post api_v1_demo_session_path
         end
 
