@@ -1,6 +1,5 @@
 import { LoginForm } from "@/components/header/login/LoginForm";
 import { SignUpForm } from "@/components/header/signup/SignupForm";
-import { Badge } from "@/components/ui/badge";
 import { getCurrentUser } from "@/lib/actions/account/get-current-user";
 
 import { UserDropdownMenu } from "./UserDropdownMenu";

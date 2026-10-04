@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Metrics/ClassLength
+
 class DemoDataBuilder
   MEMBER_COUNT = 19
   PASSWORD = "password"
@@ -54,8 +55,16 @@ class DemoDataBuilder
 
   private
 
-  attr_reader :demo_environment, :facility, :users, :admin_user,
-              :work_types, :day_off_types, :modality_types
+  attr_reader :demo_environment,
+              :facility,
+              :users,
+              :admin_user,
+              :work_types,
+              :day_off_types,
+              :modality_types,
+              :work_assignment_records,
+              :day_off_assignment_records,
+              :modality_assignment_records
 
   def create_facility
     Facility.create!(
@@ -66,14 +75,25 @@ class DemoDataBuilder
   end
 
   def create_users
-    created_users = [create_admin_user]
+    admin_user = create_admin_user
 
-    MEMBER_COUNT.times do |index|
+    member_records = Array.new(MEMBER_COUNT) do |index|
       member_number = index + 1
-      created_users << create_member(member_number)
+
+      {
+        name: "ユーザー#{member_number}",
+        email: member_email(member_number),
+        encrypted_password: admin_user.encrypted_password,
+        facility_id: facility.id,
+        demo_environment_id: demo_environment&.id,
+        display_order: member_number + 1,
+        confirmed_at: Time.current
+      }
     end
 
-    created_users
+    User.insert_all!(member_records, record_timestamps: true) # rubocop:disable Rails/SkipsModelValidations
+
+    facility.users.order(:display_order).to_a
   end
 
   def create_admin_user
@@ -86,19 +106,6 @@ class DemoDataBuilder
       demo_environment: demo_environment,
       is_admin: true,
       display_order: 1,
-      confirmed_at: Time.current
-    )
-  end
-
-  def create_member(member_number)
-    User.create!(
-      name: "ユーザー#{member_number}",
-      email: member_email(member_number),
-      password: PASSWORD,
-      password_confirmation: PASSWORD,
-      facility: facility,
-      demo_environment: demo_environment,
-      display_order: member_number + 1,
       confirmed_at: Time.current
     )
   end
@@ -165,10 +172,11 @@ class DemoDataBuilder
   def create_day_off_slot_rules
     day_off_slot_settings.each do |day_off_type, max_slots|
       8.times do |weekday|
-        create_day_off_slot_rule(
-          day_off_type,
-          max_slots,
-          weekday
+        DayOffSlotRule.create!(
+          facility: facility,
+          day_off_type: day_off_type,
+          weekday: weekday,
+          max_slots: max_slots
         )
       end
     end
@@ -180,15 +188,6 @@ class DemoDataBuilder
       day_off_types[:afternoon] => 2,
       day_off_types[:no_overtime] => 2
     }
-  end
-
-  def create_day_off_slot_rule(day_off_type, max_slots, weekday)
-    DayOffSlotRule.create!(
-      facility: facility,
-      day_off_type: day_off_type,
-      weekday: weekday,
-      max_slots: max_slots
-    )
   end
 
   def create_schedule_data
@@ -255,33 +254,21 @@ class DemoDataBuilder
 
   def create_day_off_slots(schedule_days)
     schedule_days.each do |schedule_day|
-      day_off_types.each_value do |day_off_type|
-        create_day_off_slot(
-          schedule_day,
-          day_off_type
+      day_off_slot_settings.each do |day_off_type, max_slots|
+        DayOffSlot.create!(
+          schedule_day: schedule_day,
+          day_off_type: day_off_type,
+          max_slots: max_slots
         )
       end
     end
   end
 
-  def create_day_off_slot(schedule_day, day_off_type)
-    weekday =
-      schedule_day.is_holiday ? 7 : schedule_day.date.wday
-
-    rule = DayOffSlotRule.find_by!(
-      facility: facility,
-      day_off_type: day_off_type,
-      weekday: weekday
-    )
-
-    DayOffSlot.create!(
-      schedule_day: schedule_day,
-      day_off_type: day_off_type,
-      max_slots: rule.max_slots
-    )
-  end
-
   def create_assignments(schedule_days)
+    @work_assignment_records = []
+    @day_off_assignment_records = []
+    @modality_assignment_records = []
+
     users.each_with_index do |user, user_index|
       create_user_assignments(
         user,
@@ -289,6 +276,10 @@ class DemoDataBuilder
         schedule_days
       )
     end
+
+    WorkAssignment.insert_all!(work_assignment_records, record_timestamps: true) # rubocop:disable Rails/SkipsModelValidations
+    DayOffAssignment.insert_all!(day_off_assignment_records, record_timestamps: true) # rubocop:disable Rails/SkipsModelValidations
+    ModalityAssignment.insert_all!(modality_assignment_records, record_timestamps: true) # rubocop:disable Rails/SkipsModelValidations
   end
 
   def create_user_assignments(user, user_index, schedule_days)
@@ -325,36 +316,42 @@ class DemoDataBuilder
         schedule_day,
         :night
       )
+
     when :after_night
       create_work_assignment(
         user,
         schedule_day,
         :after_night
       )
+
     when :day_overtime
       create_day_overtime(
         user,
         user_index,
         schedule_day
       )
+
     when :day_afternoon_off
       create_day_afternoon_off(
         user,
         user_index,
         schedule_day
       )
+
     when :day_no_overtime
       create_day_no_overtime(
         user,
         user_index,
         schedule_day
       )
+
     when :off
       create_day_off_assignment(
         user,
         schedule_day,
         :day_off
       )
+
     when :day
       create_day(
         user,
@@ -439,11 +436,11 @@ class DemoDataBuilder
   end
 
   def create_work_assignment(user, schedule_day, work_type)
-    WorkAssignment.create!(
-      schedule_day: schedule_day,
-      user: user,
-      work_type: work_types[work_type]
-    )
+    work_assignment_records << {
+      schedule_day_id: schedule_day.id,
+      user_id: user.id,
+      work_type_id: work_types[work_type].id
+    }
   end
 
   def create_day_off_assignment(
@@ -451,11 +448,11 @@ class DemoDataBuilder
     schedule_day,
     day_off_type
   )
-    DayOffAssignment.create!(
-      schedule_day: schedule_day,
-      user: user,
-      day_off_type: day_off_types[day_off_type]
-    )
+    day_off_assignment_records << {
+      schedule_day_id: schedule_day.id,
+      user_id: user.id,
+      day_off_type_id: day_off_types[day_off_type].id
+    }
   end
 
   def create_modality_assignment(
@@ -466,53 +463,57 @@ class DemoDataBuilder
     modality_index =
       (schedule_day.date.day + user_index) % modality_types.length
 
-    ModalityAssignment.create!(
-      schedule_day: schedule_day,
-      user: user,
-      modality_type: modality_types[modality_index]
-    )
+    modality_assignment_records << {
+      schedule_day_id: schedule_day.id,
+      user_id: user.id,
+      modality_type_id: modality_types[modality_index].id
+    }
   end
 
   def create_requests(schedule_days)
-    admin_night_days =
+    night_days =
       admin_work_days(schedule_days, :night)
 
-    admin_day_off_days =
+    day_off_days =
       admin_day_off_days(schedule_days)
 
-    admin_day_work_days =
+    day_work_days =
       admin_work_days(schedule_days, :day)
 
     create_admin_work_requests(
-      admin_day_work_days,
-      admin_night_days
+      day_work_days,
+      night_days
     )
 
     create_admin_day_off_requests(
-      admin_day_work_days,
-      admin_day_off_days
+      day_work_days,
+      day_off_days
     )
 
     create_member_requests(schedule_days)
   end
 
   def admin_work_days(schedule_days, work_type)
+    schedule_day_ids = WorkAssignment.where(
+      schedule_day: schedule_days,
+      user: admin_user,
+      work_type: work_types[work_type]
+    ).pluck(:schedule_day_id)
+
     schedule_days.select do |schedule_day|
-      WorkAssignment.exists?(
-        schedule_day: schedule_day,
-        user: admin_user,
-        work_type: work_types[work_type]
-      )
+      schedule_day_ids.include?(schedule_day.id)
     end
   end
 
   def admin_day_off_days(schedule_days)
+    schedule_day_ids = DayOffAssignment.where(
+      schedule_day: schedule_days,
+      user: admin_user,
+      day_off_type: day_off_types[:day_off]
+    ).pluck(:schedule_day_id)
+
     schedule_days.select do |schedule_day|
-      DayOffAssignment.exists?(
-        schedule_day: schedule_day,
-        user: admin_user,
-        day_off_type: day_off_types[:day_off]
-      )
+      schedule_day_ids.include?(schedule_day.id)
     end
   end
 
@@ -699,4 +700,5 @@ class DemoDataBuilder
     "demo-#{demo_environment.id}-#{member_number}@example.invalid"
   end
 end
+
 # rubocop:enable Metrics/ClassLength
