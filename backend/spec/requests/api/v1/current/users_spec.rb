@@ -184,7 +184,7 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         subject
         get(api_v1_current_user_path, headers: { "Authorization": token })
         res = JSON.parse(response.body)
-        expect(res["error"]).to be_present
+        expect(res["message"]).to eq("削除済みのアカウントです。")
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -198,6 +198,13 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
         expect(res["message"]).to eq("管理者は削除できません。（管理者権限の移譲が必要です。）")
         expect(user.reload.is_deleted).to be false
         expect(response).to have_http_status(:forbidden)
+      end
+
+      it "削除に失敗してもJWTは引き続き使用できる" do
+        subject
+        expect(response).to have_http_status(:forbidden)
+        get(api_v1_current_user_path, headers: { "Authorization": token })
+        expect(response).to have_http_status(:ok)
       end
     end
   end

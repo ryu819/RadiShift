@@ -3,6 +3,7 @@ export type User = {
   name: string;
   email: string;
   isAdmin: boolean;
+  isDemo: boolean;
   rulesText: string | null;
   facilityId: number | null;
   avatarImageUrl: string | null;

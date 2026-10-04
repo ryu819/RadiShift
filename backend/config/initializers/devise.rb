@@ -324,8 +324,7 @@ Devise.setup do |config|
       %w[POST /demo_session]
     ]
     jwt.revocation_requests = [
-      %w[DELETE /logout],
-      %w[DELETE /current/user]
+      %w[DELETE /logout]
     ]
     jwt.expiration_time = 1.day.to_i
   end

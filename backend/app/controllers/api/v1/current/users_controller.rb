@@ -10,7 +10,9 @@ module Api
           render json: current_user.as_json(
             only: [:id, :name, :email, :facility_id, :is_admin, :google_email]
           ).merge(
-            avatar_image_url: avatar_image_url, password_set: current_user.password_set?
+            avatar_image_url: avatar_image_url,
+            password_set: current_user.password_set?,
+            is_demo: current_user.demo_environment_id.present?
           )
         end
 
