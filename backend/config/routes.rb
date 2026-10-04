@@ -22,19 +22,11 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
+      post "demo_session", to: "demo_sessions#create"
       post "google_login", to: "google_sessions#create"
-
-      post "google_signup/check",
-           to: "google_registrations#check",
-           as: :google_signup_check
-
-      post "google_signup",
-           to: "google_registrations#create",
-           as: :google_signup
-
-      post "google_signup/link",
-           to: "google_registrations#link",
-           as: :google_signup_link
+      post "google_signup/check", to: "google_registrations#check"
+      post "google_signup", to: "google_registrations#create"
+      post "google_signup/link", to: "google_registrations#link"
 
       namespace :current do
         resource :user, only: [:show, :update, :destroy] do

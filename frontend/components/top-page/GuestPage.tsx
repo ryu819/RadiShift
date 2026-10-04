@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { LoginForm } from "@/components/header/login/LoginForm";
 import { SignUpForm } from "@/components/header/signup/SignupForm";
+import { DemoStartButton } from "@/components/top-page/DemoStartButton";
 import adminDashboard from "@/public/images/guest-page/admin-dashboard.png";
 import masterShiftsMockup from "@/public/images/guest-page/master-shifts-mockup.png";
 import myShiftsMobileMockup from "@/public/images/guest-page/my-shifts-mobile-mockup.png";
@@ -69,9 +70,10 @@ export function GuestPage() {
               シフト管理をWeb上でまとめて行えます。
             </p>
 
-            <div className="mt-8 flex  gap-3 flex-row justify-center lg:justify-start">
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
               <SignUpForm triggerClassName="h-12 px-7 text-base" />
               <LoginForm triggerClassName="h-12 px-7 text-base" />
+              <DemoStartButton className="h-12 px-7 text-base" />
             </div>
           </div>
 
@@ -177,9 +179,10 @@ export function GuestPage() {
             RadiShiftでシフト管理を始める
           </h2>
 
-          <div className="mt-8 flex justify-center gap-3 ">
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             <SignUpForm triggerClassName="h-11 px-6 text-base" />
             <LoginForm triggerClassName="h-11 px-6 text-base" />
+            <DemoStartButton className="h-11 px-6 text-base" />
           </div>
         </div>
       </section>

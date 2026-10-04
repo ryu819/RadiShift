@@ -320,11 +320,11 @@ Devise.setup do |config|
       %w[POST /login],
       %w[POST /google_login],
       %w[POST /google_signup],
-      %w[POST /google_signup/link]
+      %w[POST /google_signup/link],
+      %w[POST /demo_session]
     ]
     jwt.revocation_requests = [
-      %w[DELETE /logout],
-      %w[DELETE /current/user]
+      %w[DELETE /logout]
     ]
     jwt.expiration_time = 1.day.to_i
   end

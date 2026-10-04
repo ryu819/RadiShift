@@ -75,6 +75,18 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         expect(response).to have_http_status(:conflict)
       end
     end
+
+    context "デモユーザーの時" do
+      let(:demo_environment) { create(:demo_environment) }
+      let(:user) { create(:user, demo_environment: demo_environment) }
+
+      it "同じデモ環境の施設を作成する" do
+        subject
+        facility = user.reload.facility
+        expect(facility.demo_environment).to eq(demo_environment)
+        expect(response).to have_http_status(:created)
+      end
+    end
   end
 
   describe "PUT /api/v1/facility" do
@@ -186,6 +198,23 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context "デモ施設の管理者の時" do
+      let(:demo_environment) { create(:demo_environment) }
+
+      let(:facility) { create(:facility, demo_environment: demo_environment) }
+
+      let(:admin_user) { create(:user, facility: facility, demo_environment: demo_environment, is_admin: true, display_order: 1) }
+
+      let(:token) { login_and_get_token(admin_user) }
+
+      it "施設を削除してもデモ環境との紐付けは残す" do
+        subject
+        admin_user.reload
+        expect(admin_user.facility).to be_nil
+        expect(admin_user.demo_environment).to eq(demo_environment)
+      end
+    end
   end
 
   describe "POST /api/v1/facility/join" do
@@ -273,6 +302,59 @@ RSpec.describe "Api::V1::Facilities", type: :request do
 
         expect(res["message"]).to eq("すでに施設に所属しています。")
         expect(response).to have_http_status(:conflict)
+      end
+    end
+
+    context "同じデモ環境の施設に参加する時" do
+      let(:demo_environment) { create(:demo_environment) }
+      let(:user) { create(:user, demo_environment: demo_environment) }
+      let(:facility) { create(:facility, demo_environment: demo_environment) }
+
+      it "参加できる" do
+        subject
+        expect(user.reload.facility).to eq(facility)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "別のデモ環境の施設に参加する時" do
+      let(:user_demo_environment) { create(:demo_environment) }
+
+      let(:facility_demo_environment) { create(:demo_environment) }
+
+      let(:user) { create(:user, demo_environment: user_demo_environment) }
+
+      let(:facility) { create(:facility, demo_environment: facility_demo_environment) }
+
+      it "参加できない" do
+        subject
+        res = JSON.parse(response.body)
+        expect(user.reload.facility).to be_nil
+        expect(res["message"]).to eq("この施設には参加できません。")
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "デモユーザーが通常施設に参加する時" do
+      let(:demo_environment) { create(:demo_environment) }
+      let(:user) { create(:user, demo_environment: demo_environment) }
+      let(:facility) { create(:facility) }
+
+      it "参加できない" do
+        subject
+        expect(user.reload.facility).to be_nil
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "通常ユーザーがデモ施設に参加する時" do
+      let(:user) { create(:user) }
+      let(:facility) { create(:facility, demo_environment: create(:demo_environment)) }
+
+      it "参加できない" do
+        subject
+        expect(user.reload.facility).to be_nil
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end

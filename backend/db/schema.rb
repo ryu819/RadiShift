@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_111127) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_03_070152) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -109,14 +109,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_111127) do
     t.index ["facility_id"], name: "index_day_off_types_on_facility_id"
   end
 
+  create_table "demo_environments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "facilities", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.bigint "demo_environment_id"
     t.string "invite_code"
     t.datetime "invite_expires_at"
     t.string "name", null: false
     t.integer "request_deadline_day", default: 15, null: false
     t.text "rules_text"
     t.datetime "updated_at", null: false
+    t.index ["demo_environment_id"], name: "index_facilities_on_demo_environment_id"
     t.index ["invite_code"], name: "index_facilities_on_invite_code", unique: true
     t.index ["name"], name: "index_facilities_on_name", unique: true
   end
@@ -192,6 +199,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_111127) do
     t.string "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "created_at", null: false
+    t.bigint "demo_environment_id"
     t.integer "display_order"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -207,6 +215,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_111127) do
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["demo_environment_id"], name: "index_users_on_demo_environment_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["facility_id", "display_order"], name: "index_users_on_facility_id_and_display_order"
     t.index ["facility_id"], name: "index_users_on_facility_id"
@@ -275,6 +284,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_111127) do
   add_foreign_key "day_off_slots", "day_off_types"
   add_foreign_key "day_off_slots", "schedule_days"
   add_foreign_key "day_off_types", "facilities"
+  add_foreign_key "facilities", "demo_environments"
   add_foreign_key "modality_assignments", "modality_types"
   add_foreign_key "modality_assignments", "schedule_days"
   add_foreign_key "modality_assignments", "users"
@@ -283,6 +293,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_111127) do
   add_foreign_key "schedule_month_member_orders", "schedule_months"
   add_foreign_key "schedule_month_member_orders", "users"
   add_foreign_key "schedule_months", "facilities"
+  add_foreign_key "users", "demo_environments"
   add_foreign_key "users", "facilities"
   add_foreign_key "work_assignments", "schedule_days"
   add_foreign_key "work_assignments", "users"

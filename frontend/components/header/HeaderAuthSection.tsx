@@ -8,7 +8,16 @@ export async function HeaderAuthSection() {
   const user = await getCurrentUser();
 
   return user ? (
-    <UserDropdownMenu user={user} />
+    <>
+      {user.isDemo && (
+        <div className="text-red-400">
+          <span className="sm:hidden">デモ環境</span>
+          <span className="hidden sm:inline">デモ環境（24時間後に削除）</span>
+        </div>
+      )}
+
+      <UserDropdownMenu user={user} />
+    </>
   ) : (
     <>
       <SignUpForm />

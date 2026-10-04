@@ -4,6 +4,7 @@ class ApplicationController < ActionController::API
   include ActionController::MimeResponds # APIモード
   before_action :authenticate_user!, unless: :devise_controller?
   before_action :reject_deleted_user!, unless: :devise_controller?
+  before_action :reject_expired_demo_user!, unless: :devise_controller?
   before_action :require_facility!, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
 
@@ -30,5 +31,13 @@ class ApplicationController < ActionController::API
     return unless current_user.is_deleted?
 
     render json: { message: "削除済みのアカウントです。" }, status: :unauthorized
+  end
+
+  def reject_expired_demo_user!
+    return unless current_user&.demo_expired?
+
+    render json: {
+      message: "認証に失敗しました。"
+    }, status: :unauthorized
   end
 end

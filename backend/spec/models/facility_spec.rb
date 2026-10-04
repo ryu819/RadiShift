@@ -52,6 +52,15 @@ RSpec.describe Facility, type: :model do
     end
   end
 
+  context "デモ環境に紐づいている時" do
+    let(:demo_environment) { create(:demo_environment) }
+    let(:facility) { create(:facility, demo_environment: demo_environment) }
+
+    it "デモ環境に属する" do
+      expect(facility.demo_environment).to eq(demo_environment)
+    end
+  end
+
   describe "#request_deadline_date_for" do
     context "締切日が前月に存在する時" do
       before { facility.request_deadline_day = 15 }

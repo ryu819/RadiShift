@@ -54,6 +54,15 @@ RSpec.describe User, type: :model do
     end
   end
 
+  context "デモ環境に紐づいている時" do
+    let(:demo_environment) { create(:demo_environment) }
+    let(:user) { create(:user, demo_environment: demo_environment) }
+
+    it "デモ環境に属する" do
+      expect(user.demo_environment).to eq(demo_environment)
+    end
+  end
+
   describe "display_order" do
     context "施設に所属している時" do
       let(:facility) { create(:facility) }
@@ -247,6 +256,54 @@ RSpec.describe User, type: :model do
 
       it "無効である" do
         expect(user).to be_invalid
+      end
+    end
+  end
+
+  describe "#demo_expired?" do
+    context "通常ユーザーの時" do
+      let(:user) { create(:user) }
+
+      it "期限切れではない" do
+        expect(user.demo_expired?).to be false
+      end
+    end
+
+    context "デモ環境の作成から24時間未満の時" do
+      let(:demo_environment) { create(:demo_environment, created_at: 23.hours.ago) }
+      let(:user) { create(:user, demo_environment: demo_environment) }
+
+      it "期限切れではない" do
+        expect(user.demo_expired?).to be false
+      end
+    end
+
+    context "デモ環境の作成から24時間経過した時" do
+      let(:demo_environment) { create(:demo_environment, created_at: 24.hours.ago) }
+      let(:user) { create(:user, demo_environment: demo_environment) }
+
+      it "期限切れである" do
+        expect(user.demo_expired?).to be true
+      end
+    end
+  end
+
+  describe "#active_for_authentication?" do
+    context "期限内のデモユーザーの時" do
+      let(:demo_environment) { create(:demo_environment, created_at: 23.hours.ago) }
+      let(:user) { create(:user, demo_environment: demo_environment) }
+
+      it "認証できる" do
+        expect(user.active_for_authentication?).to be true
+      end
+    end
+
+    context "期限切れのデモユーザーの時" do
+      let(:demo_environment) { create(:demo_environment, created_at: 24.hours.ago) }
+      let(:user) { create(:user, demo_environment: demo_environment) }
+
+      it "認証できない" do
+        expect(user.active_for_authentication?).to be false
       end
     end
   end

@@ -15,7 +15,9 @@ module Api
       end
 
       def create
-        facility = Facility.new(facility_params)
+        facility = Facility.new(facility_params.merge(
+                                  demo_environment: current_user.demo_environment
+                                ))
 
         Facility.transaction do
           unless facility.save
@@ -63,6 +65,12 @@ module Api
         return render json: { message: "施設が存在しません。" }, status: :not_found if facility.nil?
 
         return render json: { message: "招待コードの有効期限が切れています。" }, status: :gone if facility.invite_expires_at.past?
+
+        unless same_demo_environment?(facility)
+          return render json: {
+            message: "この施設には参加できません。"
+          }, status: :forbidden
+        end
 
         facility.with_lock do
           current_user.with_lock do
@@ -117,6 +125,11 @@ module Api
           )
           .joins(:schedule_month_member_orders)
           .distinct
+      end
+
+      def same_demo_environment?(facility)
+        current_user.demo_environment_id ==
+          facility.demo_environment_id
       end
     end
   end
