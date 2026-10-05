@@ -13,6 +13,9 @@ gem "active_storage_validations"
 # Active Storageの画像加工
 gem "image_processing", "~> 1.2"
 
+# 本番環境のActive StorageでAmazon S3を利用する
+gem "aws-sdk-s3", require: false
+
 # メッセージを日本語化
 gem "rails-i18n"
 
