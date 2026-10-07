@@ -16,3 +16,11 @@ test:
   host: db
   database: myapp_test
   password: password
+
+production:
+  <<: *default
+  host: <%= ENV["DB_HOST"] %>
+  port: <%= ENV.fetch("DB_PORT", 3306) %>
+  database: <%= ENV["DB_NAME"] %>
+  username: <%= ENV["DB_USERNAME"] %>
+  password: <%= ENV["DB_PASSWORD"] %>

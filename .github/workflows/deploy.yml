@@ -1,0 +1,119 @@
+name: Deploy Production Backend
+
+on:
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: ap-northeast-1
+
+  ECR_REPOSITORY: radishift-backend
+
+  ECS_CLUSTER: radishift-production-cluster
+  ECS_SERVICE: radishift-production-service
+  ECS_TASK_DEFINITION: radishift-production
+  ECS_CONTAINER_NAME: radishift-backend
+
+  ECS_PRIVATE_SUBNETS: subnet-071c727e763248597,subnet-02553d52bff047295
+  ECS_SECURITY_GROUP: sg-0ad37aa30a4524e2f
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # CIを通過した、そのコミットをcheckoutする
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      # GitHub OIDCを使って、一時的なAWS認証情報を取得する
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::859928916153:role/radishift-github-actions-deploy-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      # DockerからECRへpushできる状態にする
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # CIを通過したcommit SHAをタグにしてimageを作成・pushする
+      - name: Build and push Docker image
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+          docker build \
+            -f backend/Dockerfile.production \
+            -t "$IMAGE_URI" \
+            backend
+
+          docker push "$IMAGE_URI"
+
+          echo "image=$IMAGE_URI" >> "$GITHUB_OUTPUT"
+
+      # AWS上で現在使っているTask Definitionを取得する
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition "$ECS_TASK_DEFINITION" \
+            --query taskDefinition \
+            > task-definition.json
+
+      # Task Definition内のDocker imageだけ、新しいimageへ差し替える
+      - name: Render new task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.ECS_CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      # 新Revisionを登録
+      # ↓
+      # db:migrateを一時Taskで実行
+      # ↓
+      # migration成功後だけServiceを更新
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
+
+          run-task: true
+          run-task-launch-type: FARGATE
+          run-task-subnets: ${{ env.ECS_PRIVATE_SUBNETS }}
+          run-task-security-groups: ${{ env.ECS_SECURITY_GROUP }}
+          run-task-assign-public-IP: DISABLED
+          run-task-container-overrides: |
+            [
+              {
+                "name": "radishift-backend",
+                "command": [
+                  "bin/rails",
+                  "db:migrate"
+                ]
+              }
+            ]
+          wait-for-task-stopped: true
+
+          wait-for-service-stability: true
+          wait-max-delay-seconds: 15
