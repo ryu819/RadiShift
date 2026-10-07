@@ -22,7 +22,7 @@ env:
   ECS_TASK_DEFINITION: radishift-production
   ECS_CONTAINER_NAME: radishift-backend
 
-  ECS_PRIVATE_SUBNETS: subnet-071c727e763248597,subnet-02553d52bff047295
+  ECS_PRIVATE_SUBNETS: subnet-071c727e763248597,subnet-02353d52bff047295
   ECS_SECURITY_GROUP: sg-0ad37aa30a4524e2f
 
 jobs:
