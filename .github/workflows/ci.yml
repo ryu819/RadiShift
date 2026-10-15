@@ -1,4 +1,5 @@
-# テスト(rspec)、コードルール(rubocop, eslint, prettier)のチェックを行う
+# RSpec・RuboCop・ESLint・Prettier・TypeScript型チェック・Next.js本番ビルドを実行する
+
 name: Continuous Integration
 
 # 当 workflow の実行タイミング
@@ -102,3 +103,50 @@ jobs:
 
       - name: Run format check
         run: npm run format:check
+
+  
+  # 処理④ TypeScriptの型エラーをチェック
+  typecheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.21.1
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Run typecheck
+        run: npm run typecheck
+
+  # 処理⑤ Next.jsの本番ビルドをチェック
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.21.1
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Run production build
+        run: npm run build
