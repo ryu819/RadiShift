@@ -34,7 +34,7 @@ jobs:
     steps:
       # CIを通過した、そのコミットをcheckoutする
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
