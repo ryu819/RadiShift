@@ -22,7 +22,7 @@ env:
   ECS_TASK_DEFINITION: radishift-production
   ECS_CONTAINER_NAME: radishift-backend
 
-  ECS_PRIVATE_SUBNETS: subnet-071c727e763248597,subnet-02353d52bff047295
+  ECS_PUBLIC_SUBNETS: subnet-07379b979d507c5e1,subnet-00a114f6e5b97f2cd
   ECS_SECURITY_GROUP: sg-0ad37aa30a4524e2f
 
 jobs:
@@ -100,9 +100,9 @@ jobs:
 
           run-task: true
           run-task-launch-type: FARGATE
-          run-task-subnets: ${{ env.ECS_PRIVATE_SUBNETS }}
+          run-task-subnets: ${{ env.ECS_PUBLIC_SUBNETS }}
           run-task-security-groups: ${{ env.ECS_SECURITY_GROUP }}
-          run-task-assign-public-IP: DISABLED
+          run-task-assign-public-IP: ENABLED
           run-task-container-overrides: |
             [
               {
