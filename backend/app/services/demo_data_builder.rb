@@ -194,8 +194,8 @@ class DemoDataBuilder
   def day_off_slot_settings
     {
       day_off_types[:day_off] => 5,
-      day_off_types[:afternoon] => 2,
-      day_off_types[:no_overtime] => 2
+      day_off_types[:afternoon] => 3,
+      day_off_types[:no_overtime] => 3
     }
   end
 
