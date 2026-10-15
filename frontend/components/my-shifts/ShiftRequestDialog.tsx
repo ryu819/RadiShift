@@ -442,7 +442,7 @@ export function ShiftRequestDialog({
 
                     const canRequest =
                       dayOffSlot !== undefined
-                        ? dayOffSlot.remainingSlots !== 0
+                        ? dayOffSlot.remainingSlots > 0
                         : !dayOffType.usesSlot;
 
                     const isSelected =
