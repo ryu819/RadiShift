@@ -3,7 +3,7 @@
 import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
 import { CircleHelp, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 
 import { InvitationDialogForm } from "@/components/admin/dashboard/members/InvitationDialogForm";
 import { SortableMemberRow } from "@/components/admin/dashboard/members/SortableMemberRow";
@@ -37,12 +37,8 @@ type Props = {
 
 export function MembersTable({ members, invitation }: Props) {
   const [searchText, setSearchText] = useState("");
-  const [orderedMembers, setOrderedMembers] = useState(members);
-  const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    setOrderedMembers(members);
-  }, [members]);
+  const [orderedMembers, setOrderedMembers] = useOptimistic(members);
+  const [isSaving, startTransition] = useTransition();
 
   const filteredMembers = orderedMembers.filter((member) => {
     return member.name.includes(searchText);
@@ -50,23 +46,12 @@ export function MembersTable({ members, invitation }: Props) {
 
   const sortingDisabled = searchText.length > 0 || isSaving;
 
-  async function saveMemberOrder(
-    previousMembers: Member[],
-    nextMembers: Member[],
-  ) {
-    try {
-      const result = await reorderMembers(
-        nextMembers.map((member) => member.id),
-      );
+  function saveMemberOrder(nextMembers: Member[]) {
+    startTransition(async () => {
+      setOrderedMembers(nextMembers);
 
-      if (!result.success) {
-        setOrderedMembers(previousMembers);
-      }
-    } catch {
-      setOrderedMembers(previousMembers);
-    } finally {
-      setIsSaving(false);
-    }
+      await reorderMembers(nextMembers.map((member) => member.id));
+    });
   }
 
   return (
@@ -143,7 +128,6 @@ export function MembersTable({ members, invitation }: Props) {
 
             if (initialIndex === index) return;
 
-            const previousMembers = orderedMembers;
             const nextMembers = [...orderedMembers];
 
             const [movedMember] = nextMembers.splice(initialIndex, 1);
@@ -152,10 +136,7 @@ export function MembersTable({ members, invitation }: Props) {
 
             nextMembers.splice(index, 0, movedMember);
 
-            setOrderedMembers(nextMembers);
-            setIsSaving(true);
-
-            saveMemberOrder(previousMembers, nextMembers);
+            saveMemberOrder(nextMembers);
           }}
         >
           <Table>
