@@ -5,7 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.3.10"
 
-gem "rails", "~> 8.1.3.1"
+gem "rails", "~> 8.1.4"
 
 # Active Storageバリデーション
 gem "active_storage_validations"
@@ -23,7 +23,7 @@ gem "rails-i18n"
 gem "mysql2", "~> 0.5"
 
 # Rails の標準 Web サーバー
-gem "puma", ">= 5.0"
+gem "puma", "~> 7.2.1"
 
 # Windowsではタイムゾーン情報がOSに含まれていないため、WindowsでRailsを動かす人向けに tzinfoのデータを別途インストールする
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
