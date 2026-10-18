@@ -2,11 +2,10 @@
 
 name: Continuous Integration
 
-# 当 workflow の実行タイミング
+# PRの作成・更新時、またはDeployから呼び出されたときに実行する
 on:
-  push:
-    branches: [main]
   pull_request:
+  workflow_call:
 
 
 # 当 workflow が行う処理

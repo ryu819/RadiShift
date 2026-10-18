@@ -1,12 +1,8 @@
 name: Deploy Production Backend
 
 on:
-  workflow_run:
-    workflows: ["Continuous Integration"]
-    types:
-      - completed
-    branches:
-      - main
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -26,17 +22,29 @@ env:
   ECS_SECURITY_GROUP: sg-0ad37aa30a4524e2f
 
 jobs:
+  # mainへpushしたコードをCIで確認してからデプロイする
+  ci:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
   deploy:
-    if: github.event.workflow_run.conclusion == 'success'
+    needs: ci
 
     runs-on: ubuntu-latest
+
+    concurrency:
+      group: radishift-production-deploy
+      cancel-in-progress: false
+      queue: max
 
     steps:
       # CIを通過した、そのコミットをcheckoutする
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.sha }}
 
       # GitHub OIDCを使って、一時的なAWS認証情報を取得する
       - name: Configure AWS credentials
@@ -55,7 +63,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
