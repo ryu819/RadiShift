@@ -10,13 +10,7 @@ import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
 
-export type ActionState = {
-  success: boolean;
-};
-
-export async function reorderMembers(
-  memberIds: number[],
-): Promise<ActionState> {
+export async function reorderMembers(memberIds: number[]): Promise<void> {
   const jwt = await getJwt();
 
   if (!jwt) redirect("/");
@@ -37,29 +31,20 @@ export async function reorderMembers(
 
     if (isServerError(res.status)) {
       await setFlashToast({ type: "failure" });
-      return {
-        success: false,
-      };
+      return;
     }
 
     if (isClientError(res.status)) {
       const data: RailsResponse = await res.json();
       await setFlashToast({ type: "failure", message: data.message });
-
-      return {
-        success: false,
-      };
+      return;
     }
 
     updateTag(CACHE_TAGS.members);
 
-    return {
-      success: true,
-    };
+    return;
   } catch {
     await setFlashToast({ type: "failure" });
-    return {
-      success: false,
-    };
+    return;
   }
 }
