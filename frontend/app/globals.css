@@ -135,34 +135,35 @@
 }
 
 @media print {
-  body.master-shift-printing {
+  body:has(.master-shift-print-area) {
     page: master-shift;
   }
 
-  body.master-shift-printing .master-shift-print-hide {
+  body:has(.master-shift-print-area) .master-shift-print-hide,
+  body:has(.master-shift-print-area) .toaster {
     display: none !important;
   }
 
-  body.master-shift-printing .master-shift-print-only {
+  body:has(.master-shift-print-area) .master-shift-print-only {
     display: block !important;
   }
 
-  body.master-shift-printing .master-shift-print-area {
+  body:has(.master-shift-print-area) .master-shift-print-area {
     zoom: 0.55;
     overflow: visible !important;
   }
 
-  body.master-shift-printing .master-shift-print-area .sticky {
+  body:has(.master-shift-print-area) .master-shift-print-area .sticky {
     position: static !important;
     inset: auto !important;
     z-index: auto !important;
   }
 
-  body.master-shift-printing [data-slot="sidebar-gap"] {
+  body:has(.master-shift-print-area) [data-slot="sidebar-gap"] {
     display: none !important;
   }
 
-  body.master-shift-printing [data-slot="sidebar-inset"] {
+  body:has(.master-shift-print-area) [data-slot="sidebar-inset"] {
     height: auto !important;
     overflow: visible !important;
     padding: 0 !important;
