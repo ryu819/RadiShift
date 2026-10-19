@@ -54,7 +54,7 @@ module Api
         end
 
         render json: {
-          message: "申請しました。"
+          message: "承認待ちとして申請されました。"
         }, status: :created
       end
 

@@ -83,6 +83,11 @@ export async function createDayOffRequestForm(
     updateTag(CACHE_TAGS.dayOffRequests);
     updateTag(CACHE_TAGS.scheduleMonth(scheduleMonthId));
 
+    await setFlashToast({
+      type: "success",
+      message: data.message,
+    });
+
     return { success: true };
   } catch {
     await setFlashToast({ type: "failure" });

@@ -316,9 +316,8 @@ module Api
       def day_off_request_message(day_off_request)
         return "申請は承認されました。" if day_off_request.approved?
         return "申請は否認されました。" if day_off_request.rejected?
-        return "申請締切日を過ぎているため、承認待ちとして申請されました。" if over_request_deadline?(day_off_request)
 
-        "申請しました。"
+        "承認待ちとして申請されました。"
       end
 
       def day_off_request_approval_error_message
