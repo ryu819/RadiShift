@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function MasterShiftPrintButton() {
   const handlePrint = () => {
-    document.body.classList.add("master-shift-printing");
     window.print();
-    document.body.classList.remove("master-shift-printing");
   };
 
   return (
