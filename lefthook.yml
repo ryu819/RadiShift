@@ -30,3 +30,13 @@ pre-push:
       root: backend/
       run: docker compose -f ../docker-compose.yml exec -T -e RAILS_ENV=test app bundle exec rspec
       fail_text: "RSpecで失敗しているテストがあります。"
+
+    - name: frontend-typecheck
+      root: frontend/
+      run: docker compose -f ../docker-compose.yml exec -T front npm run typecheck
+      fail_text: "TypeScriptの型チェックに失敗しました。"
+
+    - name: frontend-build
+      root: frontend/
+      run: docker compose -f ../docker-compose.yml exec -T front npm run build
+      fail_text: "Next.jsの本番ビルドに失敗しました。"
