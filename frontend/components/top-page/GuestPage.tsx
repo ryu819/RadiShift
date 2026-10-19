@@ -16,6 +16,7 @@ const features = [
       "施設メンバーの勤務・休み・モダリティを一覧で確認し、管理者は日ごとの割当を編集できます。",
     image: shiftEdit,
     imageAlt: "全体シフトから勤務・休み・モダリティを編集している画面",
+    imageSizes: "271px",
   },
   {
     title: "自分のシフト確認と希望申請",
@@ -23,6 +24,7 @@ const features = [
       "自分のシフトを月ごとに確認し、勤務・休みの希望申請や申請履歴を確認できます。",
     image: shiftRequest,
     imageAlt: "勤務や休みの希望申請を行う画面",
+    imageSizes: "247px",
   },
   {
     title: "施設・シフト設定をまとめて管理",
@@ -30,6 +32,7 @@ const features = [
       "シフト、申請、施設情報、勤務・休み・モダリティなどの設定を管理できます。",
     image: adminDashboard,
     imageAlt: "施設やシフトの設定を管理している画面",
+    imageSizes: "308px",
   },
 ];
 
@@ -82,12 +85,14 @@ export function GuestPage() {
               src={masterShiftsMockup}
               alt="RadiShiftの全体シフト画面"
               loading="eager"
+              sizes="768px"
             />
 
             <div className="absolute -bottom-2 -left-2 sm:-left-6 w-32 sm:w-50">
               <Image
                 src={myShiftsMobileMockup}
                 alt="RadiShiftのマイシフト画面"
+                sizes="200px"
               />
             </div>
           </div>
@@ -118,6 +123,7 @@ export function GuestPage() {
                   <Image
                     src={feature.image}
                     alt={feature.imageAlt}
+                    sizes={feature.imageSizes}
                     className="max-h-full max-w-full object-contain"
                   />
                 </div>
