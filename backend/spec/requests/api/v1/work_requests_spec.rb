@@ -65,7 +65,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         expect(WorkAssignment.count).to eq(work_assignment_count)
         expect(work_request).to be_pending
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("申請しました。")
+        expect(res["message"]).to eq("承認待ちとして申請されました。")
         expect(response).to have_http_status(:created)
       end
     end
@@ -97,7 +97,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         expect(WorkAssignment.count).to eq(work_assignment_count)
         expect(WorkRequest.last).to be_pending
         res = JSON.parse(response.body)
-        expect(res["message"]).to eq("申請しました。")
+        expect(res["message"]).to eq("承認待ちとして申請されました。")
         expect(response).to have_http_status(:created)
       end
     end
@@ -125,7 +125,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         res = JSON.parse(response.body)
         expect(WorkAssignment.count).to eq(work_assignment_count)
         expect(created_work_request).to be_pending
-        expect(res["message"]).to eq("申請しました。")
+        expect(res["message"]).to eq("承認待ちとして申請されました。")
         expect(response).to have_http_status(:created)
       end
     end
@@ -273,7 +273,7 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         res = JSON.parse(response.body)
         expect(WorkAssignment.count).to eq(work_assignment_count)
         expect(work_request).to be_pending
-        expect(res["message"]).to eq("申請しました。")
+        expect(res["message"]).to eq("承認待ちとして申請されました。")
         expect(response).to have_http_status(:created)
       end
     end

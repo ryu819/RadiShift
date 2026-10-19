@@ -129,7 +129,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
         res = JSON.parse(response.body)
         day_off_request = DayOffRequest.last
         expect(DayOffAssignment.count).to eq(day_off_assignment_count)
-        expect(res["message"]).to eq("申請しました。")
+        expect(res["message"]).to eq("承認待ちとして申請されました。")
         expect(day_off_request).to be_pending
         expect(response).to have_http_status(:created)
       end
@@ -172,7 +172,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
         res = JSON.parse(response.body)
         day_off_request = DayOffRequest.last
         expect(DayOffAssignment.count).to eq(day_off_assignment_count)
-        expect(res["message"]).to eq("申請しました。")
+        expect(res["message"]).to eq("承認待ちとして申請されました。")
         expect(day_off_request).to be_pending
         expect(day_off_assignment.reload).to be_present
         expect(response).to have_http_status(:created)
@@ -200,7 +200,7 @@ RSpec.describe "Api::V1::DayOffRequests", type: :request do
         expect { subject }.to change { DayOffRequest.count }.by(1)
         res = JSON.parse(response.body)
         day_off_request = DayOffRequest.last
-        expect(res["message"]).to eq("申請締切日を過ぎているため、承認待ちとして申請されました。")
+        expect(res["message"]).to eq("承認待ちとして申請されました。")
         expect(day_off_request).to be_pending
         expect(response).to have_http_status(:created)
       end
