@@ -211,7 +211,8 @@ class DemoDataBuilder
   def target_months
     [
       current_month,
-      current_month.next_month
+      current_month.next_month,
+      current_month.next_month.next_month
     ]
   end
 
@@ -236,7 +237,7 @@ class DemoDataBuilder
 
     create_assignments(schedule_days)
 
-    return unless month_start == current_month
+    return unless month_start == current_month.next_month
 
     create_requests(schedule_days)
   end
