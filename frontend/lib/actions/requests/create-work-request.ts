@@ -82,6 +82,11 @@ export async function createWorkRequestForm(
     updateTag(CACHE_TAGS.workRequests);
     updateTag(CACHE_TAGS.scheduleMonth(scheduleMonthId));
 
+    await setFlashToast({
+      type: "success",
+      message: data.message,
+    });
+
     return { success: true };
   } catch {
     await setFlashToast({ type: "failure" });

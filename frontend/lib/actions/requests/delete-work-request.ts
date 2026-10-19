@@ -55,6 +55,11 @@ export async function deleteWorkRequestForm(
     updateTag(CACHE_TAGS.pendingRequests);
     updateTag(CACHE_TAGS.workRequests);
 
+    await setFlashToast({
+      type: "success",
+      message: data.message,
+    });
+
     return { success: true };
   } catch {
     await setFlashToast({ type: "failure" });
