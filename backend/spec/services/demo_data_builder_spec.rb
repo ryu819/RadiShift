@@ -36,22 +36,23 @@ RSpec.describe DemoDataBuilder do
     facility = result[:facility]
     months = facility.schedule_months.order(:year, :month)
 
-    expect(months.count).to eq(2)
+    expect(months.count).to eq(3)
     expect_schedule_dates(months)
 
-    expect(months.first.is_published?).to be true
-    expect(months.last.is_published?).to be false
-    expect(months.first.schedule_month_member_orders.count).to eq(20)
-    expect(months.last.schedule_month_member_orders.count).to eq(0)
+    expect(months.map(&:is_published?)).to eq([true, false, false])
+    expect(months.map { |month| month.schedule_month_member_orders.count }).to eq([20, 0, 0])
+    expect(months.pluck(:monthly_days_off)).to eq([10, 11, 12])
   end
 
   def expect_schedule_dates(months)
-    today = Date.current
-    next_month = today.next_month
+    current_month = Date.current.beginning_of_month
+    next_month = current_month.next_month
+    month_after_next = next_month.next_month
 
     expected_months = [
-      [today.year, today.month],
-      [next_month.year, next_month.month]
+      [current_month.year, current_month.month],
+      [next_month.year, next_month.month],
+      [month_after_next.year, month_after_next.month]
     ]
 
     expect(months.pluck(:year, :month)).to eq(expected_months)
@@ -78,13 +79,13 @@ RSpec.describe DemoDataBuilder do
     facility = result[:facility]
     months = facility.schedule_months.order(:year, :month)
 
-    current_day_ids = months.first.schedule_days.select(:id)
-    next_day_ids = months.last.schedule_days.select(:id)
+    months.each do |month|
+      day_ids = month.schedule_days.select(:id)
 
-    expect(WorkAssignment.where(schedule_day_id: current_day_ids)).not_to be_empty
-    expect(DayOffAssignment.where(schedule_day_id: current_day_ids)).not_to be_empty
-    expect(ModalityAssignment.where(schedule_day_id: current_day_ids)).not_to be_empty
-    expect(WorkAssignment.where(schedule_day_id: next_day_ids)).not_to be_empty
+      expect(WorkAssignment.where(schedule_day_id: day_ids)).not_to be_empty
+      expect(DayOffAssignment.where(schedule_day_id: day_ids)).not_to be_empty
+      expect(ModalityAssignment.where(schedule_day_id: day_ids)).not_to be_empty
+    end
   end
 
   def expect_day_off_slots(result)
@@ -123,12 +124,48 @@ RSpec.describe DemoDataBuilder do
     facility = result[:facility]
     months = facility.schedule_months.order(:year, :month)
 
-    current_day_ids = months.first.schedule_days.select(:id)
-    next_day_ids = months.last.schedule_days.select(:id)
+    months.each_with_index do |month, index|
+      day_ids = month.schedule_days.select(:id)
+      work_requests = WorkRequest.where(schedule_day_id: day_ids)
+      day_off_requests = DayOffRequest.where(schedule_day_id: day_ids)
 
-    expect(WorkRequest.where(schedule_day_id: current_day_ids)).not_to be_empty
-    expect(DayOffRequest.where(schedule_day_id: current_day_ids)).not_to be_empty
-    expect(WorkRequest.where(schedule_day_id: next_day_ids)).to be_empty
-    expect(DayOffRequest.where(schedule_day_id: next_day_ids)).to be_empty
+      if index == 1
+        expect_request_details(work_requests, result[:admin_user])
+        expect_request_details(day_off_requests, result[:admin_user])
+        expect_approved_assignments(work_requests, day_off_requests)
+      else
+        expect(work_requests).to be_empty
+        expect(day_off_requests).to be_empty
+      end
+    end
+  end
+
+  def expect_request_details(requests, admin_user)
+    expect(requests.count).to eq(6)
+    expect(requests.group(:request_status).count).to eq(
+      "pending" => 4, "approved" => 1, "rejected" => 1
+    )
+    expect(requests.where(user: admin_user).count).to eq(4)
+    expect(requests.where.not(user: admin_user).count).to eq(2)
+    expect(requests.where(is_return: true).count).to eq(1)
+    expect(requests.where(is_return: true, request_status: :pending).count).to eq(1)
+  end
+
+  def expect_approved_assignments(work_requests, day_off_requests)
+    work_request = work_requests.approved.sole
+    work_assignment = work_request.work_assignment
+    day_off_request = day_off_requests.approved.sole
+    day_off_assignment = day_off_request.day_off_assignment
+
+    expect(work_assignment).to have_attributes(
+      user_id: work_request.user_id,
+      schedule_day_id: work_request.schedule_day_id,
+      work_type_id: work_request.work_type_id
+    )
+    expect(day_off_assignment).to have_attributes(
+      user_id: day_off_request.user_id,
+      schedule_day_id: day_off_request.schedule_day_id,
+      day_off_type_id: day_off_request.day_off_type_id
+    )
   end
 end
