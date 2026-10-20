@@ -82,7 +82,7 @@ export function ShiftTable({
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4  master-shift-fullscreen-frame">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 landscape:max-lg:gap-1  master-shift-fullscreen-frame">
       <div className="flex justify-between items-center master-shift-print-hide">
         <ShiftDisplayToggles
           visibility={visibility}

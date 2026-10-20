@@ -94,7 +94,7 @@ export async function MasterShifts({ searchParams }: Props) {
           </Popover>
         )}
       </div>
-      <div className="flex flex-col items-center justify-center gap-2 master-shift-fullscreen-hide">
+      <div className="flex flex-col items-center justify-center gap-2 landscape:max-lg:gap-0 master-shift-fullscreen-hide">
         <MonthNavigation
           scheduleMonths={scheduleMonthList}
           selectedScheduleMonthId={selectedScheduleMonth.id}
