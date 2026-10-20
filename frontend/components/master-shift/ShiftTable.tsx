@@ -4,9 +4,11 @@ import { LockKeyhole } from "lucide-react";
 import { useState } from "react";
 
 import { DayOffTypeItem } from "@/components/master-shift/DayOffTypeItem";
+import { ExitFullscreenButton } from "@/components/master-shift/ExitFullscreenButton";
 import { MasterShiftPrintButton } from "@/components/master-shift/MasterShiftPrintButton";
 import { ModalityTypeItem } from "@/components/master-shift/ModalityTypeItem";
 import { ShiftDisplayToggles } from "@/components/master-shift/ShiftDisplayToggles";
+import { StartFullscreenButton } from "@/components/master-shift/StartFullscreenButton";
 import { WorkTypeItem } from "@/components/master-shift/WorkTypeItem";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -80,21 +82,25 @@ export function ShiftTable({
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4  master-shift-fullscreen-frame">
       <div className="flex justify-between items-center master-shift-print-hide">
         <ShiftDisplayToggles
           visibility={visibility}
           onChange={updateVisibility}
         />
 
-        <MasterShiftPrintButton />
+        <div className="flex items-center gap-2 master-shift-fullscreen-hide">
+          <MasterShiftPrintButton />
+          <StartFullscreenButton />
+        </div>
+        <ExitFullscreenButton />
       </div>
 
       <h1 className="master-shift-print-area master-shift-print-only hidden text-center text-3xl font-semibold mb-4">
         {year}年{month}月
       </h1>
       <div
-        className="master-shift-print-area  overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm"
+        className="overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm master-shift-print-area "
         onScroll={() => setOpenCellKey(null)}
       >
         <table className="w-max min-w-full border-collapse text-xs md:text-sm">

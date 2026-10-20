@@ -130,6 +130,29 @@
   }
 }
 
+@media screen {
+  html.master-shift-fullscreen,
+  html.master-shift-fullscreen body {
+    overflow: hidden;
+  }
+
+  html.master-shift-fullscreen .master-shift-fullscreen-hide,
+  html.master-shift-fullscreen [data-slot="sidebar"],
+  html.master-shift-fullscreen [data-slot="sidebar-gap"] {
+    display: none !important;
+  }
+
+  html.master-shift-fullscreen .master-shift-fullscreen-frame {
+    position: fixed;
+    inset: 0;
+    padding: 0.5rem;
+  }
+
+  html.master-shift-fullscreen .master-shift-fullscreen-exit {
+    display: inline-flex;
+  }
+}
+
 @page master-shift {
   size: A4 landscape;
 }

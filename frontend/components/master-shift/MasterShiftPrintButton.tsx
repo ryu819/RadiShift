@@ -1,5 +1,7 @@
 "use client";
 
+import { Printer } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 
 export function MasterShiftPrintButton() {
@@ -9,7 +11,8 @@ export function MasterShiftPrintButton() {
 
   return (
     <Button type="button" variant="outline" size="sm" onClick={handlePrint}>
-      <span>印刷</span>
+      <Printer />
+      <span className="max-sm:hidden">印刷</span>
     </Button>
   );
 }

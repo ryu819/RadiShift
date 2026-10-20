@@ -65,7 +65,7 @@ export async function MasterShifts({ searchParams }: Props) {
 
   return (
     <>
-      <div className="master-shift-print-hide flex h-8 items-center justify-between text-xs md:text-sm">
+      <div className="flex h-8 items-center justify-between text-xs md:text-sm master-shift-print-hide master-shift-fullscreen-hide">
         <div className="flex items-center gap-1 md:gap-2">
           <CalendarDays className="size-3.5 md:size-4" />
           <span>全体シフト</span>
@@ -94,7 +94,7 @@ export async function MasterShifts({ searchParams }: Props) {
           </Popover>
         )}
       </div>
-      <div className="flex flex-col items-center justify-center gap-2">
+      <div className="flex flex-col items-center justify-center gap-2 master-shift-fullscreen-hide">
         <MonthNavigation
           scheduleMonths={scheduleMonthList}
           selectedScheduleMonthId={selectedScheduleMonth.id}
