@@ -16,8 +16,8 @@ type Props = {
 
 export default function MasterShiftPage({ searchParams }: Props) {
   return (
-    <div className="flex min-h-0 flex-1 p-3 md:p-8">
-      <div className="flex h-full  w-full flex-col gap-3 md:gap-6">
+    <div className="flex min-h-0 flex-1 p-3 md:p-8 landscape:max-lg:py-1">
+      <div className="flex h-full  w-full flex-col gap-3 md:gap-6 landscape:max-lg:gap-1">
         <Suspense fallback={<MasterShiftsSkeleton />}>
           <MasterShifts searchParams={searchParams} />
         </Suspense>

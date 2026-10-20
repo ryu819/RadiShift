@@ -43,9 +43,12 @@ export function SidebarItem({ href, icon, label }: Props) {
       <SidebarMenuButton
         asChild
         isActive={isActive}
-        className=" hover:opacity-70 transition"
+        className="hover:opacity-70 transition"
       >
-        <Link href={href} className="gap-3">
+        <Link
+          href={href}
+          className="gap-3 landscape:max-lg:py-0 landscape:max-lg:h-6"
+        >
           <ItemIcon icon={icon} />
           <span className="text-sm font-semibold">{label}</span>
         </Link>

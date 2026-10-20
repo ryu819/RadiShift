@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${notoSansJP.variable} antialiased font-sans bg-slate-50 min-h-screen flex flex-col text-secondary`}
+        className={`${notoSansJP.variable} antialiased font-sans bg-slate-50 min-h-dvh flex flex-col text-secondary`}
       >
         <GoogleIdentityProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
