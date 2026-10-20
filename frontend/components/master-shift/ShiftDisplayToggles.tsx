@@ -14,7 +14,7 @@ type Props = {
 
 export function ShiftDisplayToggles({ visibility, onChange }: Props) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2">
+    <div className="flex items-center gap-3 py-2">
       {SHIFT_DISPLAY_VISIBILITY_ITEMS.map((item) => {
         const checked = visibility[item.key];
 
