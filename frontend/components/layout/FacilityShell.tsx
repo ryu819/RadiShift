@@ -12,7 +12,7 @@ export function FacilityShell({ children, isAdmin }: Props) {
     <SidebarProvider>
       <AppSidebar isAdmin={isAdmin} />
 
-      <SidebarInset className="overflow-x-hidden h-screen bg-slate-50 pt-16 pb-16 md:pb-0">
+      <SidebarInset className="overflow-x-hidden h-dvh bg-slate-50 pt-16 pb-16 md:pb-0 landscape:max-md:pb-0">
         {children}
       </SidebarInset>
 
