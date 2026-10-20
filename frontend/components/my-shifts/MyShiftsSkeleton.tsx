@@ -38,18 +38,18 @@ export function MyShiftsSkeleton() {
       </div>
 
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-4 px-3 py-2">
-          <label className="flex items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center gap-3 py-2">
+          <label className="flex items-center gap-1 text-sm">
             <Checkbox checked disabled />
             <span>勤務</span>
           </label>
 
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-1 text-sm">
             <Checkbox checked disabled />
             <span>休み</span>
           </label>
 
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-1 text-sm">
             <Checkbox checked disabled />
             <span>モダリティ</span>
           </label>

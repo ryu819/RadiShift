@@ -131,11 +131,6 @@
 }
 
 @media screen {
-  html.master-shift-fullscreen,
-  html.master-shift-fullscreen body {
-    overflow: hidden;
-  }
-
   html.master-shift-fullscreen .master-shift-fullscreen-hide,
   html.master-shift-fullscreen [data-slot="sidebar"],
   html.master-shift-fullscreen [data-slot="sidebar-gap"] {

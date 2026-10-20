@@ -1,4 +1,10 @@
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Expand,
+  Printer,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -38,7 +44,7 @@ export function MasterShiftsSkeleton() {
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3 px-3 py-2">
+          <div className="flex items-center gap-3 py-2">
             <div className="flex items-center gap-1 text-sm">
               <Checkbox checked disabled />
               <label className="whitespace-nowrap">勤務</label>
@@ -52,9 +58,16 @@ export function MasterShiftsSkeleton() {
               <label className="whitespace-nowrap">モダリティ</label>
             </div>
           </div>
-          <Button type="button" variant="outline" size="sm" disabled>
-            <span>印刷</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" size="sm" disabled>
+              <Printer />
+              <span className="max-sm:hidden">印刷</span>
+            </Button>
+            <Button type="button" variant="outline" size="sm" disabled>
+              <Expand />
+              <span className="max-sm:hidden">全画面</span>
+            </Button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-auto overscroll-none rounded-sm border border-slate-200 bg-white shadow-sm">

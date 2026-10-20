@@ -12,7 +12,7 @@ export async function AccountSettings() {
   const belongsToFacility = hasFacility(user);
 
   return (
-    <div className="flex flex-1 w-full items-center justify-center max-sm:mt-2">
+    <div className="flex flex-1 w-full items-center justify-center max-sm:mt-4">
       <div className="w-sm space-y-6">
         <h1 className="text-center text-2xl font-bold">アカウント設定</h1>
 
