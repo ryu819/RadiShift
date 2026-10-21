@@ -75,6 +75,7 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
                 id="yearAndMonth"
                 name="yearAndMonth"
                 type="month"
+                className="appearance-none"
                 defaultValue={`${year}-${String(month).padStart(2, "0")}`}
                 required
               />
@@ -90,7 +91,7 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
                 id="monthlyDaysOff"
                 name="monthlyDaysOff"
                 type="number"
-                inputMode="numeric"
+                inputMode="decimal"
                 min={0}
                 step={0.5}
                 defaultValue={DEFAULT_MONTHLY_DAYS_OFF}

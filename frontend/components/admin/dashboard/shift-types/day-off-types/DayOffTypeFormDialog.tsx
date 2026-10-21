@@ -103,7 +103,7 @@ export function DayOffTypeFormDialog({ dayOffType, onOpenChange }: Props) {
               id="dayOffUnit"
               name="dayOffUnit"
               type="number"
-              inputMode="numeric"
+              inputMode="decimal"
               min="0"
               step="0.5"
               defaultValue={dayOffType?.dayOffUnit ?? 1}
