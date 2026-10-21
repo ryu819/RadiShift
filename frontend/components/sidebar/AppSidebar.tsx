@@ -13,9 +13,9 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
   return (
     <Sidebar className="fixed left-0 z-0 master-shift-print-hide">
       <SidebarContent className="bg-white mt-16">
-        <SidebarGroup className="mt-4 landscape:max-lg:mt-2 landscape:max-lg:py-1">
+        <SidebarGroup className="mt-4 landscape:max-lg:[@media(max-height:500px)]:mt-2 landscape:max-lg:[@media(max-height:500px)]:py-1">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-2 landscape:max-lg:gap-1">
+            <SidebarMenu className="gap-2 landscape:max-lg:[@media(max-height:500px)]:gap-1">
               <SidebarItem
                 href={ROUTES.masterShift}
                 icon="house"
@@ -48,7 +48,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="bg-white border-t landscape:max-lg:py-1">
+      <SidebarFooter className="bg-white border-t landscape:max-lg:[@media(max-height:500px)]:py-1">
         <SidebarMenu className="gap-0">
           <SidebarItem href={ROUTES.terms} label="利用規約" />
           <SidebarItem

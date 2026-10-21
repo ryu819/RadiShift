@@ -47,7 +47,7 @@ export function SidebarItem({ href, icon, label }: Props) {
       >
         <Link
           href={href}
-          className="gap-3 landscape:max-lg:py-0 landscape:max-lg:h-6"
+          className="gap-3 landscape:max-lg:[@media(max-height:500px)]:py-0 landscape:max-lg:[@media(max-height:500px)]:h-6"
         >
           <ItemIcon icon={icon} />
           <span className="text-sm font-semibold">{label}</span>
