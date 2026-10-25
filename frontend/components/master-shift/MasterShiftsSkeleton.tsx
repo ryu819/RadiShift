@@ -32,7 +32,7 @@ export function MasterShiftsSkeleton() {
             <ChevronLeft className="size-4" />
           </Button>
 
-          <Skeleton className="h-7 w-34" />
+          <Skeleton className="h-7 w-28.5 md:w-34" />
 
           <Button variant="link" size="icon" disabled>
             <ChevronRight className="size-4" />
