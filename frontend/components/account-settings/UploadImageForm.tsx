@@ -58,7 +58,6 @@ export function UploadImageForm({ user }: { user: User | null }) {
         return;
       }
 
-      // ① 送信先を発行（失敗時の通知はServer Actionが行う）
       const target = await prepareAvatarImageUpload({
         contentType: image.type,
         byteSize: image.size,
@@ -66,7 +65,6 @@ export function UploadImageForm({ user }: { user: User | null }) {
       });
       if (!target) return;
 
-      // ② 画像本体はブラウザからS3へ直接送る（JWTは付けない）
       try {
         const res = await fetch(target.uploadUrl, {
           method: "PUT",
@@ -83,7 +81,6 @@ export function UploadImageForm({ user }: { user: User | null }) {
         return;
       }
 
-      // ③ 登録が成功した時だけ、新しいアイコンに切り替わる
       await updateAvatarImage(target.signedId);
     });
   }
@@ -97,7 +94,7 @@ export function UploadImageForm({ user }: { user: User | null }) {
         <AvatarImage
           src={user?.avatarImageUrl ?? "/images/default-user-icon.png"}
         />
-        <AvatarFallback>{user?.name}</AvatarFallback>
+        <AvatarFallback />
       </Avatar>
 
       <Button
