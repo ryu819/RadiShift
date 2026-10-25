@@ -1,59 +1,84 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
+import snakecaseKeys from "snakecase-keys";
 
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { getJwt } from "@/lib/auth/jwt";
 import { isClientError, isServerError } from "@/lib/http-status";
 import { setFlashToast } from "@/lib/set-flash-toast";
+import { RailsResponse } from "@/types/rails-response";
 
-type ImageResponse = {
-  message?: string;
-  errors?: string[];
+type UploadTargetResponse = {
+  upload_url: string;
+  headers: Record<string, string>;
+  signed_id: string;
 };
 
-const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg"];
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-
-const ERROR_MESSAGES = {
-  INVALID_TYPE:
-    "対応している画像形式（JPEG・PNG）のファイルを選択してください。",
-  FILE_TOO_LARGE: "5MB以下の画像を選択してください。",
-};
-
-export async function uploadImage(formData: FormData) {
-  const file = formData.get("avatarImage") as File;
-
+export async function prepareAvatarImageUpload(image: {
+  contentType: string;
+  byteSize: number;
+  checksum: string;
+}) {
   const jwt = await getJwt();
   if (!jwt) redirect("/");
 
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-    await setFlashToast({
-      type: "failure",
-      message: ERROR_MESSAGES.INVALID_TYPE,
-    });
-    return;
-  }
+  try {
+    const res = await fetch(
+      `${process.env.RAILS_API_URL}/current/user/avatar_image_upload`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: jwt,
+        },
+        body: JSON.stringify({
+          content_type: image.contentType,
+          byte_size: image.byteSize,
+          checksum: image.checksum,
+        }),
+      },
+    );
 
-  if (file.size > MAX_IMAGE_SIZE) {
-    await setFlashToast({
-      type: "failure",
-      message: ERROR_MESSAGES.FILE_TOO_LARGE,
-    });
-    return;
+    if (isServerError(res.status)) {
+      await setFlashToast({ type: "failure" });
+      return null;
+    }
+
+    if (isClientError(res.status)) {
+      const data: RailsResponse = await res.json();
+      await setFlashToast({ type: "failure", message: data.message });
+      return null;
+    }
+
+    const data: UploadTargetResponse = await res.json();
+
+    return {
+      uploadUrl: data.upload_url,
+      headers: data.headers,
+      signedId: data.signed_id,
+    };
+  } catch {
+    await setFlashToast({ type: "failure" });
+    return null;
   }
+}
+
+export async function updateAvatarImage(signedId: string) {
+  const jwt = await getJwt();
+  if (!jwt) redirect("/");
 
   try {
-    const body = new FormData();
-    body.append("avatar_image", file);
-
     const res = await fetch(
       `${process.env.RAILS_API_URL}/current/user/avatar_image`,
       {
         method: "PATCH",
         headers: {
+          "Content-Type": "application/json",
           Authorization: jwt,
         },
-        body,
+        body: JSON.stringify(snakecaseKeys({ signedId })),
       },
     );
 
@@ -62,24 +87,17 @@ export async function uploadImage(formData: FormData) {
       return;
     }
 
-    const data: ImageResponse = await res.json();
-    const errorMessage = data.errors?.join("\n");
+    const data: RailsResponse = await res.json();
 
     if (isClientError(res.status)) {
-      await setFlashToast({
-        type: "failure",
-        message: errorMessage,
-      });
+      await setFlashToast({ type: "failure", message: data.message });
       return;
     }
 
-    await setFlashToast({
-      type: "success",
-      message: data.message,
-    });
+    await setFlashToast({ type: "success", message: data.message });
+
+    updateTag(CACHE_TAGS.members);
   } catch {
-    await setFlashToast({
-      type: "failure",
-    });
+    await setFlashToast({ type: "failure" });
   }
 }
