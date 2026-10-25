@@ -3,9 +3,7 @@
 class User < ApplicationRecord
   belongs_to :facility, optional: true
   belongs_to :demo_environment, optional: true
-  has_one_attached :avatar_image do |attachable|
-    attachable.variant :avatar, resize_to_fill: [256, 256]
-  end
+  has_one_attached :avatar_image
   has_many :day_off_requests, dependent: :destroy
   has_many :work_requests, dependent: :destroy
   has_many :work_assignments, dependent: :destroy
@@ -16,7 +14,7 @@ class User < ApplicationRecord
   validates :avatar_image,   content_type: { in: %w[image/jpeg image/png],
                                              message: "対応している画像形式（JPEG・PNG）のファイルを選択してください。" },
                              size: { less_than: 5.megabytes,
-                                     message: "5MB以下の画像を選択してください。" }
+                                     message: "5MiB未満の画像を選択してください。" }
   validates :display_order, presence: true, numericality: { only_integer: true, greater_than: 0 },
                             if: -> { facility.present? }
 

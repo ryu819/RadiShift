@@ -30,7 +30,8 @@ Rails.application.routes.draw do
 
       namespace :current do
         resource :user, only: [:show, :update, :destroy] do
-          patch :avatar_image
+          post :avatar_image_upload, to: "avatar_images#create"
+          patch :avatar_image, to: "avatar_images#update"
         end
         resource :google_account, only: [:create, :destroy]
         resources :shifts, only: :show

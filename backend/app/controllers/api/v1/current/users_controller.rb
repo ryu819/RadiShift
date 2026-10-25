@@ -54,19 +54,6 @@ module Api
           render json: { message: "アカウントを削除しました。" }, status: :ok
         end
 
-        def avatar_image
-          return render json: { message: "画像が送信されていません。" }, status: :bad_request if params[:avatar_image].blank?
-
-          current_user.avatar_image.purge if current_user.avatar_image.attached?
-
-          current_user.avatar_image.attach(params[:avatar_image])
-          if current_user.save
-            render json: { message: "ユーザーアイコンを更新しました。" }, status: :ok
-          else
-            render json: { errors: current_user.errors[:avatar_image] }, status: :unprocessable_content
-          end
-        end
-
         private
 
         def current_user_params
@@ -76,10 +63,7 @@ module Api
         def avatar_image_url
           return unless current_user.avatar_image.attached?
 
-          rails_representation_url(
-            current_user.avatar_image.variant(:avatar),
-            host: ENV.fetch("APP_HOST")
-          )
+          rails_blob_url(current_user.avatar_image, host: ENV.fetch("APP_HOST"))
         end
 
         def destroy_current_user!(random_password)
