@@ -17,38 +17,40 @@ type Toast = {
   message: string;
 };
 
+export function showFlashToast(data: Toast) {
+  const isMobile = window.innerWidth <= 600;
+
+  const position = isMobile ? "top-center" : "top-right";
+
+  if (data.type === "pending") {
+    toast.dismiss();
+    toast.info(data.message, {
+      position,
+      duration: TOAST_DURATION,
+      style: { color: TOAST_COLORS.pending, fontSize: TOAST_FONT_SIZE },
+    });
+  } else if (data.type === "failure") {
+    toast.dismiss();
+    toast.error(data.message, {
+      position,
+      duration: TOAST_DURATION,
+      style: { color: TOAST_COLORS.failure, fontSize: TOAST_FONT_SIZE },
+    });
+  } else if (data.type === "success") {
+    toast.dismiss();
+    toast.success(data.message, {
+      position,
+      duration: TOAST_DURATION,
+      style: { color: TOAST_COLORS.success, fontSize: TOAST_FONT_SIZE },
+    });
+  }
+}
+
 export function FlashToaster({ flash }: { flash?: string }) {
   useEffect(() => {
     if (!flash) return;
 
-    const data: Toast = JSON.parse(flash);
-
-    const isMobile = window.innerWidth <= 600;
-
-    const position = isMobile ? "top-center" : "top-right";
-
-    if (data.type === "pending") {
-      toast.dismiss();
-      toast.info(data.message, {
-        position,
-        duration: TOAST_DURATION,
-        style: { color: TOAST_COLORS.pending, fontSize: TOAST_FONT_SIZE },
-      });
-    } else if (data.type === "failure") {
-      toast.dismiss();
-      toast.error(data.message, {
-        position,
-        duration: TOAST_DURATION,
-        style: { color: TOAST_COLORS.failure, fontSize: TOAST_FONT_SIZE },
-      });
-    } else if (data.type === "success") {
-      toast.dismiss();
-      toast.success(data.message, {
-        position,
-        duration: TOAST_DURATION,
-        style: { color: TOAST_COLORS.success, fontSize: TOAST_FONT_SIZE },
-      });
-    }
+    showFlashToast(JSON.parse(flash));
   }, [flash]);
 
   return null;

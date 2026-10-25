@@ -1,45 +1,122 @@
 "use client";
 
-import { Camera } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
+import { ChangeEvent, useTransition } from "react";
 
+import { showFlashToast } from "@/components/toast/FlashToaster";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { uploadImage } from "@/lib/actions/account/upload-image";
+import {
+  prepareAvatarImageUpload,
+  updateAvatarImage,
+} from "@/lib/actions/account/upload-image";
+import {
+  calculateChecksum,
+  isValidAvatarImage,
+  resizeAvatarImage,
+} from "@/lib/avatar-image";
 import { User } from "@/types/user";
 
+const ERROR_MESSAGES = {
+  INVALID_IMAGE: "5MiB未満のJPEG・PNG画像を選び直してください。",
+  RESIZE_FAILED: "画像を加工できませんでした。別の画像を選び直してください。",
+  UPLOAD_FAILED:
+    "画像を送信できませんでした。しばらくしてからもう一度お試しください。",
+};
+
+const UPLOAD_TIMEOUT_MS = 60 * 1000;
+
 export function UploadImageForm({ user }: { user: User | null }) {
+  const [isPending, startTransition] = useTransition();
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.currentTarget.files?.[0];
+    e.currentTarget.value = "";
+    if (!file) return;
+
+    if (!isValidAvatarImage(file)) {
+      showFlashToast({
+        type: "failure",
+        message: ERROR_MESSAGES.INVALID_IMAGE,
+      });
+      return;
+    }
+
+    startTransition(async () => {
+      let image: Blob;
+      let checksum: string;
+      try {
+        image = await resizeAvatarImage(file);
+        checksum = await calculateChecksum(image);
+      } catch {
+        showFlashToast({
+          type: "failure",
+          message: ERROR_MESSAGES.RESIZE_FAILED,
+        });
+        return;
+      }
+
+      // ① 送信先を発行（失敗時の通知はServer Actionが行う）
+      const target = await prepareAvatarImageUpload({
+        contentType: image.type,
+        byteSize: image.size,
+        checksum,
+      });
+      if (!target) return;
+
+      // ② 画像本体はブラウザからS3へ直接送る（JWTは付けない）
+      try {
+        const res = await fetch(target.uploadUrl, {
+          method: "PUT",
+          headers: target.headers,
+          body: image,
+          signal: AbortSignal.timeout(UPLOAD_TIMEOUT_MS),
+        });
+        if (!res.ok) throw new Error();
+      } catch {
+        showFlashToast({
+          type: "failure",
+          message: ERROR_MESSAGES.UPLOAD_FAILED,
+        });
+        return;
+      }
+
+      // ③ 登録が成功した時だけ、新しいアイコンに切り替わる
+      await updateAvatarImage(target.signedId);
+    });
+  }
+
   return (
-    <form action={uploadImage}>
-      <Label
-        htmlFor="avatarImage"
-        className="relative w-fit mx-auto block cursor-pointer"
-      >
-        <Avatar className="w-24 h-24">
-          <AvatarImage
-            src={user?.avatarImageUrl ?? "/images/default-user-icon.png"}
-          />
-          <AvatarFallback>{user?.name}</AvatarFallback>
-        </Avatar>
-
-        <Button
-          type="button"
-          size="icon-sm"
-          className="absolute bottom-0 right-0 rounded-full pointer-events-none"
-        >
-          <Camera />
-        </Button>
-
-        <Input
-          id="avatarImage"
-          name="avatarImage"
-          type="file"
-          accept="image/jpeg,image/png"
-          className="hidden"
-          onChange={(e) => e.currentTarget.form?.requestSubmit()}
+    <Label
+      htmlFor="avatarImage"
+      className="relative w-fit mx-auto block cursor-pointer"
+    >
+      <Avatar className="w-24 h-24">
+        <AvatarImage
+          src={user?.avatarImageUrl ?? "/images/default-user-icon.png"}
         />
-      </Label>
-    </form>
+        <AvatarFallback>{user?.name}</AvatarFallback>
+      </Avatar>
+
+      <Button
+        type="button"
+        size="icon-sm"
+        className="absolute bottom-0 right-0 rounded-full pointer-events-none"
+      >
+        {isPending ? <Loader2 className="animate-spin" /> : <Camera />}
+      </Button>
+
+      <Input
+        id="avatarImage"
+        name="avatarImage"
+        type="file"
+        accept="image/jpeg,image/png"
+        className="hidden"
+        disabled={isPending}
+        onChange={handleChange}
+      />
+    </Label>
   );
 }
