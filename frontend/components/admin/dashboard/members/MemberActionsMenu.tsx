@@ -33,7 +33,7 @@ export function MemberActionsMenu({ member }: { member: Member }) {
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon-sm">
             <MoreHorizontal className="size-4 max-sm:size-3" />
