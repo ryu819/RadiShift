@@ -41,6 +41,16 @@ module Api
           end
         end
 
+        def destroy
+          return render json: { message: "ユーザーアイコンが登録されていません。" }, status: :not_found unless current_user.avatar_image.attached?
+
+          current_user.with_lock do
+            current_user.avatar_image.purge
+          end
+
+          render json: { message: "ユーザーアイコンを削除しました。" }, status: :ok
+        end
+
         private
 
         def upload_purpose
