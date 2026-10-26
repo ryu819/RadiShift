@@ -1,11 +1,18 @@
 "use client";
 
-import { Camera, Loader2 } from "lucide-react";
-import { ChangeEvent, useTransition } from "react";
+import { Camera, ImageUp, Loader2, Trash2 } from "lucide-react";
+import { ChangeEvent, useState, useTransition } from "react";
 
+import { AvatarImageDeleteDialog } from "@/components/account-settings/AvatarImageDeleteDialog";
 import { showFlashToast } from "@/components/toast/FlashToaster";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,6 +37,7 @@ const UPLOAD_TIMEOUT_MS = 60 * 1000;
 
 export function UploadImageForm({ user }: { user: User | null }) {
   const [isPending, startTransition] = useTransition();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.currentTarget.files?.[0];
@@ -85,11 +93,8 @@ export function UploadImageForm({ user }: { user: User | null }) {
     });
   }
 
-  return (
-    <Label
-      htmlFor="avatarImage"
-      className="relative w-fit mx-auto block cursor-pointer"
-    >
+  const avatar = (
+    <>
       <Avatar className="w-24 h-24">
         <AvatarImage
           src={user?.avatarImageUrl ?? "/images/default-user-icon.png"}
@@ -98,12 +103,52 @@ export function UploadImageForm({ user }: { user: User | null }) {
       </Avatar>
 
       <Button
-        type="button"
+        asChild
         size="icon-sm"
         className="absolute bottom-0 right-0 rounded-full pointer-events-none"
       >
-        {isPending ? <Loader2 className="animate-spin" /> : <Camera />}
+        <span>
+          {isPending ? <Loader2 className="animate-spin" /> : <Camera />}
+        </span>
       </Button>
+    </>
+  );
+
+  return (
+    <div className="w-fit mx-auto">
+      {user?.avatarImageUrl ? (
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="relative block cursor-pointer rounded-full"
+              disabled={isPending}
+            >
+              {avatar}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center">
+            <DropdownMenuItem asChild>
+              <label htmlFor="avatarImage" className="cursor-pointer">
+                <ImageUp />
+                画像を変更
+              </label>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              className="cursor-pointer"
+              onSelect={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash2 />
+              画像を削除
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Label htmlFor="avatarImage" className="relative block cursor-pointer">
+          {avatar}
+        </Label>
+      )}
 
       <Input
         id="avatarImage"
@@ -114,6 +159,11 @@ export function UploadImageForm({ user }: { user: User | null }) {
         disabled={isPending}
         onChange={handleChange}
       />
-    </Label>
+
+      <AvatarImageDeleteDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      />
+    </div>
   );
 }

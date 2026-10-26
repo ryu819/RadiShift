@@ -26,7 +26,7 @@ export async function prepareAvatarImageUpload(image: {
 
   try {
     const res = await fetch(
-      `${process.env.RAILS_API_URL}/current/user/avatar_image_upload`,
+      `${process.env.RAILS_API_URL}/current/user/avatar_image`,
       {
         method: "POST",
         headers: {

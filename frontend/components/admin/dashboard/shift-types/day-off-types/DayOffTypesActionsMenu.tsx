@@ -25,7 +25,7 @@ export function DayOffTypesActionsMenu({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon-sm">
             <MoreHorizontal />
