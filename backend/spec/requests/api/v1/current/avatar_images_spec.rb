@@ -16,9 +16,9 @@ RSpec.describe "Api::V1::Current::AvatarImages", type: :request do
     allow(ActiveStorage::Blob.services).to receive(:fetch).with("amazon").and_return(ActiveStorage::Blob.service)
   end
 
-  describe "POST /api/v1/current/user/avatar_image_upload" do
+  describe "POST /api/v1/current/user/avatar_image" do
     subject do
-      post(avatar_image_upload_api_v1_current_user_path, params: params, headers: { "Authorization": token })
+      post(api_v1_current_user_avatar_image_path, params: params, headers: { "Authorization": token })
     end
 
     let(:params) { { content_type: "image/png", byte_size: bytes.bytesize, checksum: Digest::MD5.base64digest(bytes) } }
@@ -38,7 +38,7 @@ RSpec.describe "Api::V1::Current::AvatarImages", type: :request do
       it "画像情報を作らない" do
         [{ content_type: "text/plain" }, { byte_size: 0 }, { byte_size: 5.megabytes }, { checksum: "" }].each do |invalid|
           expect do
-            post(avatar_image_upload_api_v1_current_user_path, params: params.merge(invalid), headers: { "Authorization": token })
+            post(api_v1_current_user_avatar_image_path, params: params.merge(invalid), headers: { "Authorization": token })
           end.not_to change { ActiveStorage::Blob.count }
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -48,7 +48,7 @@ RSpec.describe "Api::V1::Current::AvatarImages", type: :request do
 
   describe "PATCH /api/v1/current/user/avatar_image" do
     subject do
-      patch(avatar_image_api_v1_current_user_path, params: { signed_id: signed_id }, headers: { "Authorization": token })
+      patch(api_v1_current_user_avatar_image_path, params: { signed_id: signed_id }, headers: { "Authorization": token })
     end
 
     let(:blob) do
@@ -118,6 +118,71 @@ RSpec.describe "Api::V1::Current::AvatarImages", type: :request do
         subject
         expect(response).to have_http_status(:unprocessable_content)
         expect(user.reload.avatar_image.blob).to eq(old_blob)
+      end
+    end
+  end
+
+  describe "DELETE /api/v1/current/user/avatar_image" do
+    subject do
+      delete(api_v1_current_user_avatar_image_path, headers: { "Authorization": token })
+    end
+
+    def file_exists?(blob)
+      blob.service.exist?(blob.key)
+    end
+
+    context "アイコン設定済みの時" do
+      it "アイコンとファイルを削除し、成功を返す" do
+        subject
+        expect(response).to have_http_status(:ok)
+        expect(JSON.parse(response.body)["message"]).to eq("ユーザーアイコンを削除しました。")
+        expect(user.reload.avatar_image).not_to be_attached
+        expect(file_exists?(old_blob)).to be(false)
+      end
+    end
+
+    context "他のユーザーもアイコンを設定している時" do
+      let!(:other_user) { create(:user, :with_avatar) }
+
+      it "他のユーザーのアイコンは削除しない" do
+        subject
+        expect(other_user.reload.avatar_image).to be_attached
+        expect(file_exists?(other_user.avatar_image.blob)).to be(true)
+      end
+    end
+
+    context "アイコン未設定の時" do
+      let!(:user) { create(:user) }
+      let!(:old_blob) { nil }
+
+      it "404を返す" do
+        subject
+        expect(response).to have_http_status(:not_found)
+        expect(JSON.parse(response.body)["message"]).to eq("ユーザーアイコンが登録されていません。")
+      end
+    end
+
+    context "S3の削除が最初から失敗した時" do
+      before { allow(old_blob.service).to receive(:delete).and_raise(StandardError, "S3障害") }
+
+      it "エラーになり、アイコンとファイルが残る" do
+        expect { subject }.to raise_error(StandardError, "S3障害")
+        expect(user.reload.avatar_image.blob).to eq(old_blob)
+        expect(file_exists?(old_blob)).to be(true)
+      end
+    end
+
+    context "ファイルを消した後に失敗した時（加工版の一括削除の失敗など）" do
+      before { allow(old_blob.service).to receive(:delete_prefixed).and_raise(StandardError, "ListBucket拒否") }
+
+      it "エラーになるが、もう一度削除すると完了する" do
+        expect { subject }.to raise_error(StandardError, "ListBucket拒否")
+        expect(user.reload.avatar_image).to be_attached
+
+        allow(old_blob.service).to receive(:delete_prefixed).and_call_original
+        delete(api_v1_current_user_avatar_image_path, headers: { "Authorization": token })
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.avatar_image).not_to be_attached
       end
     end
   end
