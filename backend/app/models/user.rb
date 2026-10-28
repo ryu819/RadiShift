@@ -72,6 +72,15 @@ class User < ApplicationRecord
     super && !demo_expired?
   end
 
+  def resend_confirmation_instructions
+    with_lock do
+      if confirmation_sent_at.nil? || confirmation_sent_at <= 1.minute.ago
+        self.confirmation_token = nil
+        super
+      end
+    end
+  end
+
   private
 
   def password_required?
