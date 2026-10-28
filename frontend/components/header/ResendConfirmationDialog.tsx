@@ -110,7 +110,7 @@ export function ResendConfirmationDialog({ open, onOpenChange }: Props) {
               {isPending ? (
                 <Loader2 className="animate-spin" />
               ) : (
-                "認証メールを再送する"
+                "認証メールを再送信"
               )}
             </Button>
           </DialogFooter>
