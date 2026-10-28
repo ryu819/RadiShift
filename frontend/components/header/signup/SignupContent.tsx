@@ -16,7 +16,13 @@ import {
 import { ROUTES } from "@/constants/routes";
 import { checkGoogleSignup } from "@/lib/actions/auth/check-google-signup";
 
-export function SignupContent({ onClose }: { onClose: () => void }) {
+export function SignupContent({
+  onClose,
+  onOpenResendConfirmation,
+}: {
+  onClose: () => void;
+  onOpenResendConfirmation: () => void;
+}) {
   const [credential, setCredential] = useState<string | null>(null);
 
   const [state, action, isPending] = useActionState(checkGoogleSignup, {
@@ -115,6 +121,17 @@ export function SignupContent({ onClose }: { onClose: () => void }) {
           </div>
 
           <EmailSignupForm onClose={onClose} />
+
+          <div className="text-center text-sm">
+            新規会員登録後の認証メールが届かない方は
+            <button
+              type="button"
+              onClick={onOpenResendConfirmation}
+              className="cursor-pointer text-primary underline transition hover:opacity-50"
+            >
+              こちら
+            </button>
+          </div>
         </>
       )}
     </>
