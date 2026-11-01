@@ -146,6 +146,14 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       let(:future_schedule_month) { create(:schedule_month, facility: user.facility, date: future_date) }
       let(:future_schedule_day) { create(:schedule_day, schedule_month: future_schedule_month, date: future_date) }
       let!(:future_work_assignment) { create(:work_assignment, user: user, schedule_day: future_schedule_day) }
+      let(:past_date) { Date.current.prev_month.beginning_of_month }
+      let(:past_schedule_day) do
+        create(:schedule_day, schedule_month: create(:schedule_month, facility: facility, date: past_date), date: past_date)
+      end
+      let!(:past_work_assignment) { create(:work_assignment, facility: facility, user: user, schedule_day: past_schedule_day) }
+      let!(:approved_work_request) do
+        create(:work_request, facility: facility, user: user, schedule_day: past_schedule_day, request_status: :approved)
+      end
 
       it "ユーザーを物理削除せず削除済み状態にする" do
         original_name = user.name
@@ -172,6 +180,12 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       it "未来のAssignmentを削除してからアカウントを削除する" do
         subject
         expect(WorkAssignment.exists?(future_work_assignment.id)).to be false
+      end
+
+      it "過去のAssignmentと承認済みの申請は残す" do
+        subject
+        expect(WorkAssignment.exists?(past_work_assignment.id)).to be true
+        expect(WorkRequest.exists?(approved_work_request.id)).to be true
       end
 
       it "Google連携情報を削除する" do

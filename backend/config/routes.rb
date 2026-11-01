@@ -2,6 +2,7 @@
 
 Rails.application.routes.draw do
   post "/rails/active_storage/direct_uploads", to: proc { [404, {}, []] }
+  delete "/api/v1/signup", to: proc { [404, {}, []] }
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
