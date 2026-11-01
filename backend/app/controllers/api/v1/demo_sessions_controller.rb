@@ -8,7 +8,8 @@ module Api
       RATE_LIMIT_STORE = ActiveSupport::Cache::MemoryStore.new
 
       rate_limit to: 30,
-                 within: 30.minutes,
+                 within: 1.hour,
+                 by: -> { "all" },
                  store: RATE_LIMIT_STORE
 
       skip_before_action :authenticate_user!

@@ -58,14 +58,20 @@ RSpec.describe "Api::V1::DemoSessions", type: :request do
       end
     end
 
-    context "同じIPから短時間に大量作成した時" do
-      it "31回目を拒否する" do
+    context "IPが変わっても上限を超えた時" do
+      it "31回目を拒否してデモを作らない" do
         30.times do
-          post api_v1_demo_session_path
+          post api_v1_demo_session_path,
+               env: { "REMOTE_ADDR" => "203.0.113.1" }
         end
 
         expect(response).to have_http_status(:created)
-        post api_v1_demo_session_path
+
+        expect do
+          post api_v1_demo_session_path,
+               env: { "REMOTE_ADDR" => "203.0.113.2" }
+        end.not_to change { DemoEnvironment.count }
+
         expect(response).to have_http_status(:too_many_requests)
       end
     end
