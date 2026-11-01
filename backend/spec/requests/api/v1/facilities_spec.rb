@@ -55,6 +55,37 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         expect(user.reload.display_order).to eq(1)
       end
 
+      context "所属確認後に別の施設へ参加した時" do
+        let!(:joined_facility) { create(:facility) }
+
+        before do
+          new_facility = Facility.new(params[:facility])
+
+          allow(Facility).to receive(:new) do
+            user.update!(
+              facility: joined_facility,
+              is_admin: false,
+              display_order: 1
+            )
+
+            new_facility
+          end
+        end
+
+        it "施設を作成せず、参加先の所属と権限を維持する" do
+          expect do
+            subject
+          end.not_to change { Facility.count }
+
+          res = JSON.parse(response.body)
+          expect(response).to have_http_status(:conflict)
+          expect(res["message"]).to eq("すでに施設に所属しています。")
+          expect(user.reload.facility).to eq(joined_facility)
+          expect(user.is_admin).to be(false)
+          expect(user.display_order).to eq(1)
+        end
+      end
+
       context "バリデーションエラーの時" do
         let(:params) { { facility: { name: "" } } }
         it "作成に失敗する" do
@@ -233,6 +264,56 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         expect(res["message"]).to eq("施設に参加しました。")
         expect(user.reload.facility).to eq(facility)
         expect(response).to have_http_status(:ok)
+      end
+
+      context "所属確認後に別の施設を作成した時" do
+        let!(:created_facility) { create(:facility) }
+        let!(:existing_member) { create(:user, facility: facility, display_order: 1) }
+        let!(:schedule_month) { create(:schedule_month, facility: facility, date: Date.current.next_month.beginning_of_month) }
+
+        before do
+          create(
+            :schedule_month_member_order,
+            schedule_month: schedule_month,
+            user: existing_member,
+            display_order: 1
+          )
+
+          allow(Facility).to receive(:find_by)
+                               .with(invite_code: facility.invite_code) do
+            user.update!(
+              facility: created_facility,
+              is_admin: true,
+              display_order: 1
+            )
+
+            facility
+          end
+        end
+
+        it "参加と並び順の追加を行わず、作成施設の管理者を維持する" do
+          expect do
+            subject
+          end.not_to change { schedule_month.schedule_month_member_orders.count }
+
+          res = JSON.parse(response.body)
+          expect(response).to have_http_status(:conflict)
+          expect(res["message"]).to eq("すでに施設に所属しています。")
+          expect(user.reload.facility).to eq(created_facility)
+          expect(user.is_admin).to be(true)
+          expect(user.display_order).to eq(1)
+        end
+      end
+
+      context "施設未所属で管理者権限が残っている時" do
+        let(:user) { create(:user, is_admin: true) }
+
+        it "一般メンバーとして参加する" do
+          subject
+          expect(response).to have_http_status(:ok)
+          expect(user.reload.facility).to eq(facility)
+          expect(user.is_admin).to be(false)
+        end
       end
 
       it "新規参加者を現在の末尾へ追加する" do
