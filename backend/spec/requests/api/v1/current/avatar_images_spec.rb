@@ -44,6 +44,15 @@ RSpec.describe "Api::V1::Current::AvatarImages", type: :request do
         end
       end
     end
+
+    context "未ログインの時" do
+      it "401を返し、画像情報を作らない" do
+        expect do
+          post(api_v1_current_user_avatar_image_path, params: params)
+        end.not_to change { ActiveStorage::Blob.count }
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
   end
 
   describe "PATCH /api/v1/current/user/avatar_image" do
