@@ -19,7 +19,12 @@ module Api
                                   demo_environment: current_user.demo_environment
                                 ))
 
-        Facility.transaction do
+        current_user.with_lock do
+          if current_user.facility.present?
+            return render json: { message: "すでに施設に所属しています。" },
+                          status: :conflict
+          end
+
           unless facility.save
             return render json: { message: "施設作成に失敗しました。", errors: facility.errors.to_hash(true) },
                           status: :unprocessable_content
@@ -74,8 +79,14 @@ module Api
 
         facility.with_lock do
           current_user.with_lock do
+            if current_user.facility.present?
+              return render json: { message: "すでに施設に所属しています。" },
+                            status: :conflict
+            end
+
             current_user.update!(
               facility: facility,
+              is_admin: false,
               display_order: facility.next_member_display_order
             )
 

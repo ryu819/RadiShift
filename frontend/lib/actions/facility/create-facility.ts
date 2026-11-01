@@ -65,7 +65,7 @@ export async function createFacilityForm(
       });
 
       return {
-        errors: data.errors,
+        errors: data.errors ?? {},
         values: { name },
       };
     }
