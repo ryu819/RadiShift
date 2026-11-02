@@ -20,6 +20,8 @@ module Api
                                 ))
 
         current_user.with_lock do
+          return render json: { message: "削除済みのアカウントです。" }, status: :unauthorized if current_user.is_deleted?
+
           if current_user.facility.present?
             return render json: { message: "すでに施設に所属しています。" },
                           status: :conflict

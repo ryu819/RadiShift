@@ -47,6 +47,12 @@ module Api
             end
           else
             current_user.with_lock do
+              if current_user.is_admin?
+                return render json: {
+                  message: "管理者は削除できません。（管理者権限の移譲が必要です。）"
+                }, status: :forbidden
+              end
+
               destroy_current_user!(random_password)
             end
           end
