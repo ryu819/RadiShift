@@ -216,6 +216,41 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       end
     end
 
+    context "削除前の確認後に施設を作成した時" do
+      let!(:created_facility) { create(:facility) }
+
+      before do
+        allow(SecureRandom).to receive(:urlsafe_base64) do
+          user.update!(facility: created_facility, is_admin: true, display_order: 1)
+
+          "test_random_password"
+        end
+      end
+
+      it "削除せず、作成した施設と管理者を維持する" do
+        original_email = user.email
+        original_encrypted_password = user.encrypted_password
+
+        expect { subject }.not_to change { Facility.count }
+        expect(response).to have_http_status(:forbidden)
+        expect(JSON.parse(response.body)["message"]).to eq("管理者は削除できません。（管理者権限の移譲が必要です。）")
+        user.reload
+        expect(user.is_deleted).to be(false)
+        expect(user.facility).to eq(created_facility)
+        expect(user.is_admin).to be(true)
+        expect(user.display_order).to eq(1)
+        expect(user.email).to eq(original_email)
+        expect(user.encrypted_password).to eq(original_encrypted_password)
+      end
+
+      it "削除に失敗してもJWTは引き続き使用できる" do
+        subject
+        expect(response).to have_http_status(:forbidden)
+        get(api_v1_current_user_path, headers: { "Authorization": token })
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
 

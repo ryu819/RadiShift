@@ -86,6 +86,33 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         end
       end
 
+      context "所属確認後にアカウントが削除された時" do
+        before do
+          new_facility = Facility.new(params[:facility])
+
+          allow(Facility).to receive(:new) do
+            user.update!(is_deleted: true)
+
+            new_facility
+          end
+        end
+
+        it "施設を作成せず、削除済み・施設未所属のままにする" do
+          expect do
+            subject
+          end.not_to change { Facility.count }
+
+          res = JSON.parse(response.body)
+          expect(response).to have_http_status(:unauthorized)
+          expect(res["message"]).to eq("削除済みのアカウントです。")
+          user.reload
+          expect(user.is_deleted).to be(true)
+          expect(user.facility).to be_nil
+          expect(user.is_admin).to be(false)
+          expect(user.display_order).to be_nil
+        end
+      end
+
       context "バリデーションエラーの時" do
         let(:params) { { facility: { name: "" } } }
         it "作成に失敗する" do
