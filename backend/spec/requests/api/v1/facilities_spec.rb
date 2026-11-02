@@ -305,6 +305,40 @@ RSpec.describe "Api::V1::Facilities", type: :request do
         end
       end
 
+      context "所属確認後にアカウントが削除された時" do
+        let!(:existing_member) { create(:user, facility: facility, display_order: 1) }
+        let!(:schedule_month) { create(:schedule_month, facility: facility, date: Date.current.next_month.beginning_of_month) }
+
+        before do
+          create(
+            :schedule_month_member_order,
+            schedule_month: schedule_month,
+            user: existing_member,
+            display_order: 1
+          )
+
+          allow(Facility).to receive(:find_by)
+                               .with(invite_code: facility.invite_code) do
+            user.update!(is_deleted: true)
+
+            facility
+          end
+        end
+
+        it "参加と並び順の追加を行わず、削除済み・施設未所属のままにする" do
+          expect do
+            subject
+          end.not_to change { schedule_month.schedule_month_member_orders.count }
+
+          res = JSON.parse(response.body)
+          expect(response).to have_http_status(:unauthorized)
+          expect(res["message"]).to eq("削除済みのアカウントです。")
+          expect(user.reload.is_deleted).to be(true)
+          expect(user.facility).to be_nil
+          expect(user.display_order).to be_nil
+        end
+      end
+
       context "施設未所属で管理者権限が残っている時" do
         let(:user) { create(:user, is_admin: true) }
 

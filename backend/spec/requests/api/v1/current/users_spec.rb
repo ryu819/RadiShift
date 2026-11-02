@@ -204,6 +204,18 @@ RSpec.describe "Api::V1::Current::Users", type: :request do
       end
     end
 
+    context "施設に所属していない自分のアカウントを削除する時" do
+      it "削除済み状態にする" do
+        subject
+        res = JSON.parse(response.body)
+        expect(res["message"]).to eq("アカウントを削除しました。")
+        expect(response).to have_http_status(:ok)
+        user.reload
+        expect(user.is_deleted).to be(true)
+        expect(user.facility).to be_nil
+      end
+    end
+
     context "管理者である時" do
       let(:user) { create(:user, :admin) }
 
