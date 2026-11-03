@@ -1,4 +1,4 @@
-import { Building2, LogOutIcon, Settings } from "lucide-react";
+import { Building2, House, LogOutIcon, Settings } from "lucide-react";
 import Link from "next/link";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -29,6 +29,14 @@ export function UserDropdownMenu({ user }: { user: User | null }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
+          {hasFacility(user) && (
+            <DropdownMenuItem asChild>
+              <Link href="/" className="cursor-pointer">
+                <House />
+                ホーム
+              </Link>
+            </DropdownMenuItem>
+          )}
           {!hasFacility(user) && (
             <DropdownMenuItem asChild>
               <Link href="/" className="cursor-pointer">
