@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   title: "管理画面TOP",
 };
 
-export const prefetch = "partial";
-
 export default function AdminDashboardPage() {
   return <Overview />;
 }
