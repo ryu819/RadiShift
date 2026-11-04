@@ -63,7 +63,11 @@ Rails.application.routes.draw do
       resources :work_types, only: [:index, :create, :update, :destroy]
       resources :day_off_types, only: [:index, :create, :update, :destroy]
       resources :modality_types, only: [:index, :create, :update, :destroy]
-      resources :day_off_slot_rules, only: [:index, :create, :update]
+      resources :day_off_slot_rules, only: [:index] do
+        collection do
+          patch :bulk_update
+        end
+      end
       resources :day_off_slots, only: [:create, :update]
       resources :work_assignments, only: [:create, :update, :destroy] do
         member do
