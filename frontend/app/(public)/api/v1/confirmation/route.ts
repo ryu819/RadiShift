@@ -1,44 +1,29 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { redirect } from "next/navigation";
+import { type NextRequest } from "next/server";
 
+import { setFlashToast } from "@/lib/set-flash-toast";
 import { RailsResponse } from "@/types/rails-response";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const token = searchParams.get("confirmation_token");
-  const res = NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_URL));
+  try {
+    if (!token) {
+      await setFlashToast({ type: "failure" });
+    } else {
+      const railsRes = await fetch(
+        `${process.env.RAILS_API_URL}/confirmation?confirmation_token=${encodeURIComponent(token)}`,
+      );
+      const data: RailsResponse = await railsRes.json();
 
-  const railsRes = await fetch(
-    `${process.env.RAILS_API_URL}/confirmation?confirmation_token=${token}`,
-  );
-
-  const data: RailsResponse = await railsRes.json();
-
-  if (!railsRes.ok) {
-    res.cookies.set(
-      "flashToast",
-      JSON.stringify({
-        type: "failure",
+      await setFlashToast({
+        type: railsRes.ok ? "success" : "failure",
         message: data.message,
-      }),
-      {
-        path: "/",
-        maxAge: 3,
-      },
-    );
-    return res;
+      });
+    }
+  } catch {
+    await setFlashToast({ type: "failure" });
   }
 
-  res.cookies.set(
-    "flashToast",
-    JSON.stringify({
-      type: "success",
-      message: data.message,
-    }),
-    {
-      path: "/",
-      maxAge: 3,
-    },
-  );
-
-  return res;
+  redirect("/");
 }

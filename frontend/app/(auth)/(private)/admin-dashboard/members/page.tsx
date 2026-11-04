@@ -8,8 +8,6 @@ export const metadata: Metadata = {
   title: "メンバー",
 };
 
-export const prefetch = "partial";
-
 export default function MembersPage() {
   return (
     <Suspense fallback={<MembersSkeleton />}>

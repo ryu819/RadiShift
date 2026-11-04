@@ -8,8 +8,6 @@ export const metadata: Metadata = {
   title: "休み枠",
 };
 
-export const prefetch = "partial";
-
 type Props = {
   searchParams: Promise<{
     scheduleMonthId?: string;
