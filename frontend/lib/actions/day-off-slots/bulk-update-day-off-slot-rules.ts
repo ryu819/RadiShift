@@ -12,24 +12,26 @@ import { setFlashToast } from "@/lib/set-flash-toast";
 
 export type ActionState = {
   success: boolean;
-  errors?: {
-    maxSlots?: string[];
-  };
+  errors?: Record<string, string[]>;
 };
 
-type UpdateDayOffSlotRuleResponse = {
+type BulkUpdateDayOffSlotRulesResponse = {
   message?: string;
-  errors?: {
-    maxSlots?: string[];
-  };
+  errors?: Record<string, string[]>;
 };
 
-export async function updateDayOffSlotRuleForm(
+export async function bulkUpdateDayOffSlotRulesForm(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const dayOffSlotRuleId = Number(formData.get("dayOffSlotRuleId"));
-  const maxSlots = Number(formData.get("maxSlots"));
+  const dayOffTypeId = Number(formData.get("dayOffTypeId"));
+  const weekdays = formData.getAll("weekday");
+  const maxSlots = formData.getAll("maxSlots");
+
+  const dayOffSlotRules = weekdays.map((weekday, index) => ({
+    weekday: Number(weekday),
+    maxSlots: Number(maxSlots[index]),
+  }));
 
   const jwt = await getJwt();
 
@@ -37,7 +39,7 @@ export async function updateDayOffSlotRuleForm(
 
   try {
     const res = await fetch(
-      `${process.env.RAILS_API_URL}/day_off_slot_rules/${dayOffSlotRuleId}`,
+      `${process.env.RAILS_API_URL}/day_off_slot_rules/bulk_update`,
       {
         method: "PATCH",
         headers: {
@@ -46,9 +48,8 @@ export async function updateDayOffSlotRuleForm(
         },
         body: JSON.stringify(
           snakecaseKeys({
-            dayOffSlotRule: {
-              maxSlots,
-            },
+            dayOffTypeId,
+            dayOffSlotRules,
           }),
         ),
       },
@@ -60,11 +61,13 @@ export async function updateDayOffSlotRuleForm(
       return { success: false };
     }
 
-    const data: UpdateDayOffSlotRuleResponse = camelcaseKeys(await res.json(), {
-      deep: true,
-    });
+    const data: BulkUpdateDayOffSlotRulesResponse = camelcaseKeys(
+      await res.json(),
+      { deep: true },
+    );
 
     if (isClientError(res.status)) {
+      await setFlashToast({ type: "failure", message: data.message });
       return {
         success: false,
         errors: data.errors,
@@ -72,6 +75,8 @@ export async function updateDayOffSlotRuleForm(
     }
 
     updateTag(CACHE_TAGS.dayOffSlotRules);
+
+    await setFlashToast({ type: "success", message: data.message });
 
     return { success: true };
   } catch {
