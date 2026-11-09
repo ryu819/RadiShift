@@ -3,6 +3,7 @@ import { Suspense } from "react";
 
 import { DayOffSlots } from "@/components/admin/dashboard/day-off-slots/DayOffSlots";
 import { DayOffSlotsSkeleton } from "@/components/admin/dashboard/day-off-slots/DayOffSlotsSkeleton";
+import { RequireFacility } from "@/components/RequireFacility";
 
 export const metadata: Metadata = {
   title: "休み枠",
@@ -16,8 +17,13 @@ type Props = {
 
 export default function DayOffSlotsPage({ searchParams }: Props) {
   return (
-    <Suspense fallback={<DayOffSlotsSkeleton />}>
-      <DayOffSlots searchParams={searchParams} />
-    </Suspense>
+    <>
+      <Suspense fallback={null}>
+        <RequireFacility />
+      </Suspense>
+      <Suspense fallback={<DayOffSlotsSkeleton />}>
+        <DayOffSlots searchParams={searchParams} />
+      </Suspense>
+    </>
   );
 }
