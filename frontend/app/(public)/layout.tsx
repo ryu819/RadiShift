@@ -1,4 +1,5 @@
 import { Footer } from "@/components/footer/Footer";
+import { Header } from "@/components/header/Header";
 export default async function PublicLayout({
   children,
 }: {
@@ -6,6 +7,7 @@ export default async function PublicLayout({
 }) {
   return (
     <>
+      <Header />
       <main className="flex-1 flex items-center justify-center pt-16">
         {children}
       </main>

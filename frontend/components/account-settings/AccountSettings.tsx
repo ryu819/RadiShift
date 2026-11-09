@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { AccountDeleteDialogButton } from "@/components/account-settings/AccountDeleteDialogButton";
 import { AccountUpdateForm } from "@/components/account-settings/AccountUpdateForm";
 import { GoogleAccountSettings } from "@/components/account-settings/GoogleAccountSettings";
@@ -9,6 +11,8 @@ import { hasFacility } from "@/lib/auth/has-facility";
 
 export async function AccountSettings() {
   const user = await getCurrentUser();
+  if (!user) redirect("/");
+
   const belongsToFacility = hasFacility(user);
 
   return (

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Footer } from "@/components/footer/Footer";
+import { Header } from "@/components/header/Header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <>
+      <Header />
       <main className="flex-1 flex items-center justify-center pt-16">
         <div className="flex flex-col items-center gap-5">
           <AlertCircle className="w-10 h-10" />

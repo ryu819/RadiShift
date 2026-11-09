@@ -3,6 +3,7 @@ import { Suspense } from "react";
 
 import { Members } from "@/components/admin/dashboard/members/Members";
 import { MembersSkeleton } from "@/components/admin/dashboard/members/MembersSkeleton";
+import { RequireFacility } from "@/components/RequireFacility";
 
 export const metadata: Metadata = {
   title: "メンバー",
@@ -10,8 +11,13 @@ export const metadata: Metadata = {
 
 export default function MembersPage() {
   return (
-    <Suspense fallback={<MembersSkeleton />}>
-      <Members />
-    </Suspense>
+    <>
+      <Suspense fallback={null}>
+        <RequireFacility />
+      </Suspense>
+      <Suspense fallback={<MembersSkeleton />}>
+        <Members />
+      </Suspense>
+    </>
   );
 }

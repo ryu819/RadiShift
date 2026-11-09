@@ -5,7 +5,6 @@ import { Noto_Sans_JP } from "next/font/google";
 import { Suspense } from "react";
 
 import { GoogleIdentityProvider } from "@/components/google-auth/GoogleIdentityProvider";
-import { Header } from "@/components/header/Header";
 import { FlashToastServer } from "@/components/toast/FlashToastServer";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -40,8 +39,6 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <FlashToastServer />
           </Suspense>
-
-          <Header />
 
           {children}
         </GoogleIdentityProvider>
