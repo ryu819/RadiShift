@@ -84,6 +84,7 @@ export async function MyShift({ searchParams }: Props) {
           >
             <ul className="list-disc space-y-1 pl-4 text-sm">
               <li>日付セルを選択すると、シフト希望を申請できます</li>
+              <li>「複数日を選択」で同じ希望をまとめて申請できます</li>
 
               <li>今日以前の日付には申請はできません</li>
 
