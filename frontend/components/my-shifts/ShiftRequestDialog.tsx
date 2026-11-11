@@ -43,6 +43,9 @@ type Props = {
   shiftDisplayVisibility: ShiftDisplayVisibility;
   isLastColumn: boolean;
   isLastRow: boolean;
+  isBulkMode: boolean;
+  isBulkSelected: boolean;
+  onToggleBulkSelect: () => void;
 };
 
 type SelectedRequest = {
@@ -62,6 +65,9 @@ export function ShiftRequestDialog({
   shiftDisplayVisibility,
   isLastColumn,
   isLastRow,
+  isBulkMode,
+  isBulkSelected,
+  onToggleBulkSelect,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -89,6 +95,11 @@ export function ShiftRequestDialog({
   );
 
   const handleOpenChange = (nextOpen: boolean) => {
+    if (isBulkMode && nextOpen) {
+      onToggleBulkSelect();
+      return;
+    }
+
     setOpen(nextOpen);
 
     if (nextOpen) {
@@ -137,6 +148,9 @@ export function ShiftRequestDialog({
               : "cursor-pointer transition-colors hover:bg-muted/50 active:bg-muted/50",
             !isLastColumn && "border-r",
             !isLastRow && "border-b",
+            isBulkMode &&
+              isBulkSelected &&
+              "bg-primary/10 ring-1 ring-inset ring-primary hover:bg-primary/15 active:bg-primary/15",
           )}
         >
           <div className="flex h-full flex-col">

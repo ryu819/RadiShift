@@ -92,7 +92,7 @@ RadiShiftには、**アカウント登録なしで主要機能を確認できる
 | --- | --- |
 | Frontend | Next.js 16.4.2 / React 19.2.3 / TypeScript 5.9.3 |
 | UI | Tailwind CSS 4.2.1 / shadcn/ui |
-| Backend | Ruby 3.3.10 / Ruby on Rails 8.1.4 |
+| Backend | Ruby 3.3.13 / Ruby on Rails 8.1.4 |
 | Database | MySQL 8.4 |
 | Authentication | Devise 5.0.4 / devise-jwt 0.13.0 / Google Identity Services |
 | Storage | Amazon S3 |
