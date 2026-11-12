@@ -235,11 +235,8 @@ class DemoDataBuilder
 
     schedule_month.capture_member_order! if schedule_month.is_published?
 
-    create_assignments(schedule_days)
-
-    return unless month_start == current_month.next_month
-
-    create_requests(schedule_days)
+    create_assignments(schedule_days) if month_start == current_month
+    create_requests(schedule_days) if month_start == current_month.next_month
   end
 
   def create_schedule_month(month_start, month_index)
@@ -481,117 +478,70 @@ class DemoDataBuilder
   end
 
   def create_requests(schedule_days)
-    night_days =
-      admin_work_days(schedule_days, :night)
-
-    day_off_days =
-      admin_day_off_days(schedule_days)
-
-    day_work_days =
-      admin_work_days(schedule_days, :day)
-
-    create_admin_work_requests(
-      day_work_days,
-      night_days
-    )
-
-    create_admin_day_off_requests(
-      day_work_days,
-      day_off_days
-    )
-
+    create_admin_work_requests(schedule_days)
+    create_admin_day_off_requests(schedule_days)
     create_member_requests(schedule_days)
   end
 
-  def admin_work_days(schedule_days, work_type)
-    schedule_day_ids = WorkAssignment.where(
-      schedule_day: schedule_days,
-      user: admin_user,
-      work_type: work_types[work_type]
-    ).pluck(:schedule_day_id)
-
-    schedule_days.select do |schedule_day|
-      schedule_day_ids.include?(schedule_day.id)
-    end
-  end
-
-  def admin_day_off_days(schedule_days)
-    schedule_day_ids = DayOffAssignment.where(
-      schedule_day: schedule_days,
-      user: admin_user,
-      day_off_type: day_off_types[:day_off]
-    ).pluck(:schedule_day_id)
-
-    schedule_days.select do |schedule_day|
-      schedule_day_ids.include?(schedule_day.id)
-    end
-  end
-
-  def create_admin_work_requests(
-    day_work_days,
-    night_days
-  )
+  def create_admin_work_requests(schedule_days)
     create_work_request(
       admin_user,
-      day_work_days[0],
+      schedule_days[5],
       :pending
     )
 
-    night_day = night_days[0]
-
     approved_request = create_work_request(
       admin_user,
-      night_day,
+      schedule_days[6],
       :approved
     )
 
-    attach_work_request(
-      night_day,
-      approved_request
+    WorkAssignment.create!(
+      schedule_day: schedule_days[6],
+      user: admin_user,
+      work_type: work_types[:night],
+      work_request: approved_request
     )
 
     create_work_request(
       admin_user,
-      night_day,
+      schedule_days[6],
       :pending,
       is_return: true
     )
 
     create_work_request(
       admin_user,
-      day_work_days[1],
+      schedule_days[7],
       :rejected
     )
   end
 
-  def create_admin_day_off_requests(
-    day_work_days,
-    day_off_days
-  )
+  def create_admin_day_off_requests(schedule_days)
     create_day_off_request(
       admin_user,
-      day_work_days[2],
+      schedule_days[13],
       day_off_types[:day_off],
       :pending
     )
 
-    day_off_day = day_off_days[0]
-
     approved_request = create_day_off_request(
       admin_user,
-      day_off_day,
+      schedule_days[14],
       day_off_types[:day_off],
       :approved
     )
 
-    attach_day_off_request(
-      day_off_day,
-      approved_request
+    DayOffAssignment.create!(
+      schedule_day: schedule_days[14],
+      user: admin_user,
+      day_off_type: day_off_types[:day_off],
+      day_off_request: approved_request
     )
 
     create_day_off_request(
       admin_user,
-      day_off_day,
+      schedule_days[14],
       day_off_types[:day_off],
       :pending,
       is_return: true
@@ -599,7 +549,7 @@ class DemoDataBuilder
 
     create_day_off_request(
       admin_user,
-      day_work_days[3],
+      schedule_days[15],
       day_off_types[:day_off],
       :rejected
     )
@@ -663,32 +613,6 @@ class DemoDataBuilder
       day_off_type: day_off_type,
       request_status: status,
       is_return: is_return
-    )
-  end
-
-  def attach_work_request(
-    schedule_day,
-    work_request
-  )
-    WorkAssignment.find_by!(
-      schedule_day: schedule_day,
-      user: admin_user,
-      work_type: work_types[:night]
-    ).update!(
-      work_request: work_request
-    )
-  end
-
-  def attach_day_off_request(
-    schedule_day,
-    day_off_request
-  )
-    DayOffAssignment.find_by!(
-      schedule_day: schedule_day,
-      user: admin_user,
-      day_off_type: day_off_types[:day_off]
-    ).update!(
-      day_off_request: day_off_request
     )
   end
 
