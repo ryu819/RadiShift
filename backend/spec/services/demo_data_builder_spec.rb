@@ -79,13 +79,23 @@ RSpec.describe DemoDataBuilder do
     facility = result[:facility]
     months = facility.schedule_months.order(:year, :month)
 
-    months.each do |month|
-      day_ids = month.schedule_days.select(:id)
+    current_month = assignment_counts(months[0])
+    expect(current_month[:work]).to be > 0
+    expect(current_month[:day_off]).to be > 0
+    expect(current_month[:modality]).to be > 0
 
-      expect(WorkAssignment.where(schedule_day_id: day_ids)).not_to be_empty
-      expect(DayOffAssignment.where(schedule_day_id: day_ids)).not_to be_empty
-      expect(ModalityAssignment.where(schedule_day_id: day_ids)).not_to be_empty
-    end
+    expect(assignment_counts(months[1])).to eq(work: 1, day_off: 1, modality: 0)
+    expect(assignment_counts(months[2])).to eq(work: 0, day_off: 0, modality: 0)
+  end
+
+  def assignment_counts(month)
+    day_ids = month.schedule_days.select(:id)
+
+    {
+      work: WorkAssignment.where(schedule_day_id: day_ids).count,
+      day_off: DayOffAssignment.where(schedule_day_id: day_ids).count,
+      modality: ModalityAssignment.where(schedule_day_id: day_ids).count
+    }
   end
 
   def expect_day_off_slots(result)
