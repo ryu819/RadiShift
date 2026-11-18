@@ -446,6 +446,44 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         expect(work_request.reload).to be_approved
         expect(response).to have_http_status(:ok)
       end
+
+      context "翌日の勤務とセットの時" do
+        before do
+          create(:work_assignment, facility: user.facility, user: target_user, primary_work_assignment: work_assignment,
+                                   schedule_day: create(:schedule_day, schedule_month: schedule_month, date: schedule_day_date.tomorrow))
+        end
+
+        it "翌日の勤務もまとめて削除する" do
+          expect { subject }.to change { WorkAssignment.count }.by(-2)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
+
+    context "翌日の勤務が設定された通常申請を approved にした時" do
+      let(:next_day_work_type) { create(:work_type, facility: user.facility, name: "明け") }
+      let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true, next_day_work_type: next_day_work_type) }
+      let!(:next_schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: schedule_day_date.tomorrow) }
+
+      it "翌日にも勤務割当を作成する" do
+        expect { subject }.to change { WorkAssignment.count }.by(2)
+        next_day_work_assignment = work_request.reload.work_assignment.next_day_work_assignment
+        expect(next_day_work_assignment.schedule_day).to eq(next_schedule_day)
+        expect(next_day_work_assignment.work_type).to eq(next_day_work_type)
+        expect(response).to have_http_status(:ok)
+      end
+
+      context "翌日に同じ勤務割当がすでにある時" do
+        before { create(:work_assignment, schedule_day: next_schedule_day, user: target_user, work_type: next_day_work_type) }
+
+        it "承認せず、勤務割当を作成しない" do
+          expect { subject }.not_to change { WorkAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("翌日の勤務はすでに割り当てられています。")
+          expect(work_request.reload).to be_pending
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
     end
 
     context "管理者が rejected にした時" do

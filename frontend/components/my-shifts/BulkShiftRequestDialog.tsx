@@ -198,6 +198,13 @@ export function BulkShiftRequestDialog({
                       {group.label}
                     </p>
                     {group.types.map((shiftType) => {
+                      const workType =
+                        group.requestKind === "work"
+                          ? workTypes.find((type) => type.id === shiftType.id)
+                          : undefined;
+                      const nextDayType = workTypes.find(
+                        (type) => type.id === workType?.nextDayWorkTypeId,
+                      );
                       const isSelected =
                         selectedRequest?.requestKind === group.requestKind &&
                         selectedRequest.shiftType.id === shiftType.id;
@@ -224,6 +231,11 @@ export function BulkShiftRequestDialog({
                           >
                             {shiftType.name}
                           </Badge>
+                          {nextDayType && (
+                            <span className="text-xs text-muted-foreground">
+                              翌日：{nextDayType.name}
+                            </span>
+                          )}
                         </button>
                       );
                     })}
