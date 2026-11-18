@@ -504,7 +504,7 @@ class DemoDataBuilder
       user: admin_user,
       work_type: work_types[:night],
       work_request: approved_request
-    )
+    ).create_next_day_work_assignment!
 
     create_work_request(
       admin_user,

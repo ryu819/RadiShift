@@ -86,7 +86,9 @@ RSpec.describe DemoDataBuilder do
     expect(current_month[:day_off]).to be > 0
     expect(current_month[:modality]).to be > 0
 
-    expect(assignment_counts(months[1])).to eq(work: 1, day_off: 1, modality: 0)
+    expect(assignment_counts(months[1])).to eq(work: 2, day_off: 1, modality: 0)
+    approved_night = WorkAssignment.find_by!(schedule_day: months[1].schedule_days, work_type: facility.work_types.find_by!(name: "夜勤"))
+    expect(approved_night.next_day_work_assignment.work_type.name).to eq("明け")
     expect(assignment_counts(months[2])).to eq(work: 0, day_off: 0, modality: 0)
   end
 
