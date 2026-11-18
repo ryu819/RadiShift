@@ -120,7 +120,7 @@ class DemoDataBuilder
   end
 
   def create_work_types
-    {
+    types = {
       day: WorkType.create!(
         facility: facility,
         name: "日勤",
@@ -143,6 +143,9 @@ class DemoDataBuilder
         color_code: "#ff40f1"
       )
     }
+
+    types[:night].update!(next_day_work_type: types[:after_night])
+    types
   end
 
   def create_day_off_types

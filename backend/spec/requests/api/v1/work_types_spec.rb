@@ -24,6 +24,15 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
         expect(work_type_ids).not_to include(other_facility_work_type.id)
         expect(response).to have_http_status(:ok)
       end
+
+      it "翌日の勤務の設定を返す" do
+        primary_work_type = create(:work_type, facility: user.facility, name: "準夜", next_day_work_type: active_work_type)
+        subject
+        res = JSON.parse(response.body)
+        primary_work_type_json = res.find { |work_type| work_type["id"] == primary_work_type.id }
+        expect(primary_work_type_json["next_day_work_type_id"]).to eq(active_work_type.id)
+        expect(response).to have_http_status(:ok)
+      end
     end
 
     context "施設に所属していない時" do
@@ -153,6 +162,40 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
           expect(response).to have_http_status(:ok)
         end
       end
+
+      context "翌日の勤務を設定する時" do
+        let(:next_day_work_type) { create(:work_type, facility: user.facility, name: "明け") }
+        let(:params) { { work_type: { next_day_work_type_id: next_day_work_type.id } } }
+
+        it "翌日の勤務を設定できる" do
+          subject
+          expect(work_type.reload.next_day_work_type).to eq(next_day_work_type)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "別施設の勤務タイプは設定できない" do
+          other_work_type = create(:work_type, facility: create(:facility), name: "明け")
+          put(api_v1_work_type_path(work_type), params: { work_type: { next_day_work_type_id: other_work_type.id } }, headers: { "Authorization": token })
+          expect(JSON.parse(response.body)["errors"]["next_day_work_type_id"]).to be_present
+          expect(work_type.reload.next_day_work_type_id).to be_nil
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+
+        it "自分自身は設定できない" do
+          put(api_v1_work_type_path(work_type), params: { work_type: { next_day_work_type_id: work_type.id } }, headers: { "Authorization": token })
+          expect(JSON.parse(response.body)["errors"]["next_day_work_type_id"]).to be_present
+          expect(work_type.reload.next_day_work_type_id).to be_nil
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+
+        it "翌日に自分を設定している勤務タイプは設定できない" do
+          next_day_work_type.update!(next_day_work_type: work_type)
+          subject
+          expect(JSON.parse(response.body)["errors"]["next_day_work_type_id"]).to be_present
+          expect(work_type.reload.next_day_work_type_id).to be_nil
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
     end
 
     context "管理者でない時" do
@@ -215,6 +258,12 @@ RSpec.describe "Api::V1::WorkTypes", type: :request do
 
         expect(work_type.reload.is_active).to be false
         expect(WorkAssignment.exists?(work_assignment.id)).to be true
+      end
+
+      it "この勤務タイプを翌日の勤務にしている設定を解除する" do
+        primary_work_type = create(:work_type, facility: user.facility, name: "夜勤", next_day_work_type: work_type)
+        subject
+        expect(primary_work_type.reload.next_day_work_type_id).to be_nil
       end
     end
 

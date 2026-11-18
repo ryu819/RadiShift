@@ -15,6 +15,7 @@ export type ActionState = {
   errors?: {
     name?: string[];
     colorCode?: string[];
+    nextDayWorkTypeId?: string[];
   };
 };
 
@@ -23,6 +24,7 @@ type CreateWorkTypeResponse = {
   errors?: {
     name?: string[];
     colorCode?: string[];
+    nextDayWorkTypeId?: string[];
   };
 };
 
@@ -32,6 +34,9 @@ export async function createWorkTypeForm(
 ): Promise<ActionState> {
   const name = formData.get("name") as string;
   const colorCode = formData.get("colorCode") as string;
+  const nextDayValue = formData.get("nextDayWorkTypeId");
+  const nextDayWorkTypeId =
+    nextDayValue && nextDayValue !== "none" ? Number(nextDayValue) : null;
   const isRequestable = formData.get("isRequestable") === "true";
 
   const jwt = await getJwt();
@@ -51,6 +56,7 @@ export async function createWorkTypeForm(
             name,
             colorCode,
             isRequestable,
+            nextDayWorkTypeId,
           },
         }),
       ),

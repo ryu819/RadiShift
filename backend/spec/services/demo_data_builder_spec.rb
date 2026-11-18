@@ -70,6 +70,8 @@ RSpec.describe DemoDataBuilder do
     facility = result[:facility]
 
     expect(facility.work_types.count).to eq(4)
+    night = facility.work_types.find_by!(name: "夜勤")
+    expect(night.next_day_work_type).to eq(facility.work_types.find_by!(name: "明け"))
     expect(facility.day_off_types.count).to eq(3)
     expect(facility.modality_types.count).to eq(8)
     expect(facility.day_off_slot_rules.count).to eq(24)

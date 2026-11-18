@@ -15,7 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { WorkType } from "@/types/work-type";
 
-export function WorkTypesActionsMenu({ workType }: { workType: WorkType }) {
+export function WorkTypesActionsMenu({
+  workType,
+  workTypes,
+}: {
+  workType: WorkType;
+  workTypes: WorkType[];
+}) {
   const [formDialogOpen, setFormDialogOpen] = useState(false);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -57,6 +63,7 @@ export function WorkTypesActionsMenu({ workType }: { workType: WorkType }) {
       {formDialogOpen && (
         <WorkTypeFormDialog
           workType={workType}
+          workTypes={workTypes}
           onOpenChange={setFormDialogOpen}
         />
       )}
