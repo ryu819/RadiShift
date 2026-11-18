@@ -68,7 +68,9 @@ export function WorkTypeItem({
       </div>
 
       {selectedWorkAssignment ? (
-        isRequestBased ? (
+        selectedWorkAssignment.primaryWorkAssignmentId ? (
+          <span className="text-xs text-muted-foreground">セット</span>
+        ) : isRequestBased ? (
           <WorkAssignmentOverrideDialog
             workAssignment={selectedWorkAssignment}
             memberName={memberName}

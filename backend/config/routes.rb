@@ -69,7 +69,7 @@ Rails.application.routes.draw do
         end
       end
       resources :day_off_slots, only: [:create, :update]
-      resources :work_assignments, only: [:create, :update, :destroy] do
+      resources :work_assignments, only: [:create, :destroy] do
         member do
           patch :override
         end

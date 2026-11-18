@@ -85,6 +85,16 @@ RSpec.describe "Api::V1::MasterShifts", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
+      it "翌日の勤務割当にprimary_work_assignment_idを含めて返す" do
+        next_schedule_day = create(:schedule_day, schedule_month: schedule_month, date: schedule_day.date.tomorrow)
+        create(:work_assignment, facility: user.facility, user: member, schedule_day: next_schedule_day, primary_work_assignment: work_assignment)
+        subject
+        res = JSON.parse(response.body)
+        assignment = res["work_assignments_by_user_and_day"][member.id.to_s][next_schedule_day.id.to_s].first
+        expect(assignment["primary_work_assignment_id"]).to eq(work_assignment.id)
+        expect(response).to have_http_status(:ok)
+      end
+
       it "休み割当にday_off_request_idを含めて返す" do
         subject
         res = JSON.parse(response.body)

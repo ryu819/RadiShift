@@ -73,6 +73,18 @@ RSpec.describe "Api::V1::Current::Shifts", type: :request do
           expect(work_assignment_ids).not_to include(admin_work_assignment.id)
           expect(response).to have_http_status(:ok)
         end
+
+        it "申請由来の勤務とセットの翌日の勤務も返す" do
+          next_day_work_assignment = create(:work_assignment, user: user, work_type: create(:work_type, facility: user.facility, name: "明け"),
+                                                              schedule_day: create(:schedule_day, schedule_month: schedule_month,
+                                                                                                  date: schedule_day.date.tomorrow),
+                                                              primary_work_assignment: request_based_work_assignment)
+          subject
+          res = JSON.parse(response.body)
+          work_assignment_ids = res["work_assignments"].map { |assignment| assignment["id"] }
+          expect(work_assignment_ids).to include(next_day_work_assignment.id)
+          expect(response).to have_http_status(:ok)
+        end
       end
 
       context "休み割当がある時" do

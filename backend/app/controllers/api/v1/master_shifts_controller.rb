@@ -145,7 +145,7 @@ module Api
 
       def group_work_assignments_by_user_and_day(work_assignments)
         assignment_fields = [:id, :schedule_day_id, :user_id]
-        assignment_fields << :work_request_id if current_user.is_admin?
+        assignment_fields.concat([:work_request_id, :primary_work_assignment_id]) if current_user.is_admin?
         work_assignments
           .group_by(&:user_id)
           .transform_values do |user_work_assignments|

@@ -3,53 +3,42 @@
 module Api
   module V1
     class WorkAssignmentsController < ApplicationController
-      before_action :require_admin!, only: [:create, :update, :destroy, :override]
-      before_action :set_work_assignment, only: [:update, :destroy, :override]
+      before_action :require_admin!, only: [:create, :destroy, :override]
+      before_action :set_work_assignment, only: [:destroy, :override]
       before_action :validate_schedule_day_for_facility!, only: [:create]
-      before_action :validate_not_past_schedule_day!, only: [:create, :update, :destroy, :override]
+      before_action :validate_not_past_schedule_day!, only: [:create, :destroy, :override]
       before_action :validate_user_for_facility!, only: [:create]
-      before_action :validate_work_type_for_facility!, only: [:create, :update]
+      before_action :validate_work_type_for_facility!, only: [:create]
 
       def create
         work_assignment = WorkAssignment.new(work_assignment_params)
 
-        if work_assignment.save
+        if work_assignment.valid?
+          error = work_assignment.next_day_error_message
+          return render json: { message: error }, status: :unprocessable_content if error
+
+          WorkAssignment.transaction do
+            work_assignment.save!
+            work_assignment.create_next_day_work_assignment!
+          end
           render json: { message: "勤務割当を作成しました。" }, status: :created
         else
-          render json: {
-            message: "勤務割当の作成に失敗しました。",
-            errors: work_assignment.errors.to_hash(true)
-          }, status: :unprocessable_content
-        end
-      end
-
-      def update
-        @work_assignment.with_lock do
-          if @work_assignment.created_from_request?
-            return render json: {
-              message: "申請による勤務割当は通常操作では変更できません。"
-            }, status: :conflict
-          end
-
-          if @work_assignment.update(work_assignment_update_params)
-            render json: { message: "勤務割当を更新しました。" }, status: :ok
-          else
-            render json: {
-              message: "勤務割当の更新に失敗しました。",
-              errors: @work_assignment.errors.to_hash(true)
-            }, status: :unprocessable_content
-          end
+          render json: { message: "勤務割当の作成に失敗しました。", errors: work_assignment.errors.to_hash(true) },
+                 status: :unprocessable_content
         end
       end
 
       def destroy
         @work_assignment.with_lock do
+          return render json: { message: "セットの翌日勤務は個別に削除できません。" }, status: :conflict if @work_assignment.next_day_assignment?
+
           if @work_assignment.created_from_request?
             return render json: {
               message: "申請による勤務割当は通常操作では削除できません。"
             }, status: :conflict
           end
 
+          @work_assignment.next_day_work_assignment&.destroy!
           @work_assignment.destroy!
 
           render json: {
@@ -93,10 +82,6 @@ module Api
 
       def work_assignment_params
         params.require(:work_assignment).permit(:schedule_day_id, :user_id, :work_type_id)
-      end
-
-      def work_assignment_update_params
-        params.require(:work_assignment).permit(:work_type_id)
       end
 
       def validate_schedule_day_for_facility!

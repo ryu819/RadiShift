@@ -127,6 +127,38 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
           expect(response).to have_http_status(:not_found)
         end
       end
+
+      context "月末に翌日の勤務が設定された勤務タイプを送る時" do
+        let(:primary_date) { Date.current.next_month.end_of_month }
+        let(:schedule_month) { create(:schedule_month, facility: user.facility, date: primary_date) }
+        let(:schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: primary_date) }
+        let(:next_month) { create(:schedule_month, facility: user.facility, date: primary_date.tomorrow) }
+        let(:next_schedule_day) { create(:schedule_day, schedule_month: next_month, date: primary_date.tomorrow) }
+        let(:next_day_work_type) { create(:work_type, facility: user.facility, name: "明け") }
+        let(:work_type) { create(:work_type, facility: user.facility, name: "夜勤", next_day_work_type: next_day_work_type) }
+
+        it "翌月のシフト表があれば、翌月1日にも勤務割当を作成する" do
+          next_schedule_day
+          expect { subject }.to change { WorkAssignment.count }.by(2)
+          work_assignment = WorkAssignment.find_by(schedule_day: schedule_day, user: assigned_user, work_type: work_type)
+          expect(work_assignment.next_day_work_assignment.schedule_day).to eq(next_schedule_day)
+          expect(work_assignment.next_day_work_assignment.work_type).to eq(next_day_work_type)
+          expect(response).to have_http_status(:created)
+        end
+
+        it "翌月のシフト表がなければ、主勤務の勤務割当だけ作成する" do
+          expect { subject }.to change { WorkAssignment.count }.by(1)
+          expect(response).to have_http_status(:created)
+        end
+
+        it "翌日に同じ勤務割当がすでにあれば、どちらの勤務割当も作成しない" do
+          create(:work_assignment, schedule_day: next_schedule_day, user: assigned_user, work_type: next_day_work_type)
+          expect { subject }.not_to change { WorkAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("翌日の勤務はすでに割り当てられています。")
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
     end
 
     context "管理者でない時" do
@@ -146,132 +178,6 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
         subject
         res = JSON.parse(response.body)
         expect(res["message"]).to eq("施設に所属していません。")
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-  end
-
-  describe "PUT /api/v1/work_assignments/:id" do
-    subject { put(api_v1_work_assignment_path(work_assignment), params: params, headers: { "Authorization": token }) }
-
-    let(:work_assignment) { create(:work_assignment, facility: user.facility) }
-    let(:work_type) { create(:work_type, facility: user.facility, name: "夜勤") }
-    let(:params) { { work_assignment: { work_type_id: work_type.id } } }
-
-    context "管理者である時" do
-      let(:user) { create(:user, :admin) }
-
-      it "勤務割当を更新できる" do
-        subject
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("勤務割当を更新しました。")
-        expect(work_assignment.reload.work_type).to eq(work_type)
-        expect(response).to have_http_status(:ok)
-      end
-
-      context "過去日の勤務割当の時" do
-        before do
-          work_assignment.schedule_day.update!(date: Date.current.yesterday)
-        end
-
-        it "勤務割当を更新できない" do
-          original_work_type = work_assignment.work_type
-          subject
-          res = JSON.parse(response.body)
-          expect(res["message"]).to eq("過去日のシフトは変更できません。")
-          expect(work_assignment.reload.work_type).to eq(original_work_type)
-          expect(response).to have_http_status(:unprocessable_content)
-        end
-      end
-
-      context "work_type_id がない時" do
-        let(:params) { { work_assignment: { work_type_id: nil } } }
-
-        it "更新に失敗する" do
-          original_work_type = work_assignment.work_type
-          subject
-          res = JSON.parse(response.body)
-          expect(res["message"]).to eq("勤務割当の更新に失敗しました。")
-          expect(res["errors"]["work_type"]).to be_present
-          expect(work_assignment.reload.work_type).to eq(original_work_type)
-          expect(response).to have_http_status(:unprocessable_content)
-        end
-      end
-
-      context "別施設の work_type_id を送る時" do
-        let(:other_work_type) { create(:work_type, facility: create(:facility), name: "夜勤") }
-        let(:params) { { work_assignment: { work_type_id: other_work_type.id } } }
-
-        it "not_found エラーが返る" do
-          original_work_type = work_assignment.work_type
-          subject
-          res = JSON.parse(response.body)
-          expect(res["message"]).to eq("勤務パターンが存在しません。")
-          expect(work_assignment.reload.work_type).to eq(original_work_type)
-          expect(response).to have_http_status(:not_found)
-        end
-      end
-
-      context "無効化済みの work_type_id を送る時" do
-        let(:work_type) { create(:work_type, facility: user.facility, name: "夜勤", is_active: false) }
-
-        it "not_found エラーが返る" do
-          original_work_type = work_assignment.work_type
-          subject
-          res = JSON.parse(response.body)
-          expect(res["message"]).to eq("勤務パターンが存在しません。")
-          expect(work_assignment.reload.work_type).to eq(original_work_type)
-          expect(response).to have_http_status(:not_found)
-        end
-      end
-
-      context "permitしていない項目を送る時" do
-        let(:schedule_month) { work_assignment.schedule_day.schedule_month }
-        let(:other_schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: Date.new(2026, 1, 3)) }
-        let(:other_user) { create(:user, facility: user.facility) }
-        let(:params) { { work_assignment: { schedule_day_id: other_schedule_day.id, user_id: other_user.id, work_type_id: work_type.id } } }
-
-        it "schedule_day_id と user_id は更新されない" do
-          original_schedule_day = work_assignment.schedule_day
-          original_user = work_assignment.user
-          subject
-          work_assignment.reload
-          expect(work_assignment.schedule_day).to eq(original_schedule_day)
-          expect(work_assignment.user).to eq(original_user)
-          expect(work_assignment.work_type).to eq(work_type)
-          expect(response).to have_http_status(:ok)
-        end
-      end
-    end
-
-    context "管理者でない時" do
-      it "forbidden エラーが返る" do
-        subject
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("管理者権限がありません。")
-        expect(response).to have_http_status(:forbidden)
-      end
-    end
-
-    context "施設に所属していない時" do
-      let(:user) { create(:user) }
-      let(:work_assignment) { create(:work_assignment) }
-      let(:params) { { work_assignment: { work_type_id: 1 } } }
-
-      it "not_found エラーが返る" do
-        subject
-        res = JSON.parse(response.body)
-        expect(res["message"]).to eq("施設に所属していません。")
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
-    context "別施設の勤務割当を更新しようとした時" do
-      let(:user) { create(:user, :admin) }
-      let(:work_assignment) { create(:work_assignment, facility: create(:facility)) }
-
-      it "not_found エラーが返る" do
-        subject
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -349,6 +255,27 @@ RSpec.describe "Api::V1::WorkAssignments", type: :request do
           expect { subject }.not_to change { WorkAssignment.count }
           res = JSON.parse(response.body)
           expect(res["message"]).to eq("申請による勤務割当は通常操作では削除できません。")
+          expect(response).to have_http_status(:conflict)
+        end
+      end
+
+      context "翌日の勤務とセットの時" do
+        let!(:next_day_work_assignment) do
+          schedule_day = work_assignment.schedule_day
+          create(:work_assignment, facility: user.facility, user: work_assignment.user, primary_work_assignment: work_assignment,
+                                   schedule_day: create(:schedule_day, schedule_month: schedule_day.schedule_month, date: schedule_day.date.tomorrow))
+        end
+
+        it "主勤務を削除すると翌日の勤務もまとめて削除する" do
+          expect { subject }.to change { WorkAssignment.count }.by(-2)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "翌日の勤務は個別に削除できない" do
+          expect { delete(api_v1_work_assignment_path(next_day_work_assignment), headers: { "Authorization": token }) }
+            .not_to change { WorkAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("セットの翌日勤務は個別に削除できません。")
           expect(response).to have_http_status(:conflict)
         end
       end

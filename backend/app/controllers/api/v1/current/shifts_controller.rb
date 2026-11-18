@@ -31,7 +31,9 @@ module Api
 
           unless schedule_month.is_published?
             work_assignments =
-              work_assignments.where.not(work_request_id: nil)
+              work_assignments.includes(:primary_work_assignment).select do |assignment|
+                assignment.created_from_request? || assignment.primary_work_assignment&.created_from_request?
+              end
 
             day_off_assignments =
               day_off_assignments.where.not(day_off_request_id: nil)
@@ -50,7 +52,7 @@ module Api
 
         def serialize_work_assignments(assignments)
           assignments.as_json(
-            only: [:id, :schedule_day_id, :user_id, :work_request_id],
+            only: [:id, :schedule_day_id, :user_id, :work_request_id, :primary_work_assignment_id],
             include: {
               work_type: {
                 only: [:id, :name, :color_code, :is_requestable]
