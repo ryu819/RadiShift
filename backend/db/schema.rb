@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_03_070152) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_080100) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -230,6 +230,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_070152) do
     t.bigint "user_id", null: false
     t.bigint "work_request_id"
     t.bigint "work_type_id", null: false
+    t.bigint "primary_work_assignment_id"
+    t.index ["primary_work_assignment_id"], name: "index_work_assignments_on_primary_work_assignment_id", unique: true
     t.index ["schedule_day_id", "work_type_id", "user_id"], name: "idx_on_schedule_day_id_work_type_id_user_id_8ebca09a8b", unique: true
     t.index ["schedule_day_id"], name: "index_work_assignments_on_schedule_day_id"
     t.index ["user_id", "schedule_day_id"], name: "index_work_assignments_on_user_id_and_schedule_day_id"
@@ -265,8 +267,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_070152) do
     t.boolean "is_requestable", default: false, null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
+    t.bigint "next_day_work_type_id"
     t.index ["facility_id", "name"], name: "index_work_types_on_facility_id_and_name"
     t.index ["facility_id"], name: "index_work_types_on_facility_id"
+    t.index ["next_day_work_type_id"], name: "index_work_types_on_next_day_work_type_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -297,6 +301,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_070152) do
   add_foreign_key "users", "facilities"
   add_foreign_key "work_assignments", "schedule_days"
   add_foreign_key "work_assignments", "users"
+  add_foreign_key "work_assignments", "work_assignments", column: "primary_work_assignment_id", on_delete: :nullify
   add_foreign_key "work_assignments", "work_requests", on_delete: :nullify
   add_foreign_key "work_assignments", "work_types"
   add_foreign_key "work_requests", "facilities"
@@ -304,4 +309,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_070152) do
   add_foreign_key "work_requests", "users"
   add_foreign_key "work_requests", "work_types"
   add_foreign_key "work_types", "facilities"
+  add_foreign_key "work_types", "work_types", column: "next_day_work_type_id", on_delete: :nullify
 end
