@@ -382,6 +382,29 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
       end
     end
 
+    context "過去日の返上申請を数値のステータスで approved にした時" do
+      subject do
+        put(api_v1_work_request_path(work_request), params: { work_request: { request_status: WorkRequest.request_statuses[:approved] } },
+                                                    headers: { "Authorization": token }, as: :json)
+      end
+
+      let(:schedule_day_date) { Date.current.yesterday }
+      let(:work_request) do
+        create(:work_request, facility: user.facility, user: target_user, schedule_day: schedule_day, work_type: work_type, request_status: :pending,
+                              is_return: true)
+      end
+      let!(:work_assignment) do
+        create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type, work_request: create(:work_request))
+      end
+
+      it "承認せず、勤務割当も削除しない" do
+        expect { subject }.not_to change { WorkAssignment.count }
+        expect(JSON.parse(response.body)["message"]).to eq("今日以前の日付の申請は承認できません。")
+        expect(work_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
     context "過去日の返上申請を approved にした時" do
       let(:schedule_day_date) { Date.current.yesterday }
       let(:work_request) do

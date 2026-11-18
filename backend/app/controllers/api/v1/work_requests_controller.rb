@@ -66,19 +66,16 @@ module Api
             }, status: :conflict
           end
 
-          if work_request_update_params[:request_status] == "approved"
+          @work_request.assign_attributes(work_request_update_params)
+
+          if @work_request.approved?
             lock_work_type!(@work_request) unless @work_request.is_return?
 
             error_message = work_request_approval_error_message
-
-            if error_message
-              return render json: {
-                message: error_message
-              }, status: :unprocessable_content
-            end
+            return render json: { message: error_message }, status: :unprocessable_content if error_message
           end
 
-          @work_request.update!(work_request_update_params)
+          @work_request.save!
 
           apply_work_assignment!(@work_request) if @work_request.approved?
 
