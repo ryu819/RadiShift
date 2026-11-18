@@ -166,6 +166,54 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
           expect(res["message"]).to eq("対象月のシフト作成に失敗しました。")
         end
       end
+
+      context "前月末に翌日の勤務が設定された勤務割当がある時" do
+        let(:target_date) { Date.current.next_month(2).beginning_of_month }
+        let(:params) { { schedule_month: { year: target_date.year, month: target_date.month, monthly_days_off: 8.0 } } }
+        let(:previous_month) { create(:schedule_month, facility: user.facility, date: target_date.yesterday) }
+        let(:previous_day) { create(:schedule_day, schedule_month: previous_month, date: target_date.yesterday) }
+        let(:member) { create(:user, facility: user.facility) }
+        let(:next_day_work_type) { create(:work_type, facility: user.facility, name: "明け") }
+        let(:work_type) { create(:work_type, facility: user.facility, name: "夜勤", next_day_work_type: next_day_work_type) }
+        let!(:work_assignment) { create(:work_assignment, schedule_day: previous_day, user: member, work_type: work_type) }
+
+        it "1日に翌日の勤務を追加する" do
+          subject
+          next_day_work_assignment = work_assignment.reload.next_day_work_assignment
+          expect(next_day_work_assignment.schedule_day.date).to eq(target_date)
+          expect(next_day_work_assignment.work_type).to eq(next_day_work_type)
+          expect(response).to have_http_status(:created)
+        end
+
+        it "セットの設定が変更されていれば、変更後の勤務を追加する" do
+          changed_work_type = create(:work_type, facility: user.facility, name: "遅番")
+          work_type.update!(next_day_work_type: changed_work_type)
+          subject
+          expect(work_assignment.reload.next_day_work_assignment.work_type).to eq(changed_work_type)
+        end
+
+        it "セットの設定が解除されていれば、翌日の勤務を追加しない" do
+          work_type.update!(next_day_work_type: nil)
+          expect { subject }.not_to change { WorkAssignment.count }
+          expect(response).to have_http_status(:created)
+        end
+
+        it "脱退済みメンバーには、未来月の翌日の勤務を追加しない" do
+          member.update!(facility: nil, display_order: nil)
+          expect { subject }.not_to change { WorkAssignment.count }
+          expect(response).to have_http_status(:created)
+        end
+
+        it "翌日の勤務が重複すれば、対象月を作成しない" do
+          other_work_type = create(:work_type, facility: user.facility, name: "準夜", next_day_work_type: next_day_work_type)
+          create(:work_assignment, schedule_day: previous_day, user: member, work_type: other_work_type)
+          expect { subject }.not_to change { ScheduleMonth.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("翌日の勤務はすでに割り当てられています。")
+          expect(WorkAssignment.where(user: member).count).to eq(2)
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
     end
 
     context "管理者でない時" do
@@ -320,6 +368,18 @@ RSpec.describe "Api::V1::ScheduleMonths", type: :request do
 
       it "紐づく schedule_days も削除される" do
         expect { subject }.to change { ScheduleDay.count }.by(-1)
+      end
+
+      it "別月にある翌日の勤務は単独の勤務割当として残す" do
+        work_assignment = create(:work_assignment, facility: user.facility, schedule_day: schedule_day)
+        other_date = Date.current.next_month(2)
+        other_day = create(:schedule_day, schedule_month: create(:schedule_month, facility: user.facility, date: other_date), date: other_date)
+        next_day_work_assignment = create(:work_assignment, facility: user.facility, user: work_assignment.user, schedule_day: other_day,
+                                                            primary_work_assignment: work_assignment)
+
+        subject
+
+        expect(next_day_work_assignment.reload.primary_work_assignment_id).to be_nil
       end
     end
 

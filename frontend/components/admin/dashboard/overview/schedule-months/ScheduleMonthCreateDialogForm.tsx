@@ -102,6 +102,9 @@ export function ScheduleMonthCreateDialogForm({ year, month }: Props) {
               <p className="mt-1 ml-1 text-xs text-muted-foreground">
                 1人あたりの公休日数を0.5日単位で設定できます
               </p>
+              {state.message && (
+                <p className="text-red-500 text-sm">{state.message}</p>
+              )}
               {monthlyDaysOffError && (
                 <p className="text-red-500 text-sm">{monthlyDaysOffError}</p>
               )}
