@@ -10,7 +10,7 @@ module Api
         work_types = current_user.facility.work_types.active.order(:id)
 
         render json: work_types.as_json(
-          only: [:id, :name, :color_code, :is_requestable]
+          only: [:id, :name, :color_code, :is_requestable, :next_day_work_type_id]
         ), status: :ok
       end
 
@@ -39,7 +39,7 @@ module Api
       end
 
       def destroy
-        @work_type.update!(is_active: false)
+        @work_type.deactivate!
 
         render json: { message: "勤務タイプを削除しました。" }, status: :ok
       end
@@ -51,7 +51,7 @@ module Api
       end
 
       def work_type_params
-        params.require(:work_type).permit(:name, :color_code, :is_requestable)
+        params.require(:work_type).permit(:name, :color_code, :is_requestable, :next_day_work_type_id)
       end
     end
   end

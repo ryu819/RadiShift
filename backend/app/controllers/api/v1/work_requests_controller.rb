@@ -66,19 +66,16 @@ module Api
             }, status: :conflict
           end
 
-          if work_request_update_params[:request_status] == "approved"
+          @work_request.assign_attributes(work_request_update_params)
+
+          if @work_request.approved?
             lock_work_type!(@work_request) unless @work_request.is_return?
 
             error_message = work_request_approval_error_message
-
-            if error_message
-              return render json: {
-                message: error_message
-              }, status: :unprocessable_content
-            end
+            return render json: { message: error_message }, status: :unprocessable_content if error_message
           end
 
-          @work_request.update!(work_request_update_params)
+          @work_request.save!
 
           apply_work_assignment!(@work_request) if @work_request.approved?
 
@@ -217,9 +214,10 @@ module Api
           return
         end
 
-        return unless work_assignment
+        return "すでにシフトが割り当てられているため申請できません。" if work_assignment
 
-        "すでにシフトが割り当てられているため申請できません。"
+        WorkAssignment.new(schedule_day: work_request.schedule_day, user: work_request.user,
+                           work_type: work_request.work_type).next_day_error_message
       end
 
       def find_work_assignment(work_request)
@@ -234,16 +232,18 @@ module Api
 
       def return_work_assignment!(work_request)
         work_assignment = find_work_assignment(work_request)
+        work_assignment.next_day_work_assignment&.destroy!
         work_assignment.destroy!
       end
 
       def create_work_assignment!(work_request)
-        WorkAssignment.create!(
+        assignment = WorkAssignment.create!(
           schedule_day: work_request.schedule_day,
           user: work_request.user,
           work_type: work_request.work_type,
           work_request: work_request
         )
+        assignment.create_next_day_work_assignment!
       end
 
       def apply_work_assignment!(work_request)
@@ -271,7 +271,8 @@ module Api
 
         return "すでにシフトが割り当てられているため承認できません。" if find_work_assignment(@work_request)
 
-        nil
+        WorkAssignment.new(schedule_day: @work_request.schedule_day, user: @work_request.user,
+                           work_type: @work_request.work_type).next_day_error_message
       end
     end
   end

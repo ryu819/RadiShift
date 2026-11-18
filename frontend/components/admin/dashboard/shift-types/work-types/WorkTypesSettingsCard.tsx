@@ -64,10 +64,15 @@ export function WorkTypesSettingsCard({
 
                     <p className="mt-1 pl-5 text-xs text-muted-foreground">
                       {workType.isRequestable ? "申請可" : "申請不可"}
+                      {workType.nextDayWorkTypeId &&
+                        `・翌日：${workTypes.find((type) => type.id === workType.nextDayWorkTypeId)?.name ?? ""}`}
                     </p>
                   </div>
 
-                  <WorkTypesActionsMenu workType={workType} />
+                  <WorkTypesActionsMenu
+                    workType={workType}
+                    workTypes={workTypes}
+                  />
                 </div>
               ))}
             </div>
@@ -76,7 +81,11 @@ export function WorkTypesSettingsCard({
       </Card>
 
       {formDialogOpen && (
-        <WorkTypeFormDialog workType={null} onOpenChange={setFormDialogOpen} />
+        <WorkTypeFormDialog
+          workTypes={workTypes}
+          workType={null}
+          onOpenChange={setFormDialogOpen}
+        />
       )}
     </>
   );

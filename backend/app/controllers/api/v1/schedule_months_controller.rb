@@ -66,6 +66,8 @@ module Api
       def create
         schedule_month = current_user.facility.schedule_months.build(schedule_month_params)
 
+        next_day_error = nil
+
         ScheduleMonth.transaction do
           unless schedule_month.save
             return render json: {
@@ -74,7 +76,11 @@ module Api
             }, status: :unprocessable_content
           end
           create_schedule_days_with_day_off_slots!(schedule_month)
+          next_day_error = complete_previous_month_assignments(schedule_month)
+          raise ActiveRecord::Rollback if next_day_error
         end
+
+        return render json: { message: next_day_error }, status: :unprocessable_content if next_day_error
 
         render json: { message: "対象月のシフトを作成しました。" }, status: :created
       end
@@ -130,6 +136,25 @@ module Api
               day_off_slot["max_slots"] - assigned_count
           end
         end
+      end
+
+      def complete_previous_month_assignments(schedule_month)
+        month_start = Date.new(schedule_month.year, schedule_month.month, 1)
+        assignments = WorkAssignment.joins(schedule_day: :schedule_month)
+                        .where(schedule_days: { date: month_start - 1.day },
+                               schedule_months: { facility_id: current_user.facility_id },
+                               primary_work_assignment_id: nil)
+                        .includes(:schedule_day, :user, work_type: :next_day_work_type)
+        if month_start > Date.current.beginning_of_month
+          assignments = assignments.joins(:user).where(users: { facility_id: current_user.facility_id, is_deleted: false })
+        end
+        assignments.find_each do |assignment|
+          error = assignment.next_day_error_message
+          return error if error
+
+          assignment.create_next_day_work_assignment!
+        end
+        nil
       end
 
       def create_schedule_days_with_day_off_slots!(schedule_month)

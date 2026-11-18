@@ -15,6 +15,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   ActionState,
   createWorkTypeForm,
 } from "@/lib/actions/shift-types/create-work-type";
@@ -23,10 +31,15 @@ import type { WorkType } from "@/types/work-type";
 
 type Props = {
   workType: WorkType | null;
+  workTypes: WorkType[];
   onOpenChange: (open: boolean) => void;
 };
 
-export function WorkTypeFormDialog({ workType, onOpenChange }: Props) {
+export function WorkTypeFormDialog({
+  workType,
+  workTypes,
+  onOpenChange,
+}: Props) {
   const [state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const nextState = workType
@@ -49,6 +62,12 @@ export function WorkTypeFormDialog({ workType, onOpenChange }: Props) {
 
   const nameError = state.errors?.name?.join("、");
   const colorCodeError = state.errors?.colorCode?.join("、");
+  const nextDayError = state.errors?.nextDayWorkTypeId?.join("、");
+  const nextDayCandidates = workTypes.filter(
+    (type) =>
+      type.id !== workType?.id &&
+      !(workType && type.nextDayWorkTypeId === workType.id),
+  );
 
   return (
     <Dialog open onOpenChange={onOpenChange}>
@@ -110,6 +129,38 @@ export function WorkTypeFormDialog({ workType, onOpenChange }: Props) {
             </p>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="nextDayWorkTypeId">翌日に付ける勤務</Label>
+            <Select
+              name="nextDayWorkTypeId"
+              defaultValue={
+                workType?.nextDayWorkTypeId
+                  ? String(workType.nextDayWorkTypeId)
+                  : "none"
+              }
+            >
+              <SelectTrigger id="nextDayWorkTypeId" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="none">なし</SelectItem>
+                  {nextDayCandidates.map((type) => (
+                    <SelectItem key={type.id} value={String(type.id)}>
+                      {type.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {nextDayError && (
+              <p className="text-sm text-red-500">{nextDayError}</p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              翌月のシフト表がない場合は、翌月のシフト表追加時に自動で翌日分の勤務を追加します
+            </p>
+          </div>
           <DialogFooter>
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending ? <Loader2 className="animate-spin" /> : "保存"}

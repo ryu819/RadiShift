@@ -5,6 +5,7 @@ export type WorkAssignment = {
   scheduleDayId: number;
   userId: number;
   workRequestId?: number | null;
+  primaryWorkAssignmentId?: number | null;
   workType: WorkType;
 };
 

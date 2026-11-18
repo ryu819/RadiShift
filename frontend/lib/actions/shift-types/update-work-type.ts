@@ -15,6 +15,7 @@ export type ActionState = {
   errors?: {
     name?: string[];
     colorCode?: string[];
+    nextDayWorkTypeId?: string[];
   };
 };
 
@@ -23,6 +24,7 @@ type UpdateWorkTypeResponse = {
   errors?: {
     name?: string[];
     colorCode?: string[];
+    nextDayWorkTypeId?: string[];
   };
 };
 
@@ -33,6 +35,9 @@ export async function updateWorkTypeForm(
   const workTypeId = Number(formData.get("workTypeId"));
   const name = formData.get("name") as string;
   const colorCode = formData.get("colorCode") as string;
+  const nextDayValue = formData.get("nextDayWorkTypeId");
+  const nextDayWorkTypeId =
+    nextDayValue && nextDayValue !== "none" ? Number(nextDayValue) : null;
   const isRequestable = formData.get("isRequestable") === "true";
 
   const jwt = await getJwt();
@@ -54,6 +59,7 @@ export async function updateWorkTypeForm(
               name,
               colorCode,
               isRequestable,
+              nextDayWorkTypeId,
             },
           }),
         ),

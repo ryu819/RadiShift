@@ -382,6 +382,29 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
       end
     end
 
+    context "過去日の返上申請を数値のステータスで approved にした時" do
+      subject do
+        put(api_v1_work_request_path(work_request), params: { work_request: { request_status: WorkRequest.request_statuses[:approved] } },
+                                                    headers: { "Authorization": token }, as: :json)
+      end
+
+      let(:schedule_day_date) { Date.current.yesterday }
+      let(:work_request) do
+        create(:work_request, facility: user.facility, user: target_user, schedule_day: schedule_day, work_type: work_type, request_status: :pending,
+                              is_return: true)
+      end
+      let!(:work_assignment) do
+        create(:work_assignment, schedule_day: schedule_day, user: target_user, work_type: work_type, work_request: create(:work_request))
+      end
+
+      it "承認せず、勤務割当も削除しない" do
+        expect { subject }.not_to change { WorkAssignment.count }
+        expect(JSON.parse(response.body)["message"]).to eq("今日以前の日付の申請は承認できません。")
+        expect(work_request.reload).to be_pending
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
     context "過去日の返上申請を approved にした時" do
       let(:schedule_day_date) { Date.current.yesterday }
       let(:work_request) do
@@ -445,6 +468,44 @@ RSpec.describe "Api::V1::WorkRequests", type: :request do
         expect(res["message"]).to eq("申請を承認し、シフトを変更しました。")
         expect(work_request.reload).to be_approved
         expect(response).to have_http_status(:ok)
+      end
+
+      context "翌日の勤務とセットの時" do
+        before do
+          create(:work_assignment, facility: user.facility, user: target_user, primary_work_assignment: work_assignment,
+                                   schedule_day: create(:schedule_day, schedule_month: schedule_month, date: schedule_day_date.tomorrow))
+        end
+
+        it "翌日の勤務もまとめて削除する" do
+          expect { subject }.to change { WorkAssignment.count }.by(-2)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
+
+    context "翌日の勤務が設定された通常申請を approved にした時" do
+      let(:next_day_work_type) { create(:work_type, facility: user.facility, name: "明け") }
+      let(:work_type) { create(:work_type, facility: user.facility, is_requestable: true, next_day_work_type: next_day_work_type) }
+      let!(:next_schedule_day) { create(:schedule_day, schedule_month: schedule_month, date: schedule_day_date.tomorrow) }
+
+      it "翌日にも勤務割当を作成する" do
+        expect { subject }.to change { WorkAssignment.count }.by(2)
+        next_day_work_assignment = work_request.reload.work_assignment.next_day_work_assignment
+        expect(next_day_work_assignment.schedule_day).to eq(next_schedule_day)
+        expect(next_day_work_assignment.work_type).to eq(next_day_work_type)
+        expect(response).to have_http_status(:ok)
+      end
+
+      context "翌日に同じ勤務割当がすでにある時" do
+        before { create(:work_assignment, schedule_day: next_schedule_day, user: target_user, work_type: next_day_work_type) }
+
+        it "承認せず、勤務割当を作成しない" do
+          expect { subject }.not_to change { WorkAssignment.count }
+          res = JSON.parse(response.body)
+          expect(res["message"]).to eq("翌日の勤務はすでに割り当てられています。")
+          expect(work_request.reload).to be_pending
+          expect(response).to have_http_status(:unprocessable_content)
+        end
       end
     end
 

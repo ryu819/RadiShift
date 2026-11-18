@@ -3,4 +3,5 @@ export type WorkType = {
   name: string;
   colorCode: string;
   isRequestable: boolean;
+  nextDayWorkTypeId?: number | null;
 };

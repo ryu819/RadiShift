@@ -329,7 +329,9 @@ export function ShiftRequestDialog({
                           </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">
-                            返上不可
+                            {workAssignment.primaryWorkAssignmentId
+                              ? "前日の勤務とセット"
+                              : "返上不可"}
                           </span>
                         )}
                       </button>
@@ -407,6 +409,9 @@ export function ShiftRequestDialog({
                   <p className="text-xs text-muted-foreground">勤務</p>
 
                   {requestableWorkTypes.map((workType) => {
+                    const nextDayType = workTypes.find(
+                      (type) => type.id === workType.nextDayWorkTypeId,
+                    );
                     const isSelected =
                       selectedRequest?.kind === "work" &&
                       selectedRequest.shiftType.id === workType.id &&
@@ -437,7 +442,7 @@ export function ShiftRequestDialog({
                         </Badge>
 
                         <span className="text-xs text-muted-foreground">
-                          申請可
+                          {nextDayType ? `翌日：${nextDayType.name}` : "申請可"}
                         </span>
                       </button>
                     );

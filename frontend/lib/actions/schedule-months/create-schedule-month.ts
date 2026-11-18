@@ -12,6 +12,7 @@ import { setFlashToast } from "@/lib/set-flash-toast";
 
 export type ActionState = {
   success: boolean;
+  message?: string;
   errors?: {
     year?: string[];
     month?: string[];
@@ -73,6 +74,7 @@ export async function createScheduleMonthForm(
       return {
         success: false,
         errors: data.errors,
+        message: data.message,
       };
     }
 

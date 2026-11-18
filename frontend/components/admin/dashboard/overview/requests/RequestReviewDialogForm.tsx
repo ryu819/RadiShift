@@ -169,9 +169,11 @@ export function RequestReviewDialogForm({
                 </Badge>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 sm:col-span-2">
               <p className="text-muted-foreground">申請日時：</p>
-              <p>{formatCreatedAt(request.createdAt)}</p>
+              <p className="whitespace-nowrap">
+                {formatCreatedAt(request.createdAt)}
+              </p>
             </div>
           </div>
         </div>
