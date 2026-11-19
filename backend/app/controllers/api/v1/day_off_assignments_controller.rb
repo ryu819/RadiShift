@@ -3,12 +3,12 @@
 module Api
   module V1
     class DayOffAssignmentsController < ApplicationController
-      before_action :require_admin!, only: [:create, :update, :destroy, :override]
-      before_action :set_day_off_assignment, only: [:update, :destroy, :override]
+      before_action :require_admin!, only: [:create, :destroy, :override]
+      before_action :set_day_off_assignment, only: [:destroy, :override]
       before_action :validate_schedule_day_for_facility!, only: [:create]
-      before_action :validate_not_past_schedule_day!, only: [:create, :update, :destroy, :override]
+      before_action :validate_not_past_schedule_day!, only: [:create, :destroy, :override]
       before_action :validate_user_for_facility!, only: [:create]
-      before_action :validate_day_off_type_for_facility!, only: [:create, :update]
+      before_action :validate_day_off_type_for_facility!, only: [:create]
 
       def create
         day_off_assignment = DayOffAssignment.new(day_off_assignment_params)
@@ -20,25 +20,6 @@ module Api
             message: "休み割当の作成に失敗しました。",
             errors: day_off_assignment.errors.to_hash(true)
           }, status: :unprocessable_content
-        end
-      end
-
-      def update
-        @day_off_assignment.with_lock do
-          if @day_off_assignment.created_from_request?
-            return render json: {
-              message: "申請による休み割当は通常操作では変更できません。"
-            }, status: :conflict
-          end
-
-          if @day_off_assignment.update(day_off_assignment_update_params)
-            render json: { message: "休み割当を更新しました。" }, status: :ok
-          else
-            render json: {
-              message: "休み割当の更新に失敗しました。",
-              errors: @day_off_assignment.errors.to_hash(true)
-            }, status: :unprocessable_content
-          end
         end
       end
 
@@ -93,10 +74,6 @@ module Api
 
       def day_off_assignment_params
         params.require(:day_off_assignment).permit(:schedule_day_id, :user_id, :day_off_type_id)
-      end
-
-      def day_off_assignment_update_params
-        params.require(:day_off_assignment).permit(:day_off_type_id)
       end
 
       def validate_schedule_day_for_facility!

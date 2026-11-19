@@ -3,12 +3,12 @@
 module Api
   module V1
     class ModalityAssignmentsController < ApplicationController
-      before_action :require_admin!, only: [:create, :update, :destroy]
-      before_action :set_modality_assignment, only: [:update, :destroy]
+      before_action :require_admin!, only: [:create, :destroy]
+      before_action :set_modality_assignment, only: [:destroy]
       before_action :validate_schedule_day_for_facility!, only: [:create]
-      before_action :validate_not_past_schedule_day!, only: [:create, :update, :destroy]
+      before_action :validate_not_past_schedule_day!, only: [:create, :destroy]
       before_action :validate_user_for_facility!, only: [:create]
-      before_action :validate_modality_type_for_facility!, only: [:create, :update]
+      before_action :validate_modality_type_for_facility!, only: [:create]
 
       def create
         modality_assignment = ModalityAssignment.new(modality_assignment_params)
@@ -19,17 +19,6 @@ module Api
           render json: {
             message: "モダリティ割当の作成に失敗しました。",
             errors: modality_assignment.errors.to_hash(true)
-          }, status: :unprocessable_content
-        end
-      end
-
-      def update
-        if @modality_assignment.update(modality_assignment_update_params)
-          render json: { message: "モダリティ割当を更新しました。" }, status: :ok
-        else
-          render json: {
-            message: "モダリティ割当の更新に失敗しました。",
-            errors: @modality_assignment.errors.to_hash(true)
           }, status: :unprocessable_content
         end
       end
@@ -55,10 +44,6 @@ module Api
 
       def modality_assignment_params
         params.require(:modality_assignment).permit(:schedule_day_id, :user_id, :modality_type_id)
-      end
-
-      def modality_assignment_update_params
-        params.require(:modality_assignment).permit(:modality_type_id)
       end
 
       def validate_schedule_day_for_facility!
