@@ -127,7 +127,7 @@ export function DayOffSlotCalendarCard({
               </div>
 
               <div className="rounded-sm border">
-                <div className="border-b py-2">
+                <div className="border-b pt-2 pb-4">
                   <MonthNavigation
                     scheduleMonths={scheduleMonths}
                     selectedScheduleMonthId={selectedScheduleMonthId}
