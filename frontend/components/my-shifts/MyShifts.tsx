@@ -93,14 +93,12 @@ export async function MyShift({ searchParams }: Props) {
           </PopoverContent>
         </Popover>
       </div>
-      <div className="flex flex-col items-center justify-center gap-2">
-        <MonthNavigation
-          scheduleMonths={scheduleMonthList}
-          selectedScheduleMonthId={selectedScheduleMonth.id}
-          year={selectedScheduleMonth.year}
-          month={selectedScheduleMonth.month}
-        />
-
+      <MonthNavigation
+        scheduleMonths={scheduleMonthList}
+        selectedScheduleMonthId={selectedScheduleMonth.id}
+        year={selectedScheduleMonth.year}
+        month={selectedScheduleMonth.month}
+      >
         {scheduleMonth?.isPublished ? (
           <Badge className="bg-emerald-100 text-emerald-700 rounded-sm">
             シフト公開済
@@ -110,7 +108,7 @@ export async function MyShift({ searchParams }: Props) {
             シフト未公開
           </Badge>
         )}
-      </div>
+      </MonthNavigation>
 
       <div className="space-y-4 ">
         <MyShiftsCalendar

@@ -94,23 +94,23 @@ export async function MasterShifts({ searchParams }: Props) {
           </Popover>
         )}
       </div>
-      <div className="flex flex-col items-center justify-center gap-2 landscape:max-lg:gap-0 master-shift-fullscreen-hide">
+      <div className="master-shift-fullscreen-hide">
         <MonthNavigation
           scheduleMonths={scheduleMonthList}
           selectedScheduleMonthId={selectedScheduleMonth.id}
           year={selectedScheduleMonth.year}
           month={selectedScheduleMonth.month}
-        />
-
-        {scheduleMonth?.isPublished ? (
-          <Badge className="bg-emerald-100 text-emerald-700 rounded-sm master-shift-print-hide">
-            シフト公開済
-          </Badge>
-        ) : (
-          <Badge className="bg-amber-100 text-amber-700 rounded-sm master-shift-print-hide">
-            シフト未公開
-          </Badge>
-        )}
+        >
+          {scheduleMonth?.isPublished ? (
+            <Badge className="bg-emerald-100 text-emerald-700 rounded-sm">
+              シフト公開済
+            </Badge>
+          ) : (
+            <Badge className="bg-amber-100 text-amber-700 rounded-sm">
+              シフト未公開
+            </Badge>
+          )}
+        </MonthNavigation>
       </div>
 
       <ShiftTable

@@ -1,10 +1,9 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ScheduleMonths } from "@/types/schedule-months";
 
 type Props = {
@@ -12,6 +11,7 @@ type Props = {
   selectedScheduleMonthId: number;
   year: number;
   month: number;
+  children?: React.ReactNode;
 };
 
 export function MonthNavigation({
@@ -19,59 +19,47 @@ export function MonthNavigation({
   selectedScheduleMonthId,
   year,
   month,
+  children,
 }: Props) {
   const pathname = usePathname();
 
-  const currentScheduleMonthIndex = scheduleMonths.findIndex(
-    (scheduleMonth) => scheduleMonth.id === selectedScheduleMonthId,
-  );
-
-  const previousScheduleMonth =
-    currentScheduleMonthIndex > 0
-      ? scheduleMonths[currentScheduleMonthIndex - 1]
-      : null;
-
-  const nextScheduleMonth =
-    currentScheduleMonthIndex >= 0 &&
-    currentScheduleMonthIndex < scheduleMonths.length - 1
-      ? scheduleMonths[currentScheduleMonthIndex + 1]
-      : null;
-
   return (
-    <div className="flex items-center justify-center gap-1 md:gap-3 master-shift-print-hide">
-      {previousScheduleMonth ? (
-        <Button asChild variant="link" size="icon">
-          <Link
-            href={`${pathname}?scheduleMonthId=${previousScheduleMonth.id}`}
-            scroll={false}
-          >
-            <ChevronLeft className="size-4" aria-hidden="true" />
-          </Link>
-        </Button>
-      ) : (
-        <Button type="button" variant="link" size="icon" disabled>
-          <ChevronLeft className="size-4" aria-hidden="true" />
-        </Button>
-      )}
-
+    <div className="flex w-full min-w-0 flex-col items-center gap-2 master-shift-print-hide">
       <h1 className="text-xl font-semibold md:text-2xl">
         {`${year}年 ${month}月`}
       </h1>
 
-      {nextScheduleMonth ? (
-        <Button asChild variant="link" size="icon">
-          <Link
-            href={`${pathname}?scheduleMonthId=${nextScheduleMonth.id}`}
-            scroll={false}
+      {children}
+
+      <div className="relative w-full overflow-x-auto">
+        <Tabs
+          value={String(selectedScheduleMonthId)}
+          activationMode="manual"
+          className="block"
+        >
+          <TabsList
+            variant="line"
+            className="flex h-8 w-max min-w-full justify-center border-b"
           >
-            <ChevronRight className="size-4" aria-hidden="true" />
-          </Link>
-        </Button>
-      ) : (
-        <Button type="button" variant="link" size="icon" disabled>
-          <ChevronRight className="h-4 w-4" aria-hidden="true" />
-        </Button>
-      )}
+            {scheduleMonths.map((scheduleMonth) => (
+              <TabsTrigger
+                key={scheduleMonth.id}
+                value={String(scheduleMonth.id)}
+                asChild
+                className="cursor-pointer px-3 text-secondary data-[state=active]:text-primary"
+              >
+                <Link
+                  href={`${pathname}?scheduleMonthId=${scheduleMonth.id}`}
+                  scroll={false}
+                  aria-label={`${scheduleMonth.year}年${scheduleMonth.month}月`}
+                >
+                  {`${scheduleMonth.month}月`}
+                </Link>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </div>
     </div>
   );
 }

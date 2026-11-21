@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 
 import { calendarWeekdays } from "@/components/admin/dashboard/day-off-slots/calendar/day-off-slot-calendar-week-days";
 import { dayOffSlotRuleWeekDays } from "@/components/admin/dashboard/day-off-slots/rules/day-off-slot-rule-week-days";
@@ -136,18 +136,9 @@ function DayOffSlotCalendarSkeleton() {
         </div>
 
         <div className="rounded-sm border">
-          <div className="border-b py-2">
-            <div className="flex items-center justify-center gap-1 md:gap-3">
-              <Button variant="link" size="icon" disabled>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-
-              <Skeleton className="h-7 w-32 md:h-8" />
-
-              <Button variant="link" size="icon" disabled>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+          <div className="flex flex-col items-center gap-2 border-b pt-2 pb-4">
+            <Skeleton className="h-7 w-32 md:h-8" />
+            <div className="h-8" />
           </div>
 
           <div className="grid grid-cols-7 border-b bg-muted/30">
