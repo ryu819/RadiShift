@@ -6,6 +6,7 @@ module Api
       class AvatarImagesController < ApplicationController
         MAX_BYTES = 5.megabytes
         CONTENT_TYPES = { "image/jpeg" => "avatar.jpg", "image/png" => "avatar.png" }.freeze
+        UPLOAD_EXPIRES_IN = 10.minutes
 
         skip_before_action :require_facility!
 
@@ -16,14 +17,15 @@ module Api
             filename: CONTENT_TYPES[params[:content_type]],
             content_type: params[:content_type],
             byte_size: params[:byte_size].to_i,
-            checksum: params[:checksum],
-            service_name: "amazon"
+            checksum: params[:checksum]
           )
+          ActiveStorage::Current.url_options = { host: ENV.fetch("APP_HOST") }
 
-          result = PresignedUrlService.new.generate_presigned_url(blob)
-          result[:signed_id] = blob.signed_id(purpose: upload_purpose, expires_in: 10.minutes)
-
-          render json: result, status: :ok
+          render json: {
+            upload_url: blob.service_url_for_direct_upload(expires_in: UPLOAD_EXPIRES_IN),
+            headers: blob.service_headers_for_direct_upload.slice("Content-Type", "Content-MD5"),
+            signed_id: blob.signed_id(purpose: upload_purpose, expires_in: UPLOAD_EXPIRES_IN)
+          }, status: :ok
         end
 
         def update

@@ -74,3 +74,8 @@ group :development, :test do
   # N+1発生時にアラートを表示する
   gem "bullet"
 end
+
+group :development do
+  # 開発の画面から、Active Storageのディスク保存先へ画像を直接送れるようにする
+  gem "rack-cors"
+end
