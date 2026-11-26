@@ -54,6 +54,14 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
+  # 開発の画面（別のポート）のブラウザから、ディスクの保存先へ画像を直接PUTさせる
+  config.middleware.insert_before 0, Rack::Cors do
+    allow do
+      origins "http://localhost:8000"
+      resource "/rails/active_storage/disk/*", methods: [:put], headers: ["Content-Type"]
+    end
+  end
+
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 
